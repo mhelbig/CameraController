@@ -88,6 +88,7 @@ void on_time_set_selected(MenuItem* p_menu_item)
   lcd.print(setString);
   cursorPosition = 0;
   lcd.setCursor(cursorPosition,1);
+  lcd.cursor();
   lcd.blink();
   setMenu = DATETIME;
   menuSelected = true;
@@ -211,10 +212,11 @@ void serialHandler() {
         if(setMenu == DATETIME) {
           dateTime = setString;
           lcd.setCursor(0,1);
-          lcd.print("Time seted      ");
+          lcd.print("Time set        ");
           delay(SELECTED_DISPLAY_DELAY);
           menuSelected = false;
         }
+      lcd.noCursor();
       lcd.noBlink();
       }
     case '?':
@@ -237,7 +239,7 @@ void serialPrintHelp() {
   Serial.println("d: select \"selected\" item (left)");
   Serial.println("q: set (no meaning while moving");
   Serial.println("   over the menu, see LCDNav");
-  Serial.println("   example if you get confuse");
+  Serial.println("   example if you get confused");
   Serial.println("e: erase menuSelected flag");
   Serial.println("   can be used as a cancel button");
   Serial.println("?: print this help");

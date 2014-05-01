@@ -1,13 +1,4 @@
-// MultiStepper.pde
-// -*- mode: C++ -*-
-//
-// Shows how to multiple simultaneous steppers
-// Runs one stepper forwards and backwards, accelerating and decelerating
-// at the limits. Runs other steppers at the same time
-//
-// Copyright (C) 2009 Mike McCauley
-// $Id: MultiStepper.pde,v 1.1 2011/01/05 01:51:01 mikem Exp mikem $
-
+#include <spline.h>
 #include <AccelStepper.h>
 
 #define X_STEP_PIN         54
@@ -19,7 +10,7 @@
 #define Y_ENABLE_PIN       56
 
 
-// Define some steppers and the pins the will use
+// Define some steppers and the pins they will use
 AccelStepper motorX(AccelStepper::DRIVER,X_STEP_PIN,X_DIR_PIN);
 AccelStepper motorY(AccelStepper::DRIVER,Y_STEP_PIN,Y_DIR_PIN);
 

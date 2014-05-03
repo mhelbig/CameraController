@@ -13,8 +13,8 @@
 Spline X_Spline;
 Spline Y_Spline;
 
-float X_Spline_x[7] = {-1,0,1,2,3,4, 5};
-float X_Spline_y[7] = { 0,0,5,6,8,10,10};
+float X_Spline_x[7] = {-1,0,1,2,3,4, 5};  // this will be the time points (camera photo intervals)
+float X_Spline_y[7] = { 0,0,5,6,8,10,10}; // this will be the motor positions
 
 float Y_Spline_x[7] = {-1,0,1,2,3,4, 5};
 float Y_Spline_y[7] = { 0,0,2,5,8,10,10};
@@ -27,6 +27,7 @@ AccelStepper motorX(AccelStepper::DRIVER,X_STEP_PIN,X_DIR_PIN);
 AccelStepper motorY(AccelStepper::DRIVER,Y_STEP_PIN,Y_DIR_PIN);
 
 long DelayTimer;
+bool FirstPass = 1;
 
 void setup()
 {
@@ -73,13 +74,16 @@ void loop()
     
     DelayTimer = millis()+500;
 
-    while (DelayTimer>millis())
+    while (DelayTimer>millis() || motorX.distanceToGo() != 0 || motorY.distanceToGo() != 0)
     {
       motorX.run();
       motorY.run();
     }
+
+    if(i == 0 && !FirstPass) delay(3000);
+
   }
-  delay(1000);
+  FirstPass = 0;
 }
 
 

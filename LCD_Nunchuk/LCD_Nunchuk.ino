@@ -8,8 +8,8 @@
  */
 
 #include <Wire.h>
-#include <ArduinoNunchuk.h>
 #include <LiquidCrystal_I2C.h>
+#include <NunchukH.h>
 
 #define BAUDRATE 19200
 
@@ -46,9 +46,9 @@ void loop()
   nunchuk.update();
 
   lcd.setCursor ( 0, 2 );        // go to the next line
-  lcd.print(nunchuk.analogX, DEC);
+  lcd.print(nunchuk.displacementX, DEC);
   lcd.print(' ');
-  lcd.print(nunchuk.analogY, DEC);
+  lcd.print(nunchuk.displacementY, DEC);
   lcd.print(' ');
 
   lcd.setCursor ( 0, 3 );        // go to the next line

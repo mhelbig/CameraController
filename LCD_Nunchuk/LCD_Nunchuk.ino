@@ -46,9 +46,17 @@ void loop()
   nunchuk.update();
 
   lcd.setCursor ( 0, 2 );        // go to the next line
-  lcd.print(nunchuk.displacementX, DEC);
+/*  lcd.print(nunchuk.analogDisplacementX, DEC);
   lcd.print(' ');
-  lcd.print(nunchuk.displacementY, DEC);
+  lcd.print(nunchuk.analogDirectionX, DEC);
+  lcd.print(' ');
+  lcd.print(nunchuk.analogDisplacementY, DEC);
+  lcd.print(' ');
+  lcd.print(nunchuk.analogDirectionY, DEC);
+  lcd.print(' ');
+*/  lcd.print(nunchuk.digitalDirectionState, DEC);
+  lcd.print(' ');
+  lcd.print(nunchuk.digitalDirectionEdge, DEC);
   lcd.print(' ');
 
   lcd.setCursor ( 0, 3 );        // go to the next line

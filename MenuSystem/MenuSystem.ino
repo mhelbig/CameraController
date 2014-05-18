@@ -11,6 +11,7 @@
 #include <MenuSystem.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
+#include <Navchuk.h>
 
 #define I2C_ADDR    0x3F
 #define BACKLIGHT_PIN     3
@@ -34,6 +35,9 @@ MenuItem mu1_mi3("Go back");
 
 // initialize the library with the numbers of the interface pins
 LiquidCrystal_I2C lcd(I2C_ADDR,En_pin,Rw_pin,Rs_pin,D4_pin,D5_pin,D6_pin,D7_pin,BACKLIGHT_PIN,POSITIVE);
+
+// initialize the nunchuk interface
+Navchuk nunchuk = Navchuk();
 
 //Example related
 #define SELECTED_DISPLAY_DELAY 1500
@@ -88,7 +92,6 @@ void on_time_set_selected(MenuItem* p_menu_item)
   lcd.print(setString);
   cursorPosition = 0;
   lcd.setCursor(cursorPosition,1);
-  lcd.cursor();
   lcd.blink();
   setMenu = DATETIME;
   menuSelected = true;
@@ -99,9 +102,9 @@ void on_time_set_selected(MenuItem* p_menu_item)
 
 void setup() {
   Serial.begin(9600);
+  nunchuk.init();
   pinMode(led,OUTPUT);
   lcd.begin(20,4);               // initialize the lcd 
-  serialPrintHelp();
   Serial.println("Setting up the menu.");
 
   // init example vars
@@ -125,13 +128,13 @@ void setup() {
   mu1.add_item(&mu1_mi2, &on_time_set_selected);
   mu1.add_item(&mu1_mi3, &on_back_selected);
   ms.set_root_menu(&mm);
-  Serial.println("Menu setted.");
+  Serial.println("Menu setup.");
   displayMenu();
 }
 
 void loop() {
   // Handle serial commands
-  serialHandler();
+  navigationHandler();
   //SELECTED_DISPLAY_DELAY
   updateDisplay();
 
@@ -163,94 +166,74 @@ void updateDisplay() {
   }
 }
 
-void serialHandler() {
-  char inChar;
-  if((inChar = Serial.read())>0) {
-
-    switch (inChar) {
-    case 'w': // Previus item
-      if(!menuSelected)
-        ms.prev();
-      else {
-        if(setMenu == DATETIME) {
-          if(setString[cursorPosition]>47 && setString[cursorPosition]<57)
-            setString[cursorPosition]++;
-          lcd.write(setString[cursorPosition]);
-          lcd.setCursor(cursorPosition,1);
+void navigationHandler() 
+{
+  do
+  {
+    nunchuk.update();
+  } while(nunchuk.userInput ==' ' || nunchuk.userInput == 'M');
+  
+  switch (nunchuk.userInput)
+  {
+  case 'F': // forward selected - go up the menu tree
+    if(!menuSelected)
+      ms.prev();
+    else
+    {
+      if(setMenu == DATETIME)
+      {
+        if(setString[cursorPosition]>47 && setString[cursorPosition]<57)
+          setString[cursorPosition]++;
+        lcd.write(setString[cursorPosition]);
+        lcd.setCursor(cursorPosition,1);
+      }
+    }
+    break;
+  case 'B': // back selected - go down the menu tree
+    if(!menuSelected)
+      ms.next();
+    else 
+    {
+      if(setMenu == DATETIME) {
+        if(setString[cursorPosition]>48 && setString[cursorPosition]<58)
+          setString[cursorPosition]--;
+        lcd.write(setString[cursorPosition]);
+        lcd.setCursor(cursorPosition,1);
         }
+    }
+    break;
+  case 'L': // left selected - back out of menu
+    if(!menuSelected)
+      ms.back();
+    else if(cursorPosition>0)
+      lcd.setCursor(--cursorPosition,1);
+    break;
+  case 'R': // right selected - into submenu
+    if(!menuSelected)
+      ms.select();
+    else if(cursorPosition<15)
+      lcd.setCursor(++cursorPosition,1);
+    break;
+  case 'C': // Cancel (clear menuSelected) For debug purpose
+    menuSelected = false;
+    break;
+  case 'Z': // Set
+    if(menuSelected)
+    {
+      if(setMenu == DATETIME)
+      {
+        dateTime = setString;
+        lcd.setCursor(0,1);
+        lcd.print("Time set        ");
+        delay(SELECTED_DISPLAY_DELAY);
+        menuSelected = false;
       }
-      break;
-    case 's': // Next item
-      if(!menuSelected)
-        ms.next();
-      else {
-        if(setMenu == DATETIME) {
-          if(setString[cursorPosition]>48 && setString[cursorPosition]<58)
-            setString[cursorPosition]--;
-          lcd.write(setString[cursorPosition]);
-          lcd.setCursor(cursorPosition,1);
-          }
-      }
-      break;
-    case 'a': // Back presed
-      if(!menuSelected)
-        ms.back();
-      else if(cursorPosition>0)
-        lcd.setCursor(--cursorPosition,1);
-      break;
-    case 'd': // Select presed
-      if(!menuSelected)
-        ms.select();
-      else if(cursorPosition<15)
-        lcd.setCursor(++cursorPosition,1);
-      break;
-    case 'e': // Cancel (clear menuSelected) For debug purpose
-      menuSelected = false;
-      break;
-    case 'q': // Set
-      if(menuSelected) {
-        if(setMenu == DATETIME) {
-          dateTime = setString;
-          lcd.setCursor(0,1);
-          lcd.print("Time set        ");
-          delay(SELECTED_DISPLAY_DELAY);
-          menuSelected = false;
-        }
-      lcd.noCursor();
-      lcd.noBlink();
-      }
-    case '?':
-    case 'h': // Display help
-      serialPrintHelp();
-      break;
-    default:
-      break;
-    } 
-    commandReceived = true;
+    lcd.noBlink();
+    }
+    break;
+  default:
+    break;
   }
+  commandReceived = true;
 }
-
-
-void serialPrintHelp() {
-  Serial.println("***************");
-  Serial.println("w: go to previus item (up)");
-  Serial.println("s: go to next item (down)");
-  Serial.println("a: go back (right)");
-  Serial.println("d: select \"selected\" item (left)");
-  Serial.println("q: set (no meaning while moving");
-  Serial.println("   over the menu, see LCDNav");
-  Serial.println("   example if you get confused");
-  Serial.println("e: erase menuSelected flag");
-  Serial.println("   can be used as a cancel button");
-  Serial.println("?: print this help");
-  Serial.println("h: print this help");
-  Serial.println("***************");
-
-}
-
-
-
-
-
-
 

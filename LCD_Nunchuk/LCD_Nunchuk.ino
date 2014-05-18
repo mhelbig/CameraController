@@ -9,7 +9,7 @@
 
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-#include <NunchukH.h>
+#include <Navchuk.h>
 
 #define BAUDRATE 19200
 
@@ -26,7 +26,7 @@ LiquidCrystal_I2C lcd(I2C_ADDR,En_pin,Rw_pin,Rs_pin,D4_pin,D5_pin,D6_pin,D7_pin,
 
 int loopCount = 0;
 
-ArduinoNunchuk nunchuk = ArduinoNunchuk();
+Navchuk nunchuk = Navchuk();
 
 void setup()
 {
@@ -54,21 +54,19 @@ void loop()
   lcd.print(' ');
   lcd.print(nunchuk.analogDirectionY, DEC);
   lcd.print(' ');
-*/  lcd.print(nunchuk.digitalDirectionState, DEC);
+*/
+  lcd.print(nunchuk.userInputState);
   lcd.print(' ');
-  lcd.print(nunchuk.digitalDirectionEdge, DEC);
+  lcd.print(nunchuk.userInput);
   lcd.print(' ');
 
-  lcd.setCursor ( 0, 3 );        // go to the next line
-  lcd.print(nunchuk.accelX, DEC);
-  lcd.print(' ');
-  lcd.print(nunchuk.accelY, DEC);
-  lcd.print(' ');
-  lcd.print(nunchuk.accelZ, DEC);
-  lcd.print(' ');
-  Serial.print(nunchuk.zButton, DEC);
-  Serial.print(' ');
-  Serial.println(nunchuk.cButton, DEC);
+//  lcd.setCursor ( 0, 3 );        // go to the next line
+//  lcd.print(nunchuk.accelX, DEC);
+//  lcd.print(' ');
+//  lcd.print(nunchuk.accelY, DEC);
+//  lcd.print(' ');
+//  lcd.print(nunchuk.accelZ, DEC);
+//  lcd.print(' ');
   
   delay(250);
 }

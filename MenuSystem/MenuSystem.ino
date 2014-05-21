@@ -25,13 +25,13 @@
 
 // Menu variables
 MenuSystem ms;
-Menu mm("Main Menu");
-MenuItem mm_mi1("Read Analog 0 A0");
-MenuItem mm_mi2("Blink led");
-Menu mu1("Date & Time");
-MenuItem mu1_mi1("Show current");
-MenuItem mu1_mi2("Set");
-MenuItem mu1_mi3("Go back");
+Menu mm("Camera Controller");
+Menu tlMenu("Timelapse Mode");
+MenuItem tl_framesPerSecond("Set # frames/sec");
+MenuItem tl_shootTime("Set shoot time");
+MenuItem tl_motionProfile("Set motion profile");
+Menu pmMenu("Panograph Mode");
+MenuItem pm_autoMode("Panograph Auto");
 
 // initialize the library with the numbers of the interface pins
 LiquidCrystal_I2C lcd(I2C_ADDR,En_pin,Rw_pin,Rs_pin,D4_pin,D5_pin,D6_pin,D7_pin,BACKLIGHT_PIN,POSITIVE);
@@ -39,131 +39,83 @@ LiquidCrystal_I2C lcd(I2C_ADDR,En_pin,Rw_pin,Rs_pin,D4_pin,D5_pin,D6_pin,D7_pin,
 // initialize the nunchuk interface
 Navchuk nunchuk = Navchuk();
 
-//Example related
-#define SELECTED_DISPLAY_DELAY 1500
-// menuSelected:  State var that indicates that a menu item has been
-//                selected. The plan is to update acordingly the LCD
-//                if we want to use the display to other thing
-//                like set up a variable (show on this example with time)
-boolean menuSelected = false; // no menu item has been selected
-boolean commandReceived = false;// no command has been received (Seria, button, etc)
-enum setMenuSelected_Type { 
-  DATETIME, OTHER }; // this enum is in case we want to expand this example
-setMenuSelected_Type setMenu;
-byte cursorPosition;
-String setString;
+// Menu callback function
+// In this example all menu items use the same callback.
 
-int led = 41; // connect a led+resistor on pin 41 or change this number to 13 to use default arduino led on board
-int ledState = LOW;
-String dateTime = "2012-12-02 17:55";
-
-// Menu callback functions
-void on_item1_selected(MenuItem* p_menu_item) {
-  lcd.setCursor(0,1);
-  lcd.print("Analog A0: ");
-  lcd.print(analogRead(A0));
-  delay(SELECTED_DISPLAY_DELAY);
-}
-
-void on_item2_selected(MenuItem* p_menu_item) {
-  ledState = !ledState;
-  digitalWrite(led,ledState);
-  lcd.setCursor(0,1);
-  lcd.print("Led state: ");
-  if(ledState)
-    lcd.print("ON");
-  else
-    lcd.print("OFF");
-  delay(SELECTED_DISPLAY_DELAY);
-}
-// on_back_selected is usefull if you don't have a button to make the back function
-void on_back_selected(MenuItem* p_menu_item) {
-  ms.back();
-}
-void on_time_show_selected(MenuItem* p_menu_item) {
-  lcd.setCursor(0,1);
-  lcd.print(dateTime);
-  delay(SELECTED_DISPLAY_DELAY);
-}
-void on_time_set_selected(MenuItem* p_menu_item)
+void on_item1_selected(MenuItem* p_menu_item)
 {
-  setString = dateTime;
   lcd.setCursor(0,1);
-  lcd.print(setString);
-  cursorPosition = 0;
-  lcd.setCursor(cursorPosition,1);
-  lcd.blink();
-  setMenu = DATETIME;
-  menuSelected = true;
-
+  lcd.print("Frames/sec = 30");
+  waitForCbutton();
 }
+
+void on_item2_selected(MenuItem* p_menu_item)
+{
+  lcd.setCursor(0,1);
+  lcd.print("Shoot time = 1 hr");
+  waitForCbutton();
+}
+
+void on_item3_selected(MenuItem* p_menu_item)
+{
+  lcd.setCursor(0,1);
+  lcd.print("Motion = SPLINE");
+  waitForCbutton();
+}
+
+void on_item4_selected(MenuItem* p_menu_item)
+{
+  lcd.setCursor(0,1);
+  lcd.print("Pano Mode = AUTO");
+  waitForCbutton();
+}
+
+void waitForCbutton(void)
+{
+  do
+  {
+    nunchuk.update();
+  } while(nunchuk.userInput !='C' && nunchuk.userInput !='Z');
+}  
 
 // Standard arduino functions
 
 void setup() {
   Serial.begin(9600);
   nunchuk.init();
-  pinMode(led,OUTPUT);
   lcd.begin(20,4);               // initialize the lcd 
   Serial.println("Setting up the menu.");
 
-  // init example vars
-  menuSelected = false; 
-
   // Menu setup
-  /*
-  Menu Structure:
-   -Analog read
-   -Led blink
-   -Date & Time
-   --Show current
-   --Set
-   --Back
-   
-   */
-  mm.add_item(&mm_mi1, &on_item1_selected);
-  mm.add_item(&mm_mi2, &on_item2_selected);
-  mm.add_menu(&mu1);
-  mu1.add_item(&mu1_mi1, &on_time_show_selected);
-  mu1.add_item(&mu1_mi2, &on_time_set_selected);
-  mu1.add_item(&mu1_mi3, &on_back_selected);
+  mm.add_menu(&tlMenu);
+  tlMenu.add_item(&tl_framesPerSecond, &on_item1_selected);
+  tlMenu.add_item(&tl_shootTime, &on_item2_selected);
+  tlMenu.add_item(&tl_motionProfile, &on_item3_selected);
+  mm.add_menu(&pmMenu);
+  pmMenu.add_item(&pm_autoMode, &on_item4_selected);
   ms.set_root_menu(&mm);
-  Serial.println("Menu setup.");
+  Serial.println("Menu set up.");
   displayMenu();
 }
 
-void loop() {
-  // Handle serial commands
+void loop() 
+{
   navigationHandler();
-  //SELECTED_DISPLAY_DELAY
-  updateDisplay();
-
 }
 
-void displayMenu() {
+void displayMenu()
+{
   lcd.clear();
   lcd.setCursor(0,0);
-
   // Display the menu
   Menu const* cp_menu = ms.get_current_menu();
+
+  //lcd.print("Current menu name: ");
+  lcd.print(cp_menu->get_name());
+  
+  lcd.setCursor(0,1);
+  
   lcd.print(cp_menu->get_selected()->get_name());
-}
-
-void updateDisplay() {
-  if(!menuSelected && commandReceived) {
-    displayMenu();
-    commandReceived = false;
-  } 
-  else if (commandReceived) {
-    switch(setMenu) {
-    case DATETIME:
-
-      break;
-      // add new cases as you add set menus (don't forget to add the corresponding enum)
-    default:
-      break;
-    }
-  }
 }
 
 void navigationHandler() 
@@ -176,64 +128,27 @@ void navigationHandler()
   switch (nunchuk.userInput)
   {
   case 'F': // forward selected - go up the menu tree
-    if(!menuSelected)
       ms.prev();
-    else
-    {
-      if(setMenu == DATETIME)
-      {
-        if(setString[cursorPosition]>47 && setString[cursorPosition]<57)
-          setString[cursorPosition]++;
-        lcd.write(setString[cursorPosition]);
-        lcd.setCursor(cursorPosition,1);
-      }
-    }
-    break;
+      displayMenu();
+      break;
   case 'B': // back selected - go down the menu tree
-    if(!menuSelected)
       ms.next();
-    else 
-    {
-      if(setMenu == DATETIME) {
-        if(setString[cursorPosition]>48 && setString[cursorPosition]<58)
-          setString[cursorPosition]--;
-        lcd.write(setString[cursorPosition]);
-        lcd.setCursor(cursorPosition,1);
-        }
-    }
+      displayMenu();
     break;
   case 'L': // left selected - back out of menu
-    if(!menuSelected)
       ms.back();
-    else if(cursorPosition>0)
-      lcd.setCursor(--cursorPosition,1);
+      displayMenu();
     break;
-  case 'R': // right selected - into submenu
-    if(!menuSelected)
-      ms.select();
-    else if(cursorPosition<15)
-      lcd.setCursor(++cursorPosition,1);
+  case 'R': // right selected - drop into submenu
+      ms.select(0);
+      displayMenu();
     break;
-  case 'C': // Cancel (clear menuSelected) For debug purpose
-    menuSelected = false;
+  case 'C': // Not assigned - used inside menus for cancelling last adjustment
     break;
-  case 'Z': // Set
-    if(menuSelected)
-    {
-      if(setMenu == DATETIME)
-      {
-        dateTime = setString;
-        lcd.setCursor(0,1);
-        lcd.print("Time set        ");
-        delay(SELECTED_DISPLAY_DELAY);
-        menuSelected = false;
-      }
-    lcd.noBlink();
-    }
+  case 'Z': // Not assigned - used inside menus for accepting last adjustment
     break;
   default:
     break;
   }
-  commandReceived = true;
 }
 

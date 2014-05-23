@@ -13,7 +13,7 @@ LiquidCrystal_I2C lcd(I2C_ADDR,En_pin,Rw_pin,Rs_pin,D4_pin,D5_pin,D6_pin,D7_pin,
 
 void initializeLCD(void)
 {
-  lcd.begin(20,4);               // initialize the lcd
+  lcd.begin(20,4);
 
   Serial.println("LCD initialized");
 }  

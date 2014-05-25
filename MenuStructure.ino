@@ -59,6 +59,7 @@ void initializeMenu(void)
 void on_shootTime_selected(MenuItem* p_menu_item)
 {
   lcd.setCursor(0,1);
+  Serial.print("Inside the shoot time menu, ");
   lcd.print("Shoot time = 1 hr");
   waitForCbutton();
 }

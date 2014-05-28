@@ -58,8 +58,8 @@ void initializeMenu(void)
 /////////////////////////////////////////////////////////////////////////////////
 void on_shootTime_selected(MenuItem* p_menu_item)
 {
-  lcd.setCursor(0,1);
   Serial.print("Inside the shoot time menu, ");
+  lcd.setCursor(0,1);
   lcd.print("Shoot time = 1 hr");
   waitForCbutton();
 }
@@ -69,61 +69,60 @@ void on_pm_autoMode_selected(MenuItem* p_menu_item)
   lcd.setCursor(0,1);
   lcd.print("Pano Mode = AUTO");
   waitForCbutton();
-  Serial.println("menu.select callback function completed");
 }
 
 void on_framesPerSecond_selected(MenuItem* p_menu_item)
 {
+  Serial.print("Inside the frames per second menu, ");
   lcd.setCursor(0,1);
   lcd.print("Frames/sec = 30");
   waitForCbutton();
-  Serial.println("menu.select callback function completed");
 }
 
 void on_motionProfile_selected(MenuItem* p_menu_item)
 {
+  Serial.print("Inside the motion profile menu, ");
   lcd.setCursor(0,1);
   lcd.print("Motion = SPLINE");
   waitForCbutton();
-  Serial.println("menu.select callback function completed");
 }
 
 void on_Xmotion_selected(MenuItem* p_menu_item)
 {
+  Serial.print("Inside the on_Xmotion menu, ");
   lcd.setCursor(0,1);
   lcd.print("Enabled");
   waitForCbutton();
-  Serial.println("menu.select callback function completed");
 }
 
 void on_Ymotion_selected(MenuItem* p_menu_item)
 {
+  Serial.print("Inside the on_Ymotion menu, ");
   lcd.setCursor(0,1);
   lcd.print("Enabled");
   waitForCbutton();
-  Serial.println("menu.select callback function completed");
 }
 
 void on_Zmotion_selected(MenuItem* p_menu_item)
 {
+  Serial.print("Inside the on_Zmotion menu, ");
   lcd.setCursor(0,1);
   lcd.print("disabled");
   waitForCbutton();
-  Serial.println("menu.select callback function completed");
 }
 
 void on_Dmotion_selected(MenuItem* p_menu_item)
 {
+  Serial.print("Inside the on_Dmotion menu, ");
   lcd.setCursor(0,1);
   lcd.print("disabled");
   waitForCbutton();
-  Serial.println("menu.select callback function completed");
 }
 
 void on_Rmotion_selected(MenuItem* p_menu_item)
 {
+  Serial.print("Inside the on_Rmotion menu, ");
   lcd.setCursor(0,1);
   lcd.print("Disabled");
   waitForCbutton();
-  Serial.println("menu.select callback function completed");
 }

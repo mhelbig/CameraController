@@ -16,27 +16,20 @@ void navigationHandler()
   switch (nunchuk.userInput)
   {
   case 'F': // forward selected - go up the menu tree
-      Serial.print("ms.prev function starting, ");
       ms.prev();
       displayMenu();
-      Serial.println("ms.prev function completed");
       break;
   case 'B': // back selected - go down the menu tree
-      Serial.print("ms.next function starting, ");      ms.next();
+      ms.next();
       displayMenu();
-      Serial.println("ms.next function completed");
     break;
   case 'L': // left selected - back out of menu
-      Serial.print("ms.back function starting, ");
       ms.back();
       displayMenu();
-      Serial.println("ms.back function completed");
     break;
-  case 'R': // right selected - drop into submenu
-      Serial.print("ms.select function starting, ");
+  case 'R': // right selected - drop into submenu or menu item
       ms.select(0);
       displayMenu();
-      Serial.println("ms.select function completed");
     break;
   case 'C': // Not assigned - used inside menus for cancelling last adjustment
     Serial.println("'C' pressed, no menu function assigned");

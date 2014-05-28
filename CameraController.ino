@@ -19,6 +19,7 @@ void setup()
 void loop() 
 {
   navigationHandler();
+  Serial.print("Free memory = "); Serial.println(freeMemory());
 }
 
 

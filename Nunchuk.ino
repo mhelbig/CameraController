@@ -23,6 +23,6 @@ void waitForCbutton(void)
   {
     nunchuk.update();
   } while(nunchuk.userInput !='C' && nunchuk.userInput !='Z');
-  ms.next();
+//  ms.next();
 }  
 

@@ -5,6 +5,9 @@
 #include <spline.h>
 #include <AccelStepper.h>
 
+// Establish the input device
+Navchuk nunchuk = Navchuk();
+
 void setup()
 {
   Serial.begin(9600);
@@ -13,13 +16,14 @@ void setup()
   initializeLCD();
   initializeMenu();
   initializeSteppers();
+
   Serial.print("Free memory = "); Serial.println(freeMemory());
 }
 
 void loop() 
 {
   navigationHandler();
-  Serial.print("Free memory = "); Serial.println(freeMemory());
+//  Serial.print("Free memory = "); Serial.println(freeMemory());
 }
 
 

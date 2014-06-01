@@ -58,71 +58,81 @@ void initializeMenu(void)
 /////////////////////////////////////////////////////////////////////////////////
 void on_shootTime_selected(MenuItem* p_menu_item)
 {
-  Serial.print("Inside the shoot time menu, ");
+  Serial.print("st ");
   lcd.setCursor(0,1);
   lcd.print("Shoot time = 1 hr");
-  waitForCbutton();
+  if(nunchuk.userInput == 'C') ms.set_menu_item_selected(false);
+  displayMenu();
 }
 
 void on_pm_autoMode_selected(MenuItem* p_menu_item)
 {
+  Serial.print("pma ");
   lcd.setCursor(0,1);
   lcd.print("Pano Mode = AUTO");
-  waitForCbutton();
+  if(nunchuk.userInput == 'C') ms.set_menu_item_selected(false);
+  displayMenu();
 }
 
 void on_framesPerSecond_selected(MenuItem* p_menu_item)
 {
-  Serial.print("Inside the frames per second menu, ");
+  Serial.print("fps ");
   lcd.setCursor(0,1);
   lcd.print("Frames/sec = 30");
-  waitForCbutton();
+  if(nunchuk.userInput == 'C') ms.set_menu_item_selected(false);
+  displayMenu();
 }
 
 void on_motionProfile_selected(MenuItem* p_menu_item)
 {
-  Serial.print("Inside the motion profile menu, ");
+//  Serial.print("Inside the motion profile menu, ");
   lcd.setCursor(0,1);
   lcd.print("Motion = SPLINE");
-  waitForCbutton();
+  if(nunchuk.userInput == 'C') ms.set_menu_item_selected(false);
+//  waitForCbutton();
 }
 
 void on_Xmotion_selected(MenuItem* p_menu_item)
 {
-  Serial.print("Inside the on_Xmotion menu, ");
+//  Serial.print("Inside the on_Xmotion menu, ");
   lcd.setCursor(0,1);
   lcd.print("Enabled");
-  waitForCbutton();
+  if(nunchuk.userInput == 'C') ms.set_menu_item_selected(false);
+//  waitForCbutton();
 }
 
 void on_Ymotion_selected(MenuItem* p_menu_item)
 {
-  Serial.print("Inside the on_Ymotion menu, ");
+//  Serial.print("Inside the on_Ymotion menu, ");
   lcd.setCursor(0,1);
   lcd.print("Enabled");
-  waitForCbutton();
+  if(nunchuk.userInput == 'C') ms.set_menu_item_selected(false);
+//  waitForCbutton();
 }
 
 void on_Zmotion_selected(MenuItem* p_menu_item)
 {
-  Serial.print("Inside the on_Zmotion menu, ");
+//  Serial.print("Inside the on_Zmotion menu, ");
   lcd.setCursor(0,1);
   lcd.print("disabled");
-  waitForCbutton();
+  if(nunchuk.userInput == 'C') ms.set_menu_item_selected(false);
+//  waitForCbutton();
 }
 
 void on_Dmotion_selected(MenuItem* p_menu_item)
 {
-  Serial.print("Inside the on_Dmotion menu, ");
+//  Serial.print("Inside the on_Dmotion menu, ");
   lcd.setCursor(0,1);
   lcd.print("disabled");
-  waitForCbutton();
+  if(nunchuk.userInput == 'C') ms.set_menu_item_selected(false);
+//  waitForCbutton();
 }
 
 void on_Rmotion_selected(MenuItem* p_menu_item)
 {
-  Serial.print("Inside the on_Rmotion menu, ");
+//  Serial.print("Inside the on_Rmotion menu, ");
   lcd.setCursor(0,1);
   lcd.print("Disabled");
-  waitForCbutton();
+  if(nunchuk.userInput == 'C') ms.set_menu_item_selected(false);
+//  waitForCbutton();
 }

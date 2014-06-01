@@ -4,8 +4,8 @@
 void navigationHandler() 
 {
   nunchuk.update();
-  lcd.setBacklight(!nunchuk.isIdle);  // <--- we need to make this edge sensitive and work in all menu locations
-  delay(10);  // we need this delay, otherwise the nunchuk gets garbage data from this lcd.write for some reason
+//  lcd.setBacklight(!nunchuk.isIdle);  // <--- we need to make this edge sensitive and work in all menu locations
+//  delay(10);  // we need this delay, otherwise the nunchuk gets garbage data from this lcd.write for some reason
 
   if(ms.menu_item_is_selected())
   {
@@ -30,8 +30,8 @@ void navigationHandler()
           displayMenu();
         break;
       case 'R': // right selected - drop into submenu or menu item
-          ms.select();
-          displayMenu();
+          if(ms.select())
+            displayMenu();
         break;
       case 'C': // Not assigned - used inside menus for cancelling last adjustment
         Serial.println("'C' pressed, no menu function assigned");
@@ -49,15 +49,6 @@ void navigationHandler()
         break;
     }
   }
-}
-
-void displaySetInstructions(void)
-{
-  lcd.setCursor(0,2);
-  lcd.print(" Joystick = Adjust");
-
-  lcd.setCursor(0,3);
-  lcd.print("C=Cancel       Z=Set");
 }
 
 // Display the menu headings and current selection

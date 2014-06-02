@@ -7,8 +7,10 @@
 /////////////////////////////////////////////////////////////////////////////////
 // Global variables
 /////////////////////////////////////////////////////////////////////////////////
-int shootTimeSetting = 500;
+long shootTimeSetting = 3600;
 float tempShootTimeSetting;
+long videoTimeSetting = 30;
+float tempVideoTimeSetting;
 
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -18,13 +20,14 @@ float tempShootTimeSetting;
 MenuSystem ms;
 Menu mm("Camera Controller");
 //Timelapse menu
-Menu tlMenu("Timelapse Mode");
-MenuItem shootTime("Shoot time");
+Menu tlMenu("Run Timelapse");
+MenuItem videoTime("Set video time");
+MenuItem shootTime("Set shoot time");
 //panoramic menu
-Menu pmMenu("360 Panograph Mode");
+Menu pmMenu("Run 360 Panograph");
 MenuItem pm_autoMode("Panograph Auto");
 //Setup menu
-Menu suMenu("System Settings");
+Menu suMenu("Change Settings");
 MenuItem framesPerSecond("Frames/sec");
 MenuItem motionProfile("Motion Profile");
 MenuItem Xmotion("X (Pan) Motion");
@@ -41,6 +44,7 @@ void initializeMenu(void)
 {
   //Timelapse menu
   mm.add_menu(&tlMenu);
+  tlMenu.add_item(&videoTime, &on_videoTime_selected);
   tlMenu.add_item(&shootTime, &on_shootTime_selected);
   //Panoramic menu
   mm.add_menu(&pmMenu);
@@ -65,21 +69,52 @@ void initializeMenu(void)
 /////////////////////////////////////////////////////////////////////////////////
 // Callback functions
 /////////////////////////////////////////////////////////////////////////////////
-void on_shootTime_selected(MenuItem* p_menu_item)
+void on_videoTime_selected(MenuItem* p_menu_item)
 {
-// callback function "constructor"
+  // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
-    displaySetHeading("Set desired shoot time");
-    displaySetInstructions();
+    lcd.clear();
+    displaySetHeading("Set video time");
+    displayNumericSetInstructions();
+    
+    tempVideoTimeSetting = (float)videoTimeSetting;  // save a copy of the current setting in case we cancel
+  }
+
+  // callback function main:
+  if( adjustNumericValue(&tempVideoTimeSetting,5,1800,true) )  // 5 seconds to 30 minutes
+    displayLongAsDDHHMMSS(round(tempVideoTimeSetting));
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
+    {
+      videoTimeSetting = round(tempVideoTimeSetting);
+    }
+  }
+}
+
+void on_shootTime_selected(MenuItem* p_menu_item)
+{
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    lcd.clear();
+    displaySetHeading("Set shoot time");
+    displayNumericSetInstructions();
+    
     tempShootTimeSetting = (float)shootTimeSetting;  // save a copy of the current setting in case we cancel
   }
 
-// callback function main:
-    if( adjustNumericValue(&tempShootTimeSetting,100,10000,1) )
-      displayLongAsHHMMSS(round(tempShootTimeSetting));
+  // callback function main:
+  if( adjustNumericValue(&tempShootTimeSetting,300,2592000,true) )  //5 minutes to 30 days
+    displayLongAsDDHHMMSS(round(tempShootTimeSetting));
 
-// callback function "destructor"
+  // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
     ms.deselect_set_menu_item();
@@ -98,7 +133,7 @@ void on_pm_autoMode_selected(MenuItem* p_menu_item)
   lcd.setCursor(0,1);
   lcd.print("Pano Mode = AUTO");
   if(nunchuk.userInput == 'C') ms.deselect_set_menu_item();
-//  displayMenu();
+  //  displayMenu();
 }
 
 void on_framesPerSecond_selected(MenuItem* p_menu_item)
@@ -107,7 +142,7 @@ void on_framesPerSecond_selected(MenuItem* p_menu_item)
   lcd.setCursor(0,1);
   lcd.print("Frames/sec = 30");
   if(nunchuk.userInput == 'C') ms.deselect_set_menu_item();
-//  displayMenu();
+  //  displayMenu();
 }
 
 void on_motionProfile_selected(MenuItem* p_menu_item)
@@ -169,23 +204,24 @@ void on_Rmotion_selected(MenuItem* p_menu_item)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 void on_FreeMem_selected(MenuItem* p_menu_item)
 {
-// callback function "constructor"
+  // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
     lcd.setCursor(0,1);
     lcd.print("Free Memory =");
   }
 
-// callback function main:
+  // callback function main:
   lcd.setCursor(15,1);
   lcd.print(freeMemory(),DEC); 
   lcd.print("  ");
 
-// callback function "destructor"
+  // callback function "destructor"
   if(nunchuk.userInput == 'C')
   {
     ms.deselect_set_menu_item();
     displayMenu();
   }
 }
+
 

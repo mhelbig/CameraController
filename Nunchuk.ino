@@ -18,10 +18,11 @@ void initializeNavchuk(void)
 
 void waitForCbutton(void)
 {
-  displaySetInstructions();
   do
   {
     nunchuk.update();
-  } while(nunchuk.userInput !='C' && nunchuk.userInput !='Z');
+  } 
+  while(nunchuk.userInput !='C' && nunchuk.userInput !='Z');
 }  
+
 

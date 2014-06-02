@@ -15,20 +15,20 @@ void initializeSteppers()
   pinMode(X_STEP_PIN, OUTPUT);
   pinMode(X_DIR_PIN, OUTPUT);
   pinMode(X_ENABLE_PIN, OUTPUT);
-  
+
   pinMode(Y_STEP_PIN, OUTPUT);
   pinMode(Y_DIR_PIN, OUTPUT);
   pinMode(Y_ENABLE_PIN, OUTPUT);
-  
+
   digitalWrite(X_ENABLE_PIN, LOW );
   digitalWrite(Y_ENABLE_PIN, LOW );
 
   motorX.setMaxSpeed(1000.0);
   motorX.setAcceleration(1000.0);
-    
+
   motorY.setMaxSpeed(300.0);
   motorY.setAcceleration(1000.0);
-  
+
   Serial.println("Stepper motors initialized");
 }
 
@@ -37,12 +37,13 @@ void runSteppers(void)
   motorX.moveTo(1000);
   motorY.moveTo(1000);
 
-    // Change direction at the limits
-    if (motorX.distanceToGo() == 0)
-	motorX.moveTo(-motorX.currentPosition());
-    if (motorY.distanceToGo() == 0)
-	motorY.moveTo(-motorY.currentPosition());
+  // Change direction at the limits
+  if (motorX.distanceToGo() == 0)
+    motorX.moveTo(-motorX.currentPosition());
+  if (motorY.distanceToGo() == 0)
+    motorY.moveTo(-motorY.currentPosition());
 
-    motorX.run();
-    motorY.run();
+  motorX.run();
+  motorY.run();
 }
+

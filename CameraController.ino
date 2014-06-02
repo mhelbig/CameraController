@@ -8,6 +8,20 @@
 // Establish the input device
 Navchuk nunchuk = Navchuk();
 
+/////////////////////////////////////////////////////////////////////////////////
+// Global variables
+/////////////////////////////////////////////////////////////////////////////////
+// Timelapse Mode:
+long videoTimeSetting = 30;
+long shootTimeSetting = 3600;
+int selectedMotionProfile = 0;
+
+struct enumeratedMenuList
+{
+  char menuText[21];
+  int value;
+};
+
 void setup()
 {
   Serial.begin(9600);

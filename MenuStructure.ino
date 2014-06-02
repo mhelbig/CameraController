@@ -5,26 +5,17 @@
 //  Callback:         Associates each selectable menu item to a function
 
 /////////////////////////////////////////////////////////////////////////////////
-// Global variables
-/////////////////////////////////////////////////////////////////////////////////
-long shootTimeSetting = 3600;
-float tempShootTimeSetting;
-long videoTimeSetting = 30;
-float tempVideoTimeSetting;
-
-
-/////////////////////////////////////////////////////////////////////////////////
 // Menu structure
 /////////////////////////////////////////////////////////////////////////////////
 //Root menu
 MenuSystem ms;
-Menu mm("Camera Controller");
+Menu mm("    PanTron 4000");
 //Timelapse menu
-Menu tlMenu("Run Timelapse");
+Menu tlMenu("Timelapse Video");
 MenuItem videoTime("Set video time");
 MenuItem shootTime("Set shoot time");
 //panoramic menu
-Menu pmMenu("Run 360 Panograph");
+Menu pmMenu("360 Panograph");
 MenuItem pm_autoMode("Panograph Auto");
 //Setup menu
 Menu suMenu("Change Settings");
@@ -71,6 +62,8 @@ void initializeMenu(void)
 /////////////////////////////////////////////////////////////////////////////////
 void on_videoTime_selected(MenuItem* p_menu_item)
 {
+  static float tempVideoTimeSetting;
+  
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
@@ -100,6 +93,8 @@ void on_videoTime_selected(MenuItem* p_menu_item)
 
 void on_shootTime_selected(MenuItem* p_menu_item)
 {
+  static float tempShootTimeSetting;
+  
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
@@ -147,11 +142,46 @@ void on_framesPerSecond_selected(MenuItem* p_menu_item)
 
 void on_motionProfile_selected(MenuItem* p_menu_item)
 {
-  //  Serial.print("Inside the motion profile menu, ");
-  lcd.setCursor(0,1);
-  lcd.print("Motion = SPLINE");
-  if(nunchuk.userInput == 'C') ms.deselect_set_menu_item();
-  //  waitForCbutton();
+  static int enumIndex = 2;
+  int tempEnumIndex;
+  
+  enumeratedMenuList motionProfileList[]=
+  {
+    { "Step  "   ,0},  // corresponds to the spline.cpp setDegree() function
+    { "Linear" ,1},
+    { "Spline" ,11}  // we use the catmull spline type because it's easer to setup
+  };
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    lcd.clear();
+    displaySetHeading("Set motion profile");
+
+    lcd.setCursor(0,1);
+    lcd.print(motionProfileList[enumIndex].menuText);
+    tempEnumIndex = enumIndex;
+  }
+
+  // callback function main:
+  if(selectEnumeratedValue(&tempEnumIndex,3))
+    {
+      lcd.setCursor(0,1);
+      lcd.print(motionProfileList[tempEnumIndex].menuText);
+    }
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
+    {
+      enumIndex = tempEnumIndex;
+      selectedMotionProfile = motionProfileList[enumIndex].value;
+    }
+  }
 }
 
 void on_Xmotion_selected(MenuItem* p_menu_item)
@@ -207,14 +237,16 @@ void on_FreeMem_selected(MenuItem* p_menu_item)
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
+    lcd.clear();
     lcd.setCursor(0,1);
     lcd.print("Free Memory =");
+    lcd.setCursor(14,1);
+    lcd.print(freeMemory(),DEC); 
+    lcd.setCursor(0,3);
+    lcd.print("Press Z to Exit"); 
   }
 
   // callback function main:
-  lcd.setCursor(15,1);
-  lcd.print(freeMemory(),DEC); 
-  lcd.print("  ");
 
   // callback function "destructor"
   if(nunchuk.userInput == 'C')

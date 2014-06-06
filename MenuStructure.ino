@@ -14,14 +14,13 @@ Menu mm("    PanTron 4000");
 //Timelapse menu
 Menu tlMenu                 ("Timelapse Video");
 MenuItem transitionToSet    ("Transition to set");
-MenuItem setPositions       ("Set positions");
 MenuItem setVideoTime       ("Set video time");
-MenuItem addDelTransition   ("Add/Del transition");
+MenuItem setPositions       ("Set position");
+MenuItem addTransition      ("Add transition");
+MenuItem delTransition      ("Delete transition");
 MenuItem setShootTime       ("Set shoot time");
 MenuItem setStartDelay      ("Set start delay");
-MenuItem systemReady        ("System ready");
-MenuItem countdownToStart   ("Countdown to start");
-MenuItem runningSequence    ("Running sequence");
+MenuItem RunSequence        ("Run sequence");
 
 //panoramic menu
 Menu pmMenu                 ("360 Panograph");
@@ -40,19 +39,18 @@ void initializeMenu(void)
 {
 //Timelapse menu
   mm.add_menu(&tlMenu);
-//  tlMenu.add_item(&transitionToSet,  &on_transitionToSet_selected);
-//  tlMenu.add_item(&setPositions,     &on_setPositions_selected);
+  tlMenu.add_item(&transitionToSet,  &on_transitionToSet_selected);
   tlMenu.add_item(&setVideoTime,     &on_set_videoTime_selected);
-//  tlMenu.add_item(&addDelTransition, &on_addDelTransition_selected;
+  tlMenu.add_item(&setPositions,     &on_setPositions_selected);
+  tlMenu.add_item(&addTransition,    &on_addTransition_selected);
+  tlMenu.add_item(&delTransition,    &on_delTransition_selected);
   tlMenu.add_item(&setShootTime,     &on_set_shootTime_selected);
-//  tlMenu.add_item(&setStartDelay,    &on_setStartDelay_selected);
-//  tlMenu.add_item(&systemReady,      &on_systemReady_selected);
-//  tlMenu.add_item(&countdownToStart, &on_coundownToStart_selected);
-//  tlMenu.add_item(&runningSequence,  &on_runningSequence_selected);
+  tlMenu.add_item(&setStartDelay,    &on_setStartDelay_selected);
+  tlMenu.add_item(&RunSequence,      &on_RunSequence_selected);
 
 //Panoramic menu
-  mm.add_menu(&pmMenu);
-  pmMenu.add_item(&pm_autoMode, &on_pm_autoMode_selected);
+//  mm.add_menu(&pmMenu);
+//  pmMenu.add_item(&pm_autoMode, &on_pm_autoMode_selected);
 
 //Setup menu
   mm.add_menu(&suMenu);

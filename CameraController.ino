@@ -12,9 +12,17 @@ Navchuk nunchuk = Navchuk();
 // Global variables
 /////////////////////////////////////////////////////////////////////////////////
 // Timelapse Mode:
-long videoTimeSetting = 30;
+int numberOfTransitions=2;
+int currentTransitionSelected=1;
+long videoTimeSetting = 5;
 long shootTimeSetting = 3600;
+long startDelayTimeSetting =0;
 int selectedMotionProfile = 0;
+
+/////////////////////////////////////////////////////////////////////////////////
+// Constants
+/////////////////////////////////////////////////////////////////////////////////
+#define MAX_NUMBER_OF_TRANSITIONS 5
 
 struct enumeratedMenuList
 {
@@ -39,7 +47,7 @@ void setup()
 void loop() 
 {
   navigationHandler();
-  //  Serial.print("Free memory = "); Serial.println(freeMemory());
+  runSteppers();
 }
 
 

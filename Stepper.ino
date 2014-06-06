@@ -34,7 +34,13 @@ void initializeSteppers()
 
 void runSteppers(void)
 {
-  motorX.moveTo(1000);
+  motorX.run();
+  motorY.run();
+}
+
+void exampleCode(void)
+{
+    motorX.moveTo(1000);
   motorY.moveTo(1000);
 
   // Change direction at the limits
@@ -42,8 +48,4 @@ void runSteppers(void)
     motorX.moveTo(-motorX.currentPosition());
   if (motorY.distanceToGo() == 0)
     motorY.moveTo(-motorY.currentPosition());
-
-  motorX.run();
-  motorY.run();
 }
-

@@ -15,10 +15,10 @@ void on_transitionToSet_selected(MenuItem* p_menu_item)
   }
 
   // callback function main:
-  adjustIntValue(&tempTransitionToSet,1,numberOfTransitions);  // 1 - current number of transitions
+  adjustIntValue(&currentTransitionSelected,1,numberOfTransitions);  // 1 - current number of transitions
     
     lcd.setCursor(5,1);
-    lcd.print(tempTransitionToSet);
+    lcd.print(currentTransitionSelected);
     lcd.print(" of ");
     lcd.print(numberOfTransitions);
 
@@ -28,7 +28,7 @@ void on_transitionToSet_selected(MenuItem* p_menu_item)
     ms.deselect_set_menu_item();
     displayMenu();
 
-    if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
+    if(nunchuk.userInput == 'C')  // if c is pressed, restore the original value
     {
       currentTransitionSelected = tempTransitionToSet;
     }
@@ -37,7 +37,7 @@ void on_transitionToSet_selected(MenuItem* p_menu_item)
 
 void on_set_videoTime_selected(MenuItem* p_menu_item)
 {
-  static float tempVideoTimeSetting;
+  static long tempVideoTimeSetting;
   
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
@@ -45,25 +45,36 @@ void on_set_videoTime_selected(MenuItem* p_menu_item)
     lcd.clear();
     displaySetHeading();
     lcd.setCursor(0,3);
-    lcd.print("for transition ");
+    lcd.print("@ transition ");
     lcd.print(currentTransitionSelected);
     
-    tempVideoTimeSetting = (float)videoTimeSetting;  // save a copy of the current setting in case we cancel
+    tempVideoTimeSetting = videoTimeSetting;  // save a copy of the current setting in case we cancel
+    adjustLongValue(&videoTimeSetting,5,1800,true,true); // initialize the adjustment function
   }
 
   // callback function main:
-  if( adjustFloatValue(&tempVideoTimeSetting,5,1800,true) )  // 5 seconds to 30 minutes
-    displayLongAsDDHHMMSS(round(tempVideoTimeSetting));
+  if( adjustLongValue(&videoTimeSetting,5,1800,true,false) )  // 5 seconds to 30 minutes
+  {
+    lcd.setCursor(2,1);
+    displayLongAsDDHHMMSS(videoTimeSetting);
+    if (currentTransitionSelected == numberOfTransitions)
+    {
+      lcd.setCursor(0,2);
+      lcd.print("frames req'd: ");
+      lcd.print(videoTimeSetting * videoFramesPerSecond);
+      lcd.print(" ");
+    }
 
+  }
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
     ms.deselect_set_menu_item();
     displayMenu();
 
-    if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
+    if(nunchuk.userInput == 'C')  // if C is pressed, restore the original value
     {
-      videoTimeSetting = round(tempVideoTimeSetting);
+      videoTimeSetting = tempVideoTimeSetting;
     }
   }
 }
@@ -188,21 +199,28 @@ void on_set_shootTime_selected(MenuItem* p_menu_item)
     displaySetHeading();
     
     tempShootTimeSetting = (float)shootTimeSetting;  // save a copy of the current setting in case we cancel
+    adjustLongValue(&shootTimeSetting,300,2592000,true,true);
   }
 
   // callback function main:
-  if( adjustFloatValue(&tempShootTimeSetting,300,2592000,true) )  //5 minutes to 30 days
-    displayLongAsDDHHMMSS(round(tempShootTimeSetting));
-
+  if( adjustLongValue(&shootTimeSetting,300,2592000,true,false) )   //5 minutes to 30 days
+  {
+    lcd.setCursor(2,1);
+    displayLongAsDDHHMMSS(shootTimeSetting);
+    lcd.setCursor(0,2);
+    lcd.print("Interval:");
+    lcd.setCursor(2,3);
+    displayLongAsDDHHMMSS( (shootTimeSetting / (videoTimeSetting * videoFramesPerSecond)) );
+  }
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
     ms.deselect_set_menu_item();
     displayMenu();
 
-    if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
+    if(nunchuk.userInput == 'C')  // if C is pressed, restore the orignal value
     {
-      shootTimeSetting = round(tempShootTimeSetting);
+      shootTimeSetting = tempShootTimeSetting;
     }
   }
 }
@@ -210,7 +228,7 @@ void on_set_shootTime_selected(MenuItem* p_menu_item)
 
 void on_setStartDelay_selected(MenuItem* p_menu_item)
 {
-  static float tempDelayStartSetting;
+  static float tempStartDelayTimeSetting;
   
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
@@ -218,12 +236,16 @@ void on_setStartDelay_selected(MenuItem* p_menu_item)
     lcd.clear();
     displaySetHeading();
     
-    tempDelayStartSetting = (float)startDelayTimeSetting;  // save a copy of the current setting in case we cancel
+    tempStartDelayTimeSetting = startDelayTimeSetting;  // save a copy of the current setting in case we cancel
+    adjustLongValue(&startDelayTimeSetting,0,2592000,true,true);
   }
 
   // callback function main:
-  if( adjustFloatValue(&tempDelayStartSetting,300,2592000,true) )  //5 minutes to 30 days
-    displayLongAsDDHHMMSS(round(tempDelayStartSetting));
+  if( adjustLongValue(&startDelayTimeSetting,0,2592000,true,false) )  //5 minutes to 30 days
+  {
+    lcd.setCursor(2,1);
+    displayLongAsDDHHMMSS(startDelayTimeSetting);
+  }
 
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
@@ -231,9 +253,9 @@ void on_setStartDelay_selected(MenuItem* p_menu_item)
     ms.deselect_set_menu_item();
     displayMenu();
 
-    if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
+    if(nunchuk.userInput == 'C')  // if C is pressed, restore the original value
     {
-      startDelayTimeSetting = round(tempDelayStartSetting);
+      startDelayTimeSetting = tempStartDelayTimeSetting;
     }
   }
 }

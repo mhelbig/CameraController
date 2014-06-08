@@ -1,9 +1,7 @@
-#define USER_INPUT_ROW 1
-#define USER_INPUT_COL 2
 #define UI_THROTTLE_TIME 100
 
 /////////////////////////////////////////////////////////////////////////////////
-// Function to read the joystick positions and adjust an integer value on the lcd display
+// Function to read the joystick positions as digital and adjust an integer value on the lcd display
 // includes support for fine and coarse adjustment by shifting the joystick right and left
 void adjustIntValue(int *value, int min, int max)
 {
@@ -26,12 +24,19 @@ void adjustIntValue(int *value, int min, int max)
 // Function to read the analog joystick and adjust a numeric value on the lcd display
 // All the math in the function is done with a float to maintain fractional precision
 // result is converted back to an int or long as necessary by the calling function
-boolean adjustFloatValue(float *value, float min, float max, boolean adjustRateForTime)
+boolean adjustLongValue(long *value, long min, long max, boolean adjustRateForTime, boolean initialize)
 {
   static int timeAdjust = 1;
   static int coarseAdjust = 1;
+  static float tempValue;
   
-  if(adjustRateForTime)
+  if (initialize)
+  {
+    tempValue = float(*value);
+    return(false);
+  }
+  
+  if(adjustRateForTime);
   {
     if(*value > 60) timeAdjust = 1;
     if(*value > 3600) timeAdjust = 60;
@@ -43,15 +48,17 @@ boolean adjustFloatValue(float *value, float min, float max, boolean adjustRateF
   
   if (uiThrottle()) return (false);  // this keeps the timing and adjust rates of UI functions consistent
 
-  *value = *value + (
+  tempValue = tempValue + (
   pow( (float)nunchuk.analogDisplacementY, 3)
     * (float)nunchuk.analogDirectionY
     * timeAdjust
     * coarseAdjust
     / 20000);     // fudge factor - adjust this value to affect the overall responsiveness
 
-  if(*value > max) *value = max;
-  if(*value < min) *value = min;
+  if(tempValue > max) tempValue = max;
+  if(tempValue < min) tempValue = min;
+  
+  *value = round(tempValue);
   return (true); // this flag synchronizes display updates with the uiThrottle
 }
 
@@ -87,8 +94,11 @@ void displayLongAsDDHHMMSS(long time)
   minute=second/60;
   second %= 60;
 
-  lcd.setCursor(USER_INPUT_COL,USER_INPUT_ROW);
-
+  if(time == 0)
+  {
+    lcd.print("           <1 s ");
+    return;
+  }
   if(day > 0)
   {
     if(day < 10) lcd.print(" ");

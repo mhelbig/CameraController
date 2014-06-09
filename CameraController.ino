@@ -14,9 +14,9 @@ Navchuk nunchuk = Navchuk();
 // Timelapse Mode:
 int numberOfTransitions=2;
 int currentTransitionSelected=1;
-long videoTimeSetting = 5;
-long shootTimeSetting = 3600;
-long startDelayTimeSetting =0;
+float videoTimeSetting = 5;
+float shootTimeSetting = 3600;
+float startDelayTimeSetting =0;
 int selectedMotionProfile = 0;
 
 int videoFramesPerSecond = 30;

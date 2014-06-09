@@ -24,17 +24,10 @@ void adjustIntValue(int *value, int min, int max)
 // Function to read the analog joystick and adjust a numeric value on the lcd display
 // All the math in the function is done with a float to maintain fractional precision
 // result is converted back to an int or long as necessary by the calling function
-boolean adjustLongValue(long *value, long min, long max, boolean adjustRateForTime, boolean initialize)
+boolean adjustAnalogValue(float *value, long min, long max, boolean adjustRateForTime)
 {
   static int timeAdjust = 1;
   static int coarseAdjust = 1;
-  static float tempValue;
-  
-  if (initialize)
-  {
-    tempValue = float(*value);
-    return(false);
-  }
   
   if(adjustRateForTime);
   {
@@ -48,17 +41,16 @@ boolean adjustLongValue(long *value, long min, long max, boolean adjustRateForTi
   
   if (uiThrottle()) return (false);  // this keeps the timing and adjust rates of UI functions consistent
 
-  tempValue = tempValue + (
+  *value = *value + (
   pow( (float)nunchuk.analogDisplacementY, 3)
     * (float)nunchuk.analogDirectionY
     * timeAdjust
     * coarseAdjust
     / 20000);     // fudge factor - adjust this value to affect the overall responsiveness
 
-  if(tempValue > max) tempValue = max;
-  if(tempValue < min) tempValue = min;
+  if(*value > max) *value = max;
+  if(*value < min) *value = min;
   
-  *value = round(tempValue);
   return (true); // this flag synchronizes display updates with the uiThrottle
 }
 
@@ -81,13 +73,15 @@ boolean selectEnumeratedValue(int *tempValue, char listSize)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-void displayLongAsDDHHMMSS(long time)
+void displayAsDDHHMMSS(float displayTime)
 {
+  long time;
   int day;
   int hour;
   int minute;
   int second;
 
+  time = round(displayTime);
   day = time/86400;
   hour = (time % 86400) / 3600;
   second=time % 3600;

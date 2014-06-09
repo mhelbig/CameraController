@@ -37,7 +37,7 @@ void on_transitionToSet_selected(MenuItem* p_menu_item)
 
 void on_set_videoTime_selected(MenuItem* p_menu_item)
 {
-  static long tempVideoTimeSetting;
+  static float tempVideoTimeSetting;
   
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
@@ -49,19 +49,18 @@ void on_set_videoTime_selected(MenuItem* p_menu_item)
     lcd.print(currentTransitionSelected);
     
     tempVideoTimeSetting = videoTimeSetting;  // save a copy of the current setting in case we cancel
-    adjustLongValue(&videoTimeSetting,5,1800,true,true); // initialize the adjustment function
   }
 
   // callback function main:
-  if( adjustLongValue(&videoTimeSetting,5,1800,true,false) )  // 5 seconds to 30 minutes
+  if( adjustAnalogValue(&videoTimeSetting,5,1800,true) )  // 5 seconds to 30 minutes
   {
     lcd.setCursor(2,1);
-    displayLongAsDDHHMMSS(videoTimeSetting);
+    displayAsDDHHMMSS(videoTimeSetting);
     if (currentTransitionSelected == numberOfTransitions)
     {
       lcd.setCursor(0,2);
       lcd.print("frames req'd: ");
-      lcd.print(videoTimeSetting * videoFramesPerSecond);
+      lcd.print( round(videoTimeSetting) * videoFramesPerSecond);
       lcd.print(" ");
     }
 
@@ -75,6 +74,10 @@ void on_set_videoTime_selected(MenuItem* p_menu_item)
     if(nunchuk.userInput == 'C')  // if C is pressed, restore the original value
     {
       videoTimeSetting = tempVideoTimeSetting;
+    }
+    else
+    {
+      videoTimeSetting = round(videoTimeSetting);    // make the final result a whole number
     }
   }
 }
@@ -198,19 +201,18 @@ void on_set_shootTime_selected(MenuItem* p_menu_item)
     lcd.clear();
     displaySetHeading();
     
-    tempShootTimeSetting = (float)shootTimeSetting;  // save a copy of the current setting in case we cancel
-    adjustLongValue(&shootTimeSetting,300,2592000,true,true);
+    tempShootTimeSetting = shootTimeSetting;  // save a copy of the current setting in case we cancel
   }
 
   // callback function main:
-  if( adjustLongValue(&shootTimeSetting,300,2592000,true,false) )   //5 minutes to 30 days
+  if( adjustAnalogValue(&shootTimeSetting,300,2592000,true) )   //5 minutes to 30 days
   {
     lcd.setCursor(2,1);
-    displayLongAsDDHHMMSS(shootTimeSetting);
+    displayAsDDHHMMSS(shootTimeSetting);
     lcd.setCursor(0,2);
     lcd.print("Interval:");
     lcd.setCursor(2,3);
-    displayLongAsDDHHMMSS( (shootTimeSetting / (videoTimeSetting * videoFramesPerSecond)) );
+    displayAsDDHHMMSS( (shootTimeSetting / (videoTimeSetting * videoFramesPerSecond)) );
   }
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
@@ -221,6 +223,10 @@ void on_set_shootTime_selected(MenuItem* p_menu_item)
     if(nunchuk.userInput == 'C')  // if C is pressed, restore the orignal value
     {
       shootTimeSetting = tempShootTimeSetting;
+    }
+    else
+    {
+      shootTimeSetting = round(shootTimeSetting);    // make the final result a whole number
     }
   }
 }
@@ -237,14 +243,13 @@ void on_setStartDelay_selected(MenuItem* p_menu_item)
     displaySetHeading();
     
     tempStartDelayTimeSetting = startDelayTimeSetting;  // save a copy of the current setting in case we cancel
-    adjustLongValue(&startDelayTimeSetting,0,2592000,true,true);
   }
 
   // callback function main:
-  if( adjustLongValue(&startDelayTimeSetting,0,2592000,true,false) )  //5 minutes to 30 days
+  if( adjustAnalogValue(&startDelayTimeSetting,0,2592000,true) )  //5 minutes to 30 days
   {
     lcd.setCursor(2,1);
-    displayLongAsDDHHMMSS(startDelayTimeSetting);
+    displayAsDDHHMMSS(startDelayTimeSetting);
   }
 
   // callback function "destructor"
@@ -257,6 +262,10 @@ void on_setStartDelay_selected(MenuItem* p_menu_item)
     {
       startDelayTimeSetting = tempStartDelayTimeSetting;
     }
+    else
+    {
+      startDelayTimeSetting = round(startDelayTimeSetting);    // make the final result a whole number
+  }
   }
 }
 

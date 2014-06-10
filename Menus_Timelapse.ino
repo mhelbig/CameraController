@@ -35,32 +35,45 @@ void on_transitionToSet_selected(MenuItem* p_menu_item)
   }
 }
 
+// THIS FUNCTION NEEDS TO BE REWORKED TO USE FRAMES TO DETERMINE VIDEO TIME
+// THE FRAMES COME FROM THE SPLINE ARRAY
+// REMOVE THE REFERENCE TO VideoTimeSetting and tempVideoTimeSetting altogether
+
 void on_set_videoTime_selected(MenuItem* p_menu_item)
 {
   static float tempVideoTimeSetting;
+  static float localVideoTimeSetting;
   
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
+    if (currentTransitionSelected == 1) // the first transition must be left at zero time
+    {
+      ms.deselect_set_menu_item();
+      displayMenu();
+      return;
+    }
+
     lcd.clear();
     displaySetHeading();
     lcd.setCursor(0,3);
     lcd.print("@ transition ");
     lcd.print(currentTransitionSelected);
     
-    tempVideoTimeSetting = videoTimeSetting;  // save a copy of the current setting in case we cancel
+    tempVideoTimeSetting = frameNumber[currentTransitionSelected];  // save a copy of the current setting in case we cancel
+    localVideoTimeSetting = frameNumber[currentTransitionSelected] / videoFramesPerSecond;  // we will work with this value in time and convert it back to frames when we're done
   }
 
   // callback function main:
-  if( adjustAnalogValue(&videoTimeSetting,5,1800,true) )  // 5 seconds to 30 minutes
+  if( adjustAnalogValue(&localVideoTimeSetting,5,1800,true) )  // 5 seconds to 30 minutes
   {
     lcd.setCursor(2,1);
-    displayAsDDHHMMSS(videoTimeSetting);
+    displayAsDDHHMMSS(localVideoTimeSetting);
     if (currentTransitionSelected == numberOfTransitions)
     {
       lcd.setCursor(0,2);
       lcd.print("frames req'd: ");
-      lcd.print( round(videoTimeSetting) * videoFramesPerSecond);
+      lcd.print( round(localVideoTimeSetting) * videoFramesPerSecond);
       lcd.print(" ");
     }
 
@@ -73,19 +86,19 @@ void on_set_videoTime_selected(MenuItem* p_menu_item)
 
     if(nunchuk.userInput == 'C')  // if C is pressed, restore the original value
     {
-      videoTimeSetting = tempVideoTimeSetting;
+      frameNumber[currentTransitionSelected] = tempVideoTimeSetting;
     }
     else
     {
-      videoTimeSetting = round(videoTimeSetting);    // make the final result a whole number
+      frameNumber[currentTransitionSelected] = round(localVideoTimeSetting) * videoFramesPerSecond;    // make the final result a whole number
     }
   }
 }
 
 void on_setPositions_selected(MenuItem* p_menu_item)
 {
-  static long tempXposition;
-  static long tempYposition;
+  static float tempXmotorPosition;
+  static float tempYmotorPosition;
   
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
@@ -93,13 +106,15 @@ void on_setPositions_selected(MenuItem* p_menu_item)
     lcd.clear();
     displaySetHeading();
     
-//    tempXposition = 1000;  // save a copy of the current settings in case we cancel
-//    tempYposition = 1000;  
+    XmotorPosition = XmotorSplinePoints_y[currentTransitionSelected]; // get the current position from the array
+    YmotorPosition = YmotorSplinePoints_y[currentTransitionSelected];
+    tempXmotorPosition = XmotorPosition; // save a copy of the current settings in case we cancel
+    tempYmotorPosition = YmotorPosition;
   }
 
   // callback function main:
-//  if( adjustFloatValue(&tempVideoTimeSetting,5,1800,true) )  // 5 seconds to 30 minutes
-//    displayLongAsDDHHMMSS(round(tempVideoTimeSetting));
+  
+  // adjust the XmotorPosition and YmotorPostion variables with the nunchuk here
 
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
@@ -107,9 +122,13 @@ void on_setPositions_selected(MenuItem* p_menu_item)
     ms.deselect_set_menu_item();
     displayMenu();
 
-    if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
+    if(nunchuk.userInput == 'Z')  // if Z is pressed we update the array with the newly adjusted values
     {
-//      videoTimeSetting = round(tempVideoTimeSetting);
+      XmotorPosition = round(tempXmotorPosition);
+      YmotorPosition = round(tempYmotorPosition);
+// update the spline points for motor position:
+      XmotorSplinePoints_y[currentTransitionSelected] = XmotorPosition;
+      YmotorSplinePoints_y[currentTransitionSelected] = YmotorPosition;
     }
   }
 }
@@ -119,6 +138,12 @@ void on_addTransition_selected(MenuItem* p_menu_item)
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
+    if(numberOfTransitions >= MAX_NUMBER_OF_TRANSITIONS) // jump out of the menu if we're at the max
+    {
+      ms.deselect_set_menu_item();
+      displayMenu();
+      return;
+    }      
     displaySetHeading();
     lcd.print(" #");
     lcd.print(numberOfTransitions+1);
@@ -139,15 +164,6 @@ void on_addTransition_selected(MenuItem* p_menu_item)
     if(nunchuk.userInput == 'z')  // if Z is held we add another spot for a transition
     {
       numberOfTransitions++;
-      if (numberOfTransitions > MAX_NUMBER_OF_TRANSITIONS) 
-      {
-        numberOfTransitions = MAX_NUMBER_OF_TRANSITIONS;
-        lcd.clear();
-        lcd.setCursor(0,1);
-        lcd.print("Max 5 transitions");
-        delay(1500);
-        displayMenu();
-      }
     }
   }
 }
@@ -157,6 +173,12 @@ void on_delTransition_selected(MenuItem* p_menu_item)
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
+    if(numberOfTransitions <= 2) // jump out of the menu if we're at the min number of transitions
+    {
+      ms.deselect_set_menu_item();
+      displayMenu();
+      return;
+    }      
     displaySetHeading();
     lcd.print(" #");
     lcd.print(numberOfTransitions);
@@ -178,15 +200,6 @@ void on_delTransition_selected(MenuItem* p_menu_item)
     {
       numberOfTransitions--;
       if (currentTransitionSelected > numberOfTransitions) currentTransitionSelected = numberOfTransitions;
-      if (numberOfTransitions < 2)
-      {
-        numberOfTransitions = 2;
-        lcd.clear();
-        lcd.setCursor(0,1);
-        lcd.print("Need 2 transitions");
-        delay(1500);
-        displayMenu();
-      }
     }
   }
 }
@@ -212,7 +225,7 @@ void on_set_shootTime_selected(MenuItem* p_menu_item)
     lcd.setCursor(0,2);
     lcd.print("Interval:");
     lcd.setCursor(2,3);
-    displayAsDDHHMMSS( (shootTimeSetting / (videoTimeSetting * videoFramesPerSecond)) );
+    displayAsDDHHMMSS( (shootTimeSetting / frameNumber[numberOfTransitions]) );
   }
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
@@ -280,9 +293,21 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
     lcd.print("Hold Z to Start");
     lcd.setCursor(0,3);
     lcd.print("Press C to cancel");
+
+    XmotorSpline.setPoints(frameNumber,XmotorSplinePoints_y,numberOfTransitions+2);
+    XmotorSpline.setDegree(selectedMotionProfile);
+   
+    YmotorSpline.setPoints(frameNumber,YmotorSplinePoints_y,numberOfTransitions+2);
+    YmotorSpline.setDegree(selectedMotionProfile);
+
   }
 
   // callback function main:
+
+/* these lines need some work, but will lookup the motor positions from the spline function
+    X_Motor_Position = X_Spline.value(i) * 800;
+    Y_Motor_Position = Y_Spline.value(i) * 800;
+*/
 
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'z')
@@ -290,7 +315,7 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
     ms.deselect_set_menu_item();
     displayMenu();
 
-    if(nunchuk.userInput == 'z')  // if Z is held we add another spot for a transition
+    if(nunchuk.userInput == 'z')  // if Z is held, I'M NOT SURE WHAT WE DO?????
     {
     }
   }

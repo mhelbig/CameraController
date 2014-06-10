@@ -25,7 +25,7 @@ void on_motionProfile_selected(MenuItem* p_menu_item)
     lcd.clear();
     displaySetHeading();
 
-    lcd.setCursor(0,1);
+    lcd.setCursor(5,2);
     lcd.print(motionProfileList[enumIndex].menuText);
     tempEnumIndex = enumIndex;
   }
@@ -33,7 +33,7 @@ void on_motionProfile_selected(MenuItem* p_menu_item)
   // callback function main:
   if(selectEnumeratedValue(&tempEnumIndex,3))
     {
-      lcd.setCursor(0,1);
+      lcd.setCursor(5,2);
       lcd.print(motionProfileList[tempEnumIndex].menuText);
     }
 

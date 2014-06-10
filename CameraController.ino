@@ -14,12 +14,25 @@ Navchuk nunchuk = Navchuk();
 // Timelapse Mode:
 int numberOfTransitions=2;
 int currentTransitionSelected=1;
-float videoTimeSetting = 5;
 float shootTimeSetting = 3600;
 float startDelayTimeSetting =0;
 int selectedMotionProfile = 0;
 
+// Settings menu:
 int videoFramesPerSecond = 30;
+
+
+//motor control variables:
+float frameNumber[7] = {000,000,900,1200,1500,1800,1800};  // first and last values set tangent points
+
+Spline XmotorSpline;
+float XmotorSplinePoints_y[7] = {0,0,0,0,0,0,0};                    // motor positions
+float XmotorPosition = 0;
+
+Spline YmotorSpline;
+float YmotorSplinePoints_y[7] = {0,0,0,0,0,0,0};                    // motor positions
+float YmotorPosition = 0;
+
 
 /////////////////////////////////////////////////////////////////////////////////
 // Constants

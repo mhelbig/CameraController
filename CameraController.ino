@@ -9,6 +9,11 @@
 Navchuk nunchuk = Navchuk();
 
 /////////////////////////////////////////////////////////////////////////////////
+// Constants
+/////////////////////////////////////////////////////////////////////////////////
+#define MAX_NUMBER_OF_TRANSITIONS 5
+
+/////////////////////////////////////////////////////////////////////////////////
 // Global variables
 /////////////////////////////////////////////////////////////////////////////////
 // Timelapse Mode:
@@ -22,22 +27,16 @@ int selectedMotionProfile = 0;
 int videoFramesPerSecond = 30;
 
 
-//motor control variables:
-float frameNumber[7] = {000,000,900,1200,1500,1800,1800};  // first and last values set tangent points
+//motor control and spline variables:
+float frameNumber[MAX_NUMBER_OF_TRANSITIONS + 2] = {000,000,900,1200,1500,1800,1800};  // first and last values set tangent points
 
 Spline XmotorSpline;
-float XmotorSplinePoints_y[7] = {0,0,0,0,0,0,0};                    // motor positions
+float XmotorSplinePoints_y[MAX_NUMBER_OF_TRANSITIONS + 2] = {0,0,0,0,0,0,0};           // motor positions
 float XmotorPosition = 0;
 
 Spline YmotorSpline;
-float YmotorSplinePoints_y[7] = {0,0,0,0,0,0,0};                    // motor positions
+float YmotorSplinePoints_y[MAX_NUMBER_OF_TRANSITIONS + 2] = {0,0,0,0,0,0,0};           // motor positions
 float YmotorPosition = 0;
-
-
-/////////////////////////////////////////////////////////////////////////////////
-// Constants
-/////////////////////////////////////////////////////////////////////////////////
-#define MAX_NUMBER_OF_TRANSITIONS 5
 
 struct enumeratedMenuList
 {
@@ -54,15 +53,21 @@ void setup()
   initializeLCD();
   initializeMenu();
   initializeSteppers();
+  initializeStepperTimerISR();
 
   Serial.print("Free memory = "); 
   Serial.println(freeMemory());
 }
 
+long cycleTime;
+
 void loop() 
 {
   navigationHandler();
-  runSteppers();
+  updateMotorPositions();
+//  cycleTime = micros();
+
+//  Serial.println(micros()-cycleTime);
 }
 
 

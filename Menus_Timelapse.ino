@@ -113,8 +113,13 @@ void on_setPositions_selected(MenuItem* p_menu_item)
   }
 
   // callback function main:
+//  adjustAnalogValue(&XmotorPosition,-100000,100000,false);
+  adjustAnalogValue(&YmotorPosition,-100000,100000,false);
   
-  // adjust the XmotorPosition and YmotorPostion variables with the nunchuk here
+  lcd.setCursor(0,2);
+  lcd.print(XmotorPosition);
+  lcd.setCursor(10,2);
+  lcd.print(YmotorPosition);
 
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')

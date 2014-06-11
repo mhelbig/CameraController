@@ -1,3 +1,5 @@
+#include <TimerThree.h>
+
 #define X_STEP_PIN         54
 #define X_DIR_PIN          55
 #define X_ENABLE_PIN       38
@@ -23,29 +25,30 @@ void initializeSteppers()
   digitalWrite(X_ENABLE_PIN, LOW );
   digitalWrite(Y_ENABLE_PIN, LOW );
 
-  motorX.setMaxSpeed(1000.0);
-  motorX.setAcceleration(1000.0);
+  motorX.setMaxSpeed(2000.0);
+  motorX.setAcceleration(2000.0);
 
-  motorY.setMaxSpeed(300.0);
-  motorY.setAcceleration(1000.0);
+  motorY.setMaxSpeed(2000.0);
+  motorY.setAcceleration(2000.0);
 
   Serial.println("Stepper motors initialized");
 }
 
-void runSteppers(void)
+void initializeStepperTimerISR(void)
+{
+  Timer3.initialize(250);         // initialize timer3 to 4KHz
+  Timer3.attachInterrupt(_ISRrunSteppers);  // attach stepper motor update as a timer overflow interrupt
+  Serial.println("Stepper Interrupt Service Routine Started");
+}
+
+void _ISRrunSteppers(void)  // stepper motor ISR callback function
 {
   motorX.run();
   motorY.run();
 }
 
-void exampleCode(void)
+void updateMotorPositions(void)
 {
-    motorX.moveTo(1000);
-  motorY.moveTo(1000);
-
-  // Change direction at the limits
-  if (motorX.distanceToGo() == 0)
-    motorX.moveTo(-motorX.currentPosition());
-  if (motorY.distanceToGo() == 0)
-    motorY.moveTo(-motorY.currentPosition());
+  motorX.moveTo((long)XmotorPosition);
+  motorY.moveTo((long)YmotorPosition);
 }

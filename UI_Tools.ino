@@ -21,6 +21,27 @@ void adjustIntValue(int *value, int min, int max)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
+// Function to read the analog joystick X and Y axes and adjust motor positions
+// All the math in the function is done with a float to maintain fractional precision
+// result is converted back to an int or long as necessary by the calling function
+boolean adjustMotorPositions(float *Xvalue, float *Yvalue)
+{
+  if (uiThrottle()) return (false);  // this keeps the timing and adjust rates of UI functions consistent
+
+  *Xvalue = *Xvalue + (
+  pow( (float)nunchuk.analogDisplacementX, 2)
+    * (float)nunchuk.analogDirectionX
+    / 40);     // fudge factor - adjust this value to affect the overall responsiveness
+
+  *Yvalue = *Yvalue + (
+  pow( (float)nunchuk.analogDisplacementY, 2)
+    * (float)nunchuk.analogDirectionY
+    / 40);     // fudge factor - adjust this value to affect the overall responsiveness
+
+  return (true); // this flag synchronizes display updates with the uiThrottle
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 // Function to read the analog joystick and adjust a numeric value on the lcd display
 // All the math in the function is done with a float to maintain fractional precision
 // result is converted back to an int or long as necessary by the calling function
@@ -162,11 +183,11 @@ boolean uiThrottle(void)  // this keeps the timing and adjust rates of UI functi
 {
   static long throttleTime;
 
-  if(throttleTime > millis())  // we haven't yet waited long enough, tell them to bail out
+  if(millis()- throttleTime < UI_THROTTLE_TIME)  // we haven't yet waited long enough, tell them to bail out
     return true;
   else                         // we've waited long enough, reset the timer and tell them to process some UI
   {
-    throttleTime = millis() + UI_THROTTLE_TIME;
+    throttleTime = millis();
     return (false);
   }
 }

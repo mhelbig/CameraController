@@ -1,5 +1,3 @@
-#include <TimerThree.h>
-
 #define X_STEP_PIN         54
 #define X_DIR_PIN          55
 #define X_ENABLE_PIN       38
@@ -26,10 +24,10 @@ void initializeSteppers()
   digitalWrite(Y_ENABLE_PIN, LOW );
 
   motorX.setMaxSpeed(2000.0);
-  motorX.setAcceleration(2000.0);
+  motorX.setAcceleration(3000.0);
 
   motorY.setMaxSpeed(2000.0);
-  motorY.setAcceleration(2000.0);
+  motorY.setAcceleration(3000.0);
 
   Serial.println("Stepper motors initialized");
 }
@@ -50,5 +48,5 @@ void _ISRrunSteppers(void)  // stepper motor ISR callback function
 void updateMotorPositions(void)
 {
   motorX.moveTo((long)XmotorPosition);
-  motorY.moveTo((long)YmotorPosition);
+  motorY.moveTo(-(long)YmotorPosition);
 }

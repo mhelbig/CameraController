@@ -97,8 +97,7 @@ void on_set_videoTime_selected(MenuItem* p_menu_item)
 
 void on_setPositions_selected(MenuItem* p_menu_item)
 {
-  static float tempXmotorPosition;
-  static float tempYmotorPosition;
+  static boolean waitForJoystickToBeCentered;
   
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
@@ -108,18 +107,25 @@ void on_setPositions_selected(MenuItem* p_menu_item)
     
     XmotorPosition = XmotorSplinePoints_y[currentTransitionSelected]; // get the current position from the array
     YmotorPosition = YmotorSplinePoints_y[currentTransitionSelected];
-    tempXmotorPosition = XmotorPosition; // save a copy of the current settings in case we cancel
-    tempYmotorPosition = YmotorPosition;
+    
+    waitForJoystickToBeCentered = 1;   // flag that stops the joystick shift from messing up the motor positions
   }
 
   // callback function main:
-//  adjustAnalogValue(&XmotorPosition,-100000,100000,false);
-  adjustAnalogValue(&YmotorPosition,-100000,100000,false);
+  if(waitForJoystickToBeCentered)  // this keep the joystick being shifted as we enter the menu from messing with the motor postion
+  {
+    if(nunchuk.analogDisplacementX == 0) waitForJoystickToBeCentered = 0;
+    return;
+  }
+
+  adjustMotorPositions(&XmotorPosition, &YmotorPosition);
   
   lcd.setCursor(0,2);
-  lcd.print(XmotorPosition);
+  lcd.print("                    ");
+  lcd.setCursor(0,2);
+  lcd.print(round(XmotorPosition));
   lcd.setCursor(10,2);
-  lcd.print(YmotorPosition);
+  lcd.print(round(YmotorPosition));
 
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
@@ -127,13 +133,10 @@ void on_setPositions_selected(MenuItem* p_menu_item)
     ms.deselect_set_menu_item();
     displayMenu();
 
-    if(nunchuk.userInput == 'Z')  // if Z is pressed we update the array with the newly adjusted values
+    if(nunchuk.userInput == 'Z')  // if Z is pressed save the new values back into the motor array
     {
-      XmotorPosition = round(tempXmotorPosition);
-      YmotorPosition = round(tempYmotorPosition);
-// update the spline points for motor position:
-      XmotorSplinePoints_y[currentTransitionSelected] = XmotorPosition;
-      YmotorSplinePoints_y[currentTransitionSelected] = YmotorPosition;
+      XmotorSplinePoints_y[currentTransitionSelected] = round(XmotorPosition);
+      YmotorSplinePoints_y[currentTransitionSelected] = round(YmotorPosition);
     }
   }
 }

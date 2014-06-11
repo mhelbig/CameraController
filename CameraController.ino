@@ -4,6 +4,7 @@
 #include <Navchuk.h>
 #include <spline.h>
 #include <AccelStepper.h>
+#include <TimerThree.h>
 
 // Establish the input device
 Navchuk nunchuk = Navchuk();

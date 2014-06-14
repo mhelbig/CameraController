@@ -13,11 +13,12 @@ Menu mm("    PanTron 4000");
 
 //Timelapse menu
 Menu tlMenu                 ("Timelapse Video");
+MenuItem setPositions       ("Set position");
 MenuItem transitionToSet    ("Transition to set");
 MenuItem setVideoTime       ("Set video time");
-MenuItem setPositions       ("Set position");
 MenuItem addTransition      ("Add transition");
 MenuItem delTransition      ("Delete transition");
+MenuItem dryRun             ("Dry Run");
 MenuItem setShootTime       ("Set shoot time");
 MenuItem setStartDelay      ("Set start delay");
 MenuItem RunSequence        ("Run sequence");
@@ -39,11 +40,12 @@ void initializeMenu(void)
 {
 //Timelapse menu
   mm.add_menu(&tlMenu);
+  tlMenu.add_item(&setPositions,     &on_setPositions_selected);
   tlMenu.add_item(&transitionToSet,  &on_transitionToSet_selected);
   tlMenu.add_item(&setVideoTime,     &on_set_videoTime_selected);
-  tlMenu.add_item(&setPositions,     &on_setPositions_selected);
   tlMenu.add_item(&addTransition,    &on_addTransition_selected);
   tlMenu.add_item(&delTransition,    &on_delTransition_selected);
+  tlMenu.add_item(&dryRun,           &on_dryRun_selected);
   tlMenu.add_item(&setShootTime,     &on_set_shootTime_selected);
   tlMenu.add_item(&setStartDelay,    &on_setStartDelay_selected);
   tlMenu.add_item(&RunSequence,      &on_RunSequence_selected);

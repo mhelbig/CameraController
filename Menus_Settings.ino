@@ -14,7 +14,7 @@ void on_motionProfile_selected(MenuItem* p_menu_item)
   
   enumeratedMenuList motionProfileList[]=
   {
-    { "Step  "   ,0},  // corresponds to the spline.cpp setDegree() function
+    { "Step  " ,0},  // corresponds to the spline.cpp setDegree() function
     { "Linear" ,1},
     { "Spline" ,11}  // we use the catmull spline type because it's easer to setup
   };

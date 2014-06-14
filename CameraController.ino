@@ -18,7 +18,7 @@ Navchuk nunchuk = Navchuk();
 // Global variables
 /////////////////////////////////////////////////////////////////////////////////
 // Timelapse Mode:
-int numberOfTransitions=2;
+int numberOfTransitions=1;
 int currentTransitionSelected=1;
 float shootTimeSetting = 3600;
 float startDelayTimeSetting =0;

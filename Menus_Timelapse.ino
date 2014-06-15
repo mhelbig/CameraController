@@ -48,40 +48,6 @@ void on_setPositions_selected(MenuItem* p_menu_item)
   }
 }
 
-void on_transitionToSet_selected(MenuItem* p_menu_item)
-{
-  static int tempTransitionToSet;
-  
-  // callback function "constructor"
-  if (ms.menu_item_was_just_selected())
-  {
-    lcd.clear();
-    displaySetHeading();
-    
-    tempTransitionToSet = currentTransitionSelected;  // save a copy of the current setting in case we cancel
-  }
-
-  // callback function main:
-  adjustIntValue(&currentTransitionSelected,1,numberOfTransitions);  // 1 - current number of transitions
-    
-    lcd.setCursor(5,1);
-    lcd.print(currentTransitionSelected);
-    lcd.print(" of ");
-    lcd.print(numberOfTransitions);
-
-  // callback function "destructor"
-  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
-  {
-    ms.deselect_set_menu_item();
-    displayMenu();
-
-    if(nunchuk.userInput == 'C')  // if c is pressed, restore the original value
-    {
-      currentTransitionSelected = tempTransitionToSet;
-    }
-  }
-}
-
 void on_set_videoTime_selected(MenuItem* p_menu_item)
 {
   static float tempVideoTimeSetting;
@@ -176,6 +142,40 @@ void on_addTransition_selected(MenuItem* p_menu_item)
   }
 }
 
+void on_transitionToSet_selected(MenuItem* p_menu_item)
+{
+  static int tempTransitionToSet;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    lcd.clear();
+    displaySetHeading();
+    
+    tempTransitionToSet = currentTransitionSelected;  // save a copy of the current setting in case we cancel
+  }
+
+  // callback function main:
+  adjustIntValue(&currentTransitionSelected,1,numberOfTransitions);  // 1 - current number of transitions
+    
+    lcd.setCursor(5,1);
+    lcd.print(currentTransitionSelected);
+    lcd.print(" of ");
+    lcd.print(numberOfTransitions);
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'C')  // if c is pressed, restore the original value
+    {
+      currentTransitionSelected = tempTransitionToSet;
+    }
+  }
+}
+
 void on_delTransition_selected(MenuItem* p_menu_item)
 {
   // callback function "constructor"
@@ -214,25 +214,39 @@ void on_delTransition_selected(MenuItem* p_menu_item)
 
 void on_dryRun_selected (MenuItem* p_menu_item)
 {
+  static float frameNumber = 0;
+  
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
     lcd.clear();
     displaySetHeading();
+    initializeSplines();
+  }
     
-    // do whatever else we need to do once someone has selected the dry run function
-    
-  if( adjustAnalogValue(& put frame number variable here) )   //
+  if( adjustAnalogValue(&frameNumber,0,1800,false))  // ((long)frameNumber[numberOfTransitions]) <---- we need to make this auto-calculate the upper limit
   {
-    lcd.setCursor(2,1);
-    lcd.print("Video time:");
-    displayAsDDHHMMSS( video time variable or calculation goes here);
+    XmotorPosition = XmotorSpline.value(frameNumber);
+    YmotorPosition = YmotorSpline.value(frameNumber);
+
+    lcd.setCursor(1,1);
+    lcd.print("X: ");
+    lcd.print(XmotorPosition);
+
+    lcd.setCursor(10,1);
+    lcd.print("Y: ");
+    lcd.print(YmotorPosition);
+
+//    lcd.print("Video time:");
+//    displayAsDDHHMMSS(0);
     lcd.setCursor(0,2);
     lcd.print("Frame number:");
-    lcd.setCursor(2,3);
-    lcd.print( frame number variable goes here);
-    add a function here to move the motors to their position based on frame number here
-  }
+//    lcd.setCursor(2,3);
+    lcd.print(frameNumber);
+    lcd.print("   ");
+    
+    
+    updateMotorPositions();
     
   }
 

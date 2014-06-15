@@ -55,6 +55,7 @@ void setup()
   initializeMenu();
   initializeSteppers();
   initializeStepperTimerISR();
+  initializeSplines();
 
   Serial.print("Free memory = "); 
   Serial.println(freeMemory());

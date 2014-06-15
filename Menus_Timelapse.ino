@@ -100,6 +100,8 @@ void on_set_videoTime_selected(MenuItem* p_menu_item)
     else
     {
       frameNumber[currentTransitionSelected] = round(localVideoTimeSetting) * videoFramesPerSecond;    // make the final result a whole number
+      if(currentTransitionSelected == numberOfTransitions)
+        frameNumber[currentTransitionSelected+1] = round(localVideoTimeSetting) * videoFramesPerSecond;
     }
   }
 }
@@ -135,6 +137,7 @@ void on_addTransition_selected(MenuItem* p_menu_item)
     if(nunchuk.userInput == 'z')  // if Z is held we add another spot for a transition
     {
       numberOfTransitions++;
+      currentTransitionSelected=numberOfTransitions;
       XmotorSplinePoints_y[numberOfTransitions] = XmotorSplinePoints_y[numberOfTransitions-1];
       YmotorSplinePoints_y[numberOfTransitions] = YmotorSplinePoints_y[numberOfTransitions-1];
       frameNumber[numberOfTransitions] = frameNumber[numberOfTransitions-1] + 300;
@@ -214,20 +217,23 @@ void on_delTransition_selected(MenuItem* p_menu_item)
 
 void on_dryRun_selected (MenuItem* p_menu_item)
 {
-  static float frameNumber = 0;
+  static float frame = 0;
   
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
     lcd.clear();
     displaySetHeading();
+    XmotorSplinePoints_y[numberOfTransitions+1] = XmotorSplinePoints_y[numberOfTransitions];
+    YmotorSplinePoints_y[numberOfTransitions+1] = XmotorSplinePoints_y[numberOfTransitions];
+
     initializeSplines();
   }
     
-  if( adjustAnalogValue(&frameNumber,0,1800,false))  // ((long)frameNumber[numberOfTransitions]) <---- we need to make this auto-calculate the upper limit
+  if( adjustAnalogValue(&frame,0,(long)frameNumber[numberOfTransitions],false))
   {
-    XmotorPosition = XmotorSpline.value(frameNumber);
-    YmotorPosition = YmotorSpline.value(frameNumber);
+    XmotorPosition = XmotorSpline.value(frame);
+    YmotorPosition = YmotorSpline.value(frame);
 
     lcd.setCursor(1,1);
     lcd.print("X: ");
@@ -242,7 +248,7 @@ void on_dryRun_selected (MenuItem* p_menu_item)
     lcd.setCursor(0,2);
     lcd.print("Frame number:");
 //    lcd.setCursor(2,3);
-    lcd.print(frameNumber);
+    lcd.print(frame);
     lcd.print("   ");
     
     

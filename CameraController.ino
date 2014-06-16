@@ -22,11 +22,23 @@ int numberOfTransitions=1;
 int currentTransitionSelected=1;
 float shootTimeSetting = 3600;
 float startDelayTimeSetting =0;
-int selectedMotionProfile = 0;
+int selectedMotionProfileIndex = 2;
 
 // Settings menu:
 int videoFramesPerSecond = 30;
 
+struct enumeratedMenuList
+{
+  char menuText[21];
+  int value;
+};
+
+enumeratedMenuList motionProfileList[]=
+{
+  { "Step  " ,0},  // corresponds to the spline.cpp setDegree() function
+  { "Linear" ,1},
+  { "Spline" ,11}  // we use the catmull spline type because it's easer to setup
+};
 
 //motor control and spline variables:
 float frameNumber[MAX_NUMBER_OF_TRANSITIONS + 2] = {000,000,900,1200,1500,1800,1800};  // first and last values set tangent points
@@ -38,12 +50,6 @@ float XmotorPosition = 0;
 Spline YmotorSpline;
 float YmotorSplinePoints_y[MAX_NUMBER_OF_TRANSITIONS + 2] = {0,0,0,0,0,0,0};           // motor positions
 float YmotorPosition = 0;
-
-struct enumeratedMenuList
-{
-  char menuText[21];
-  int value;
-};
 
 void setup()
 {

@@ -100,8 +100,6 @@ void on_set_videoTime_selected(MenuItem* p_menu_item)
     else
     {
       frameNumber[currentTransitionSelected] = round(localVideoTimeSetting) * videoFramesPerSecond;    // make the final result a whole number
-      if(currentTransitionSelected == numberOfTransitions)
-        frameNumber[currentTransitionSelected+1] = round(localVideoTimeSetting) * videoFramesPerSecond;
     }
   }
 }
@@ -132,6 +130,8 @@ void on_addTransition_selected(MenuItem* p_menu_item)
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'z')
   {
     ms.deselect_set_menu_item();
+    ms.prev();  // move the user back to the position menu so they can set the next position
+    ms.prev();
     displayMenu();
 
     if(nunchuk.userInput == 'z')  // if Z is held we add another spot for a transition
@@ -141,6 +141,7 @@ void on_addTransition_selected(MenuItem* p_menu_item)
       XmotorSplinePoints_y[numberOfTransitions] = XmotorSplinePoints_y[numberOfTransitions-1];
       YmotorSplinePoints_y[numberOfTransitions] = YmotorSplinePoints_y[numberOfTransitions-1];
       frameNumber[numberOfTransitions] = frameNumber[numberOfTransitions-1] + 300;
+      
     }
   }
 }
@@ -224,9 +225,6 @@ void on_dryRun_selected (MenuItem* p_menu_item)
   {
     lcd.clear();
     displaySetHeading();
-    XmotorSplinePoints_y[numberOfTransitions+1] = XmotorSplinePoints_y[numberOfTransitions];
-    YmotorSplinePoints_y[numberOfTransitions+1] = XmotorSplinePoints_y[numberOfTransitions];
-
     initializeSplines();
   }
     
@@ -354,12 +352,7 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
     lcd.setCursor(0,3);
     lcd.print("Press C to cancel");
 
-    XmotorSpline.setPoints(frameNumber,XmotorSplinePoints_y,numberOfTransitions+2);
-    XmotorSpline.setDegree(selectedMotionProfile);
-   
-    YmotorSpline.setPoints(frameNumber,YmotorSplinePoints_y,numberOfTransitions+2);
-    YmotorSpline.setDegree(selectedMotionProfile);
-
+    initializeSplines();
   }
 
   // callback function main:

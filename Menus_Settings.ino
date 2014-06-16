@@ -9,25 +9,16 @@ void on_framesPerSecond_selected(MenuItem* p_menu_item)
 
 void on_motionProfile_selected(MenuItem* p_menu_item)
 {
-  static int enumIndex = 2;
-  int tempEnumIndex;
-  
-  enumeratedMenuList motionProfileList[]=
-  {
-    { "Step  " ,0},  // corresponds to the spline.cpp setDegree() function
-    { "Linear" ,1},
-    { "Spline" ,11}  // we use the catmull spline type because it's easer to setup
-  };
+  static int tempEnumIndex;
   
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
+    tempEnumIndex = selectedMotionProfileIndex;
     lcd.clear();
     displaySetHeading();
-
     lcd.setCursor(5,2);
-    lcd.print(motionProfileList[enumIndex].menuText);
-    tempEnumIndex = enumIndex;
+    lcd.print(motionProfileList[tempEnumIndex].menuText);
   }
 
   // callback function main:
@@ -45,8 +36,7 @@ void on_motionProfile_selected(MenuItem* p_menu_item)
 
     if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
     {
-      enumIndex = tempEnumIndex;
-      selectedMotionProfile = motionProfileList[enumIndex].value;
+      selectedMotionProfileIndex = tempEnumIndex;
     }
   }
 }

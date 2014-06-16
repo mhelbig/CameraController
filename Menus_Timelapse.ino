@@ -239,6 +239,12 @@ void on_dryRun_selected (MenuItem* p_menu_item)
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
+    if (currentTransitionSelected == 1) // if only one transition setup, we can't do the dry run
+    {
+      ms.deselect_set_menu_item();      // so boot them right out of the menu
+      displayMenu();
+      return;
+    }
     lcd.clear();
     displaySetHeading();
     initializeSplines();
@@ -252,23 +258,22 @@ void on_dryRun_selected (MenuItem* p_menu_item)
     lcd.setCursor(1,1);
     lcd.print("X: ");
     lcd.print(round(XmotorPosition));
+    lcd.print(" ");
 
     lcd.setCursor(10,1);
     lcd.print("Y: ");
     lcd.print(round(YmotorPosition));
+    lcd.print(" ");
 
     lcd.setCursor(1,2);
     lcd.print("Video time:");
     displayAsDDHHMMSS(round(frame / videoFramesPerSecond));
     lcd.setCursor(0,3);
     lcd.print("Frame number:");
-//    lcd.setCursor(2,3);
-    lcd.print(frame);
+    lcd.print(round(frame));
     lcd.print("   ");
-    
-    
+
     updateMotorPositions();
-    
   }
 
   // callback function "destructor"
@@ -302,7 +307,6 @@ void on_set_shootTime_selected(MenuItem* p_menu_item)
     displayAsDDHHMMSS(shootTimeSetting);
     lcd.setCursor(0,2);
     lcd.print("Interval:");
-    lcd.setCursor(2,3);
     displayAsDDHHMMSS( (shootTimeSetting / frameNumber[numberOfTransitions]) );
   }
   // callback function "destructor"

@@ -45,6 +45,12 @@ void navigationHandler()
     case 'z': // Not assigned, C button held
       Serial.print("'Z' Held");
       break;
+   case 'M': // Nunchuk is moving, turn on the backlighting
+     lcd.setBacklight(true);
+     break;
+   case 'I': // Nunchuk is idle, turn off the backlighting
+     lcd.setBacklight(false);
+     break;
     default:
       break;
     }

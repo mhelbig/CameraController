@@ -9,6 +9,7 @@
 // C = Button C
 // Z = Button Z
 // M = Motion detected (from accelerometer)
+// I = Nunchuk idle (no accelerometer action detected for a while)
 
 void initializeNavchuk(void)
 {

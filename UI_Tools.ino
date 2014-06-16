@@ -111,7 +111,7 @@ void displayAsDDHHMMSS(float displayTime)
 
   if(time == 0)
   {
-    lcd.print("           <1 s ");
+    lcd.print(" <1 s   ");
     return;
   }
   if(day > 0)
@@ -120,15 +120,13 @@ void displayAsDDHHMMSS(float displayTime)
     lcd.print(day,DEC);
     lcd.print("d ");
   }
-  else lcd.print("    ");
-  
+
   if(hour > 0 || day > 0)
   {
     if(hour < 10) lcd.print("0");
     lcd.print(hour,DEC);
     lcd.print("h ");
   }
-  else lcd.print("    ");
   
   if( (minute > 0 || hour > 0) && day == 0)
   {
@@ -160,12 +158,6 @@ void displayMenu()
   lcd.setCursor(0,2);
   lcd.print(">");
   lcd.print(cp_menu->get_selected()->get_name());
-
-//  lcd.setCursor(0,2);
-//  lcd.print("Up/Dn to choose Menu");
-
-//  lcd.setCursor(0,3);
-//  lcd.print("Rt/Lf to Enter/Exit");
 }
 
 /////////////////////////////////////////////////////////////////////////////////

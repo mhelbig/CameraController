@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////////
-// Timelapse menu callback functions
+// Set Positions
 /////////////////////////////////////////////////////////////////////////////////
 
 void on_setPositions_selected(MenuItem* p_menu_item)
@@ -47,6 +47,10 @@ void on_setPositions_selected(MenuItem* p_menu_item)
     }
   }
 }
+
+/////////////////////////////////////////////////////////////////////////////////
+// Set Video Time
+/////////////////////////////////////////////////////////////////////////////////
 
 void on_set_videoTime_selected(MenuItem* p_menu_item)
 {
@@ -104,6 +108,9 @@ void on_set_videoTime_selected(MenuItem* p_menu_item)
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+// Add Transition
+/////////////////////////////////////////////////////////////////////////////////
 void on_addTransition_selected(MenuItem* p_menu_item)
 {
   // callback function "constructor"
@@ -146,6 +153,9 @@ void on_addTransition_selected(MenuItem* p_menu_item)
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+// Choose transition to Set
+/////////////////////////////////////////////////////////////////////////////////
 void on_transitionToSet_selected(MenuItem* p_menu_item)
 {
   static int tempTransitionToSet;
@@ -180,6 +190,9 @@ void on_transitionToSet_selected(MenuItem* p_menu_item)
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+// Delete last transition
+/////////////////////////////////////////////////////////////////////////////////
 void on_delTransition_selected(MenuItem* p_menu_item)
 {
   // callback function "constructor"
@@ -216,6 +229,9 @@ void on_delTransition_selected(MenuItem* p_menu_item)
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+// Dry Run
+/////////////////////////////////////////////////////////////////////////////////
 void on_dryRun_selected (MenuItem* p_menu_item)
 {
   static float frame = 0;
@@ -235,15 +251,16 @@ void on_dryRun_selected (MenuItem* p_menu_item)
 
     lcd.setCursor(1,1);
     lcd.print("X: ");
-    lcd.print(XmotorPosition);
+    lcd.print(round(XmotorPosition));
 
     lcd.setCursor(10,1);
     lcd.print("Y: ");
-    lcd.print(YmotorPosition);
+    lcd.print(round(YmotorPosition));
 
-//    lcd.print("Video time:");
-//    displayAsDDHHMMSS(0);
-    lcd.setCursor(0,2);
+    lcd.setCursor(1,2);
+    lcd.print("Video time:");
+    displayAsDDHHMMSS(round(frame / videoFramesPerSecond));
+    lcd.setCursor(0,3);
     lcd.print("Frame number:");
 //    lcd.setCursor(2,3);
     lcd.print(frame);
@@ -262,6 +279,9 @@ void on_dryRun_selected (MenuItem* p_menu_item)
   }
 }  
 
+/////////////////////////////////////////////////////////////////////////////////
+// Set Shoot Time
+/////////////////////////////////////////////////////////////////////////////////
 void on_set_shootTime_selected(MenuItem* p_menu_item)
 {
   static float tempShootTimeSetting;
@@ -303,6 +323,9 @@ void on_set_shootTime_selected(MenuItem* p_menu_item)
 }
 
 
+/////////////////////////////////////////////////////////////////////////////////
+// Set Start Delay
+/////////////////////////////////////////////////////////////////////////////////
 void on_setStartDelay_selected(MenuItem* p_menu_item)
 {
   static float tempStartDelayTimeSetting;
@@ -341,6 +364,9 @@ void on_setStartDelay_selected(MenuItem* p_menu_item)
 }
 
 
+/////////////////////////////////////////////////////////////////////////////////
+// Run Sequence
+/////////////////////////////////////////////////////////////////////////////////
 void on_RunSequence_selected(MenuItem* p_menu_item)
 {
   // callback function "constructor"

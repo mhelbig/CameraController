@@ -11,6 +11,9 @@ void on_setPositions_selected(MenuItem* p_menu_item)
   {
     lcd.clear();
     displaySetHeading();
+    lcd.setCursor(0,3);
+    lcd.print("@ transition ");
+    lcd.print(currentTransitionSelected);
     
     XmotorPosition = XmotorSplinePoints_y[currentTransitionSelected]; // get the current position from the array
     YmotorPosition = YmotorSplinePoints_y[currentTransitionSelected];
@@ -27,11 +30,13 @@ void on_setPositions_selected(MenuItem* p_menu_item)
 
   adjustMotorPositions(&XmotorPosition, &YmotorPosition);
   
-  lcd.setCursor(0,2);
+  lcd.setCursor(0,1);
   lcd.print("                    ");
-  lcd.setCursor(0,2);
+  lcd.setCursor(0,1);
+  lcd.print("X:");
   lcd.print(round(XmotorPosition));
-  lcd.setCursor(10,2);
+  lcd.setCursor(10,1);
+  lcd.print("Y:");
   lcd.print(round(YmotorPosition));
 
   // callback function "destructor"
@@ -154,7 +159,7 @@ void on_addTransition_selected(MenuItem* p_menu_item)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-// Choose transition to Set
+// Select transition
 /////////////////////////////////////////////////////////////////////////////////
 void on_transitionToSet_selected(MenuItem* p_menu_item)
 {
@@ -198,7 +203,7 @@ void on_delTransition_selected(MenuItem* p_menu_item)
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
-    if(numberOfTransitions <= 2) // jump out of the menu if we're at the min number of transitions
+    if(numberOfTransitions <= 1) // jump out of the menu if we're at the min number of transitions
     {
       ms.deselect_set_menu_item();
       displayMenu();

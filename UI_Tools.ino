@@ -111,7 +111,7 @@ void displayAsDDHHMMSS(float displayTime)
 
   if(time == 0)
   {
-    lcd.print("     00s");
+    lcd.print("    00s");
     return;
   }
   if(day > 0)

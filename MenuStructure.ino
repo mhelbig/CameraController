@@ -16,7 +16,7 @@ Menu tlMenu                 ("Timelapse Video");
 MenuItem setPositions       ("Set position");
 MenuItem setVideoTime       ("Set video time");
 MenuItem addTransition      ("Add transition");
-MenuItem transitionToSet    ("Transition to set");
+MenuItem transitionToSet    ("Select transition");
 MenuItem delTransition      ("Delete transition");
 MenuItem dryRun             ("Dry Run");
 MenuItem setShootTime       ("Set shoot time");

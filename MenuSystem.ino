@@ -4,9 +4,12 @@
 void navigationHandler() 
 {
   nunchuk.update();
-   if(nunchuk.userInput == 'M') // Nunchuk is moving, turn on the backlighting
+//  if(nunchuk.userInput != ' ') Serial.println(nunchuk.userInput);
+  
+// dim the display when nobody's using the nunchuk, turn it on when they are
+   if(nunchuk.userInput != ' ')
        lcd.setBacklight(true);
-   if(nunchuk.userInput == 'I') // Nunchuk is idle, turn off the backlighting
+   if(nunchuk.userInput == 'I')
        lcd.setBacklight(false);
 
   if(ms.menu_item_is_selected())
@@ -36,16 +39,12 @@ void navigationHandler()
         displayMenu();
       break;
     case 'C': // Not assigned - used inside menus for cancelling last adjustment
-      Serial.println("'C' pressed, no menu function assigned");
       break;
     case 'Z': // Not assigned - used inside menus for accepting last adjustment
-      Serial.println("'Z' pressed, no menu function assigned");
       break;
-    case 'c': // Not assigned, C button held
-      //    Serial.println("'C' Held");
+    case 'c': // Not assigned, C button held, used inside some menus
       break;
-    case 'z': // Not assigned, C button held
-      Serial.print("'Z' Held");
+    case 'z': // Not assigned, C button held, used inside some menus
       break;
     default:
       break;

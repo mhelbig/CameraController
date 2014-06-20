@@ -10,6 +10,8 @@
 AccelStepper motorX(AccelStepper::DRIVER,X_STEP_PIN,X_DIR_PIN);
 AccelStepper motorY(AccelStepper::DRIVER,Y_STEP_PIN,Y_DIR_PIN);
 
+boolean stepperMotorDriverEnableState;
+
 void initializeSteppers()
 {
   pinMode(X_STEP_PIN, OUTPUT);
@@ -19,9 +21,6 @@ void initializeSteppers()
   pinMode(Y_STEP_PIN, OUTPUT);
   pinMode(Y_DIR_PIN, OUTPUT);
   pinMode(Y_ENABLE_PIN, OUTPUT);
-
-  digitalWrite(X_ENABLE_PIN, LOW );
-  digitalWrite(Y_ENABLE_PIN, LOW );
 
   motorX.setMaxSpeed(2000.0);
   motorX.setAcceleration(3000.0);
@@ -45,8 +44,30 @@ void _ISRrunSteppers(void)  // stepper motor ISR callback function
   motorY.run();
 }
 
+void setMotorDriverEnables(boolean state)
+{
+  stepperMotorDriverEnableState = state;
+}
+
 void updateMotorPositions(void)
 {
   motorX.moveTo((long)XmotorPosition);
-  motorY.moveTo(-(long)YmotorPosition);
+  if (stepperMotorDriverEnableState == true)
+  {
+    digitalWrite(X_ENABLE_PIN, false );  // turn the motor drivers on anytime they're enabled
+  }
+  else if (motorX.distanceToGo() == 0)
+  {
+    digitalWrite(X_ENABLE_PIN, true ); // only turn them off when they've finished thier move
+  }
+ 
+  motorY.moveTo((long)YmotorPosition);
+  if (stepperMotorDriverEnableState == true)
+  {
+    digitalWrite(Y_ENABLE_PIN, false );  // turn the motor drivers on anytime they're enabled
+  }
+  else if(motorY.distanceToGo() == 0)
+  {
+    digitalWrite(Y_ENABLE_PIN, true ); // only turn them off when they've finished thier move
+  }
 }

@@ -9,6 +9,7 @@ void on_setPositions_selected(MenuItem* p_menu_item)
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
+    setMotorDriverEnables(true);
     lcd.clear();
     displaySetHeading();
     lcd.setCursor(0,3);
@@ -42,6 +43,7 @@ void on_setPositions_selected(MenuItem* p_menu_item)
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
+    setMotorDriverEnables(false);
     ms.deselect_set_menu_item();
     displayMenu();
 
@@ -244,6 +246,7 @@ void on_dryRun_selected (MenuItem* p_menu_item)
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
+    setMotorDriverEnables(true);
     if (currentTransitionSelected == 1) // if only one transition setup, we can't do the dry run
     {
       ms.deselect_set_menu_item();      // so boot them right out of the menu
@@ -284,6 +287,7 @@ void on_dryRun_selected (MenuItem* p_menu_item)
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
+    setMotorDriverEnables(false);
     ms.deselect_set_menu_item();
     displayMenu();
   }
@@ -401,7 +405,9 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
 //{
 //   Take shot
 //   Wait shutter time
+//   setMotorDriverEnables(true);
 //   Move to next postion
+//   setMotorDriverEnables(false);
 //   Wait interval time
 //}
 

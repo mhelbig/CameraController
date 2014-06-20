@@ -4,8 +4,10 @@
 void navigationHandler() 
 {
   nunchuk.update();
-  //  lcd.setBacklight(!nunchuk.isIdle);  // <--- we need to make this edge sensitive and work in all menu locations
-  //  delay(10);  // we need this delay, otherwise the nunchuk gets garbage data from this lcd.write for some reason
+   if(nunchuk.userInput == 'M') // Nunchuk is moving, turn on the backlighting
+       lcd.setBacklight(true);
+   if(nunchuk.userInput == 'I') // Nunchuk is idle, turn off the backlighting
+       lcd.setBacklight(false);
 
   if(ms.menu_item_is_selected())
   {
@@ -45,12 +47,6 @@ void navigationHandler()
     case 'z': // Not assigned, C button held
       Serial.print("'Z' Held");
       break;
-   case 'M': // Nunchuk is moving, turn on the backlighting
-     lcd.setBacklight(true);
-     break;
-   case 'I': // Nunchuk is idle, turn off the backlighting
-     lcd.setBacklight(false);
-     break;
     default:
       break;
     }

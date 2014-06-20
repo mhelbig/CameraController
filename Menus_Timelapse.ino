@@ -388,9 +388,22 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
     lcd.print("Press C to cancel");
 
     initializeSplines();
+// Move motors to start position
   }
 
   // callback function main:
+
+
+//Modes:
+// Start time setup
+// Start time countdown
+// for loop:
+//{
+//   Take shot
+//   Wait shutter time
+//   Move to next postion
+//   Wait interval time
+//}
 
 /* these lines need some work, but will lookup the motor positions from the spline function
     X_Motor_Position = X_Spline.value(i) * 800;

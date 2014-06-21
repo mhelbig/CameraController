@@ -49,6 +49,18 @@ void setMotorDriverEnables(boolean state)
   stepperMotorDriverEnableState = state;
 }
 
+void lookupMotorSplinePosition(float frame)
+{
+  XmotorPosition = XmotorSpline.value(frame);
+  YmotorPosition = YmotorSpline.value(frame);
+}
+
+boolean motorsAreRunning(void)
+{
+  if (motorX.distanceToGo() != 0 || motorY.distanceToGo() != 0) return (true);
+  else return (false);
+}
+
 void updateMotorPositions(void)
 {
   motorX.moveTo((long)XmotorPosition);
@@ -58,7 +70,7 @@ void updateMotorPositions(void)
   }
   else if (motorX.distanceToGo() == 0)
   {
-    digitalWrite(X_ENABLE_PIN, true ); // only turn them off when they've finished thier move
+    digitalWrite(X_ENABLE_PIN, true ); // only turn them off when they've finished their move
   }
  
   motorY.moveTo((long)YmotorPosition);
@@ -68,6 +80,6 @@ void updateMotorPositions(void)
   }
   else if(motorY.distanceToGo() == 0)
   {
-    digitalWrite(Y_ENABLE_PIN, true ); // only turn them off when they've finished thier move
+    digitalWrite(Y_ENABLE_PIN, true ); // only turn them off when they've finished their move
   }
 }

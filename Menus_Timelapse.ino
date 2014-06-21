@@ -260,28 +260,12 @@ void on_dryRun_selected (MenuItem* p_menu_item)
     
   if( adjustAnalogValue(&frame,0,(long)frameNumber[numberOfTransitions],false))
   {
-    XmotorPosition = XmotorSpline.value(frame);
-    YmotorPosition = YmotorSpline.value(frame);
-
-    lcd.setCursor(1,1);
-    lcd.print("X: ");
-    lcd.print(round(XmotorPosition));
-    lcd.print(" ");
-
-    lcd.setCursor(10,1);
-    lcd.print("Y: ");
-    lcd.print(round(YmotorPosition));
-    lcd.print(" ");
-
-    lcd.setCursor(1,2);
-    lcd.print("Video time:");
-    displayAsDDHHMMSS(round(frame / videoFramesPerSecond));
-    lcd.setCursor(0,3);
-    lcd.print("Frame number:");
-    lcd.print(round(frame));
-    lcd.print("   ");
-
+    lookupMotorSplinePosition(frame);
     updateMotorPositions();
+    
+    displayXYmotorPositions();
+    displayVideoTime(frame);
+    displayFrameNumber(frame);
   }
 
   // callback function "destructor"
@@ -380,51 +364,124 @@ void on_setStartDelay_selected(MenuItem* p_menu_item)
 /////////////////////////////////////////////////////////////////////////////////
 // Run Sequence
 /////////////////////////////////////////////////////////////////////////////////
+enum shootSequenceMode
+{
+  waitForMotors,
+  waitToStart,
+  waitStartDelay,
+  shootFrame,
+  waitExposureTime,
+  incrementFrame,
+  moveMotorsToPosition,
+  waitIntervalTime,
+  sequenceFinished
+};
+
 void on_RunSequence_selected(MenuItem* p_menu_item)
 {
+  static shootSequenceMode mode;
+  static float frame;
+  static long intervalTimer;
+  static long generalPurposeTimer;
+  static float intervalTime;
+
   // callback function "constructor"
+
   if (ms.menu_item_was_just_selected())
   {
+    frame = 0;
+    intervalTime = (shootTimeSetting / frameNumber[numberOfTransitions] * 1000);
+    setMotorDriverEnables(true);
+    initializeSplines();
+    lookupMotorSplinePosition(frame);
+    updateMotorPositions();
+
     displaySetHeading();
     lcd.setCursor(0,1);
     lcd.print("Hold Z to Start");
     lcd.setCursor(0,3);
     lcd.print("Press C to cancel");
-
-    initializeSplines();
-// Move motors to start position
+    
+    mode = waitForMotors;
   }
 
-  // callback function main:
-
-
-//Modes:
-// Start time setup
-// Start time countdown
-// for loop:
-//{
-//   Take shot
-//   Wait shutter time
-//   setMotorDriverEnables(true);
-//   Move to next postion
-//   setMotorDriverEnables(false);
-//   Wait interval time
-//}
-
-/* these lines need some work, but will lookup the motor positions from the spline function
-    X_Motor_Position = X_Spline.value(i) * 800;
-    Y_Motor_Position = Y_Spline.value(i) * 800;
-*/
-
-  // callback function "destructor"
-  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'z')
+// callback function main:
+  switch(mode)
   {
+    case waitForMotors:
+      if(motorsAreRunning()) return;  //wait until the motors reach the home position
+      else mode = waitToStart;
+      break;
+    case waitToStart:
+      if(nunchuk.userInput == 'z')
+      {
+        lcd.setCursor(0,1);
+        lcd.print("Starting in:       ");
+        generalPurposeTimer = millis();
+        mode = waitStartDelay;
+      }
+      break;
+    case waitStartDelay:
+      lcd.setCursor(0,2);
+      displayAsDDHHMMSS((generalPurposeTimer + (startDelayTimeSetting * 1000) - millis()) / 1000);
+      if (millis() - generalPurposeTimer > (startDelayTimeSetting * 1000))
+      {
+        lcd.setCursor(0,1);
+        lcd.print("                    ");
+        lcd.setCursor(0,2);
+        lcd.print("                    ");
+        intervalTimer = millis();    // start the interval time
+        mode = shootFrame;
+      }
+      break;  
+    case shootFrame:
+        Serial.println("opening shutter");
+      if (millis() - generalPurposeTimer > shutterPressTime)
+      {
+        Serial.println("closing shutter");
+        mode = waitExposureTime;
+      }
+      break;
+    case waitExposureTime:
+      mode = incrementFrame;
+      break;
+    case incrementFrame:
+      frame ++;
+      if(frame > frameNumber[numberOfTransitions]) mode = sequenceFinished;
+      else mode = moveMotorsToPosition;
+      break;
+    case moveMotorsToPosition:
+      setMotorDriverEnables(true);
+      lookupMotorSplinePosition(frame);
+      updateMotorPositions();
+      setMotorDriverEnables(false);
+      mode = waitIntervalTime;
+      displayXYmotorPositions();
+      displayVideoTime(frame);
+      displayFrameNumber(frame);
+      break;
+    case waitIntervalTime:
+      if (millis()- intervalTimer > intervalTime)
+      {
+        intervalTimer += intervalTime;
+        generalPurposeTimer = millis();
+        mode = shootFrame;
+//        Serial.println(".");
+      }
+      break;
+    case sequenceFinished:
+//      Serial.println("sequence finished");
+      setMotorDriverEnables(false);
+      break;
+  }
+ 
+
+// callback function "destructor"
+  if(nunchuk.userInput == 'C')
+  {
+    setMotorDriverEnables(false);
     ms.deselect_set_menu_item();
     displayMenu();
-
-    if(nunchuk.userInput == 'z')  // if Z is held, I'M NOT SURE WHAT WE DO?????
-    {
-    }
   }
 }
 

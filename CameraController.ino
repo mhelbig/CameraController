@@ -23,9 +23,11 @@ int currentTransitionSelected=1;
 float shootTimeSetting = 3600;
 float startDelayTimeSetting =0;
 int selectedMotionProfileIndex = 2;
+int shutterTime = 10000;
 
 // Settings menu:
 int videoFramesPerSecond = 30;
+long shutterPressTime = 100;
 
 struct enumeratedMenuList
 {

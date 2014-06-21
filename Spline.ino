@@ -13,5 +13,5 @@ void initializeSplines(void)
   YmotorSplinePoints_y[numberOfTransitions+1] = YmotorSplinePoints_y[numberOfTransitions];
   frameNumber[numberOfTransitions+1]          = frameNumber[numberOfTransitions];
  
-  Serial.println("Spline functions initialized");
+//  Serial.println("Spline functions initialized");
 }

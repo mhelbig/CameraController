@@ -79,7 +79,7 @@ boolean adjustAnalogValue(float *value, long min, long max, boolean adjustRateFo
 // Function to select from an enumerated list and return the new value
 boolean selectEnumeratedValue(int *tempValue, char listSize)
 {
-  delay(25);   // wait so we don't botch up wire communications between LCD and nunchuk until we find a better way to handle this
+//  delay(25);   // wait so we don't botch up wire communications between LCD and nunchuk until we find a better way to handle this
   if(nunchuk.userInput == 'B' && *tempValue < listSize-1)
   {
     (*tempValue)++;
@@ -168,6 +168,34 @@ void displaySetHeading(void)
 
   lcd.setCursor(0,0);
   lcd.print(cp_menu->get_selected()->get_name());
+}
+
+void displayXYmotorPositions(void)
+{
+  lcd.setCursor(1,1);
+  lcd.print("X: ");
+  lcd.print(round(XmotorPosition));
+  lcd.print("  ");
+
+  lcd.setCursor(10,1);
+  lcd.print("Y: ");
+  lcd.print(round(YmotorPosition));
+  lcd.print("  ");
+}
+
+void displayVideoTime(float frame)
+{
+  lcd.setCursor(1,2);
+  lcd.print("Video time:");
+  displayAsDDHHMMSS(round(frame / videoFramesPerSecond));
+}
+
+void displayFrameNumber(float frame)
+{
+  lcd.setCursor(0,3);
+  lcd.print("Frame number:");
+  lcd.print(round(frame));
+  lcd.print("   ");
 }
 
 /////////////////////////////////////////////////////////////////////////////////

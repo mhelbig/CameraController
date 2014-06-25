@@ -265,7 +265,7 @@ void on_dryRun_selected (MenuItem* p_menu_item)
     
     displayXYmotorPositions();
     displayVideoTime(frame);
-    displayFrameNumber(frame);
+    displayFrameNumber(frame,frameNumber[numberOfTransitions]);
   }
 
   // callback function "destructor"
@@ -300,7 +300,8 @@ void on_set_shootTime_selected(MenuItem* p_menu_item)
     displayAsDDHHMMSS(shootTimeSetting);
     lcd.setCursor(0,2);
     lcd.print("Interval:");
-    displayAsDDHHMMSS( (shootTimeSetting / frameNumber[numberOfTransitions]) );
+    lcd.print( (shootTimeSetting / frameNumber[numberOfTransitions]) );  //displayAsDDHHMMSS
+    lcd.print(" sec  ");
   }
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
@@ -360,6 +361,8 @@ void on_setStartDelay_selected(MenuItem* p_menu_item)
   }
 }
 
+NBtimer intervalTimer;
+NBtimer generalPurposeTimer;
 
 /////////////////////////////////////////////////////////////////////////////////
 // Run Sequence
@@ -377,12 +380,11 @@ enum shootSequenceMode
   sequenceFinished
 };
 
+
 void on_RunSequence_selected(MenuItem* p_menu_item)
 {
   static shootSequenceMode mode;
   static float frame;
-  static long intervalTimer;
-  static long generalPurposeTimer;
   static float intervalTime;
 
   // callback function "constructor"
@@ -409,48 +411,63 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
   switch(mode)
   {
     case waitForMotors:
+//      Serial.println("waitForMotors:");
       if(motorsAreRunning()) return;  //wait until the motors reach the home position
       else mode = waitToStart;
       break;
     case waitToStart:
+//      Serial.println("waitToStart:");
       if(nunchuk.userInput == 'z')
       {
         lcd.setCursor(0,1);
         lcd.print("Starting in:       ");
-        generalPurposeTimer = millis();
+        generalPurposeTimer.init(startDelayTimeSetting);
         mode = waitStartDelay;
       }
       break;
     case waitStartDelay:
+//      Serial.println("waitStartDelay:");
       lcd.setCursor(0,2);
-      displayAsDDHHMMSS((generalPurposeTimer + (startDelayTimeSetting * 1000) - millis()) / 1000);
-      if (millis() - generalPurposeTimer > (startDelayTimeSetting * 1000))
+      displayAsDDHHMMSS(generalPurposeTimer.remaining() / 1000);
+      if (generalPurposeTimer.expired())
       {
         lcd.setCursor(0,1);
         lcd.print("                    ");
         lcd.setCursor(0,2);
         lcd.print("                    ");
-        intervalTimer = millis();    // start the interval time
+        lcd.setCursor(0,3);
+        lcd.print("                    ");
+        intervalTimer.init(intervalTime);    // start the interval time
+        generalPurposeTimer.init(shutterPressTime);
         mode = shootFrame;
       }
       break;  
     case shootFrame:
-        Serial.println("opening shutter");
-      if (millis() - generalPurposeTimer > shutterPressTime)
+//        Serial.println("pressing shutter button");
+        pressShutterButton();
+      if (generalPurposeTimer.expired())
       {
-        Serial.println("closing shutter");
+//        Serial.println("releasing shutter button");
+        releaseShutterButton();
+        generalPurposeTimer.init(exposureTime);
         mode = waitExposureTime;
       }
       break;
     case waitExposureTime:
-      mode = incrementFrame;
+//      Serial.println("waitExposureTime");
+      if(generalPurposeTimer.expired())
+      {
+        mode = incrementFrame;
+      }
       break;
     case incrementFrame:
+//      Serial.println("incrementFrame:");
       frame ++;
       if(frame > frameNumber[numberOfTransitions]) mode = sequenceFinished;
       else mode = moveMotorsToPosition;
       break;
     case moveMotorsToPosition:
+//      Serial.println("moveMotorsToPosition:");
       setMotorDriverEnables(true);
       lookupMotorSplinePosition(frame);
       updateMotorPositions();
@@ -458,13 +475,14 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
       mode = waitIntervalTime;
       displayXYmotorPositions();
       displayVideoTime(frame);
-      displayFrameNumber(frame);
+      displayFrameNumber(frame,frameNumber[numberOfTransitions]);
       break;
     case waitIntervalTime:
-      if (millis()- intervalTimer > intervalTime)
+//      Serial.println("waitIntervalTime:");
+      if (intervalTimer.expired())
       {
-        intervalTimer += intervalTime;
-        generalPurposeTimer = millis();
+        intervalTimer.addTime(intervalTime);
+        generalPurposeTimer.init(shutterPressTime);
         mode = shootFrame;
 //        Serial.println(".");
       }

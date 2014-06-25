@@ -5,6 +5,7 @@
 #include <spline.h>
 #include <AccelStepper.h>
 #include <TimerThree.h>
+#include <NBtimer.h>
 
 // Establish the input device
 Navchuk nunchuk = Navchuk();
@@ -21,9 +22,9 @@ Navchuk nunchuk = Navchuk();
 int numberOfTransitions=1;
 int currentTransitionSelected=1;
 float shootTimeSetting = 3600;
-float startDelayTimeSetting =0;
+float startDelayTimeSetting = 0;
 int selectedMotionProfileIndex = 2;
-int shutterTime = 10000;
+int exposureTime = 100;
 
 // Settings menu:
 int videoFramesPerSecond = 30;
@@ -58,6 +59,7 @@ void setup()
   Serial.begin(9600);
   Serial.print("Free memory = "); 
   Serial.println(freeMemory());
+  initializeShutterControl();
   initializeNavchuk();
   initializeLCD();
   initializeMenu();

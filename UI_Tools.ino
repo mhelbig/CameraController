@@ -190,12 +190,14 @@ void displayVideoTime(float frame)
   displayAsDDHHMMSS(round(frame / videoFramesPerSecond));
 }
 
-void displayFrameNumber(float frame)
+void displayFrameNumber(float frame, float numberOfFrames)
 {
   lcd.setCursor(0,3);
-  lcd.print("Frame number:");
+  lcd.print("Frame:");
   lcd.print(round(frame));
-  lcd.print("   ");
+  lcd.print("/");
+  lcd.print(round(numberOfFrames));
+  lcd.print(" ");
 }
 
 /////////////////////////////////////////////////////////////////////////////////

@@ -1,56 +1,75 @@
 /////////////////////////////////////////////////////////////////////////////////
-// Set Positions
+// Set Camera Exposure Time
 /////////////////////////////////////////////////////////////////////////////////
-
-void on_setPositions_selected(MenuItem* p_menu_item)
+void on_setExposureTime_selected(MenuItem* p_menu_item)
 {
-  static boolean waitForJoystickToBeCentered;
+  static int tempEnumIndex;
+  
+// callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    tempEnumIndex = selectedExposureIndex;
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(15,2);
+    lcd.print("Sec");
+    lcd.setCursor(3,2);
+    lcd.print(cameraExposureTime[tempEnumIndex].menuText);
+  }
+
+// callback function main:
+  if(selectEnumeratedValue(&tempEnumIndex,(sizeof(cameraExposureTime)/sizeof(cameraExposureTime[0]))))
+    {
+      lcd.setCursor(3,2);
+      lcd.print(cameraExposureTime[tempEnumIndex].menuText);
+    }
+  
+// callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
+    {
+      selectedExposureIndex = tempEnumIndex;
+    }
+  }  
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// Select transition
+/////////////////////////////////////////////////////////////////////////////////
+void on_transitionToSet_selected(MenuItem* p_menu_item)
+{
+  static int tempTransitionToSet;
   
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
-    setMotorDriverEnables(true);
     lcd.clear();
     displaySetHeading();
-    lcd.setCursor(0,3);
-    lcd.print("@ transition ");
-    lcd.print(currentTransitionSelected);
     
-    XmotorPosition = XmotorSplinePoints_y[currentTransitionSelected]; // get the current position from the array
-    YmotorPosition = YmotorSplinePoints_y[currentTransitionSelected];
-    
-    waitForJoystickToBeCentered = 1;   // flag that stops the joystick shift from messing up the motor positions
+    tempTransitionToSet = currentTransitionSelected;  // save a copy of the current setting in case we cancel
   }
 
   // callback function main:
-  if(waitForJoystickToBeCentered)  // this keep the joystick being shifted as we enter the menu from messing with the motor postion
-  {
-    if(nunchuk.analogDisplacementX == 0) waitForJoystickToBeCentered = 0;
-    return;
-  }
-
-  adjustMotorPositions(&XmotorPosition, &YmotorPosition);
-  
-  lcd.setCursor(0,1);
-  lcd.print("                    ");
-  lcd.setCursor(0,1);
-  lcd.print("X:");
-  lcd.print(round(XmotorPosition));
-  lcd.setCursor(10,1);
-  lcd.print("Y:");
-  lcd.print(round(YmotorPosition));
+  adjustIntValue(&currentTransitionSelected,1,numberOfTransitions);  // 1 - current number of transitions
+    
+    lcd.setCursor(5,1);
+    lcd.print(currentTransitionSelected);
+    lcd.print(" of ");
+    lcd.print(numberOfTransitions);
 
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
-    setMotorDriverEnables(false);
     ms.deselect_set_menu_item();
     displayMenu();
 
-    if(nunchuk.userInput == 'Z')  // if Z is pressed save the new values back into the motor array
+    if(nunchuk.userInput == 'C')  // if c is pressed, restore the original value
     {
-      XmotorSplinePoints_y[currentTransitionSelected] = round(XmotorPosition);
-      YmotorSplinePoints_y[currentTransitionSelected] = round(YmotorPosition);
+      currentTransitionSelected = tempTransitionToSet;
     }
   }
 }
@@ -116,6 +135,63 @@ void on_set_videoTime_selected(MenuItem* p_menu_item)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
+// Set Positions
+/////////////////////////////////////////////////////////////////////////////////
+
+void on_setPositions_selected(MenuItem* p_menu_item)
+{
+  static boolean waitForJoystickToBeCentered;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    setMotorDriverEnables(true);
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(0,3);
+    lcd.print("@ transition ");
+    lcd.print(currentTransitionSelected);
+    
+    XmotorPosition = XmotorSplinePoints_y[currentTransitionSelected]; // get the current position from the array
+    YmotorPosition = YmotorSplinePoints_y[currentTransitionSelected];
+    
+    waitForJoystickToBeCentered = 1;   // flag that stops the joystick shift from messing up the motor positions
+  }
+
+  // callback function main:
+  if(waitForJoystickToBeCentered)  // this keep the joystick being shifted as we enter the menu from messing with the motor postion
+  {
+    if(nunchuk.analogDisplacementX == 0) waitForJoystickToBeCentered = 0;
+    return;
+  }
+
+  adjustMotorPositions(&XmotorPosition, &YmotorPosition);
+  
+  lcd.setCursor(0,1);
+  lcd.print("                    ");
+  lcd.setCursor(0,1);
+  lcd.print("X:");
+  lcd.print(round(XmotorPosition));
+  lcd.setCursor(10,1);
+  lcd.print("Y:");
+  lcd.print(round(YmotorPosition));
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    setMotorDriverEnables(false);
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'Z')  // if Z is pressed save the new values back into the motor array
+    {
+      XmotorSplinePoints_y[currentTransitionSelected] = round(XmotorPosition);
+      YmotorSplinePoints_y[currentTransitionSelected] = round(YmotorPosition);
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 // Add Transition
 /////////////////////////////////////////////////////////////////////////////////
 void on_addTransition_selected(MenuItem* p_menu_item)
@@ -161,43 +237,6 @@ void on_addTransition_selected(MenuItem* p_menu_item)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-// Select transition
-/////////////////////////////////////////////////////////////////////////////////
-void on_transitionToSet_selected(MenuItem* p_menu_item)
-{
-  static int tempTransitionToSet;
-  
-  // callback function "constructor"
-  if (ms.menu_item_was_just_selected())
-  {
-    lcd.clear();
-    displaySetHeading();
-    
-    tempTransitionToSet = currentTransitionSelected;  // save a copy of the current setting in case we cancel
-  }
-
-  // callback function main:
-  adjustIntValue(&currentTransitionSelected,1,numberOfTransitions);  // 1 - current number of transitions
-    
-    lcd.setCursor(5,1);
-    lcd.print(currentTransitionSelected);
-    lcd.print(" of ");
-    lcd.print(numberOfTransitions);
-
-  // callback function "destructor"
-  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
-  {
-    ms.deselect_set_menu_item();
-    displayMenu();
-
-    if(nunchuk.userInput == 'C')  // if c is pressed, restore the original value
-    {
-      currentTransitionSelected = tempTransitionToSet;
-    }
-  }
-}
-
-/////////////////////////////////////////////////////////////////////////////////
 // Delete last transition
 /////////////////////////////////////////////////////////////////////////////////
 void on_delTransition_selected(MenuItem* p_menu_item)
@@ -235,6 +274,52 @@ void on_delTransition_selected(MenuItem* p_menu_item)
     }
   }
 }
+
+/////////////////////////////////////////////////////////////////////////////////
+// Set Shoot Time
+/////////////////////////////////////////////////////////////////////////////////
+void on_set_shootTime_selected(MenuItem* p_menu_item)
+{
+  static float tempShootTimeSetting;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    lcd.clear();
+    displaySetHeading();
+    
+    tempShootTimeSetting = shootTimeSetting;  // save a copy of the current setting in case we cancel
+  }
+
+  // callback function main:
+  if( adjustAnalogValue(&shootTimeSetting,
+    ((cameraExposureTime[selectedExposureIndex].value + EXPOSURE_TIME_BUFFER)*frameNumber[numberOfTransitions]/1000),
+       2592000,true) )   //calcuated min based on exposure time up to 30 days
+  {
+    lcd.setCursor(2,1);
+    displayAsDDHHMMSS(shootTimeSetting);
+    lcd.setCursor(0,2);
+    lcd.print("Interval:");
+    lcd.print( (shootTimeSetting / frameNumber[numberOfTransitions]) );  //displayAsDDHHMMSS
+    lcd.print(" sec  ");
+  }
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'C')  // if C is pressed, restore the orignal value
+    {
+      shootTimeSetting = tempShootTimeSetting;
+    }
+    else
+    {
+      shootTimeSetting = round(shootTimeSetting);    // make the final result a whole number
+    }
+  }
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////
 // Dry Run
@@ -276,50 +361,6 @@ void on_dryRun_selected (MenuItem* p_menu_item)
     displayMenu();
   }
 }  
-
-/////////////////////////////////////////////////////////////////////////////////
-// Set Shoot Time
-/////////////////////////////////////////////////////////////////////////////////
-void on_set_shootTime_selected(MenuItem* p_menu_item)
-{
-  static float tempShootTimeSetting;
-  
-  // callback function "constructor"
-  if (ms.menu_item_was_just_selected())
-  {
-    lcd.clear();
-    displaySetHeading();
-    
-    tempShootTimeSetting = shootTimeSetting;  // save a copy of the current setting in case we cancel
-  }
-
-  // callback function main:
-  if( adjustAnalogValue(&shootTimeSetting,300,2592000,true) )   //5 minutes to 30 days
-  {
-    lcd.setCursor(2,1);
-    displayAsDDHHMMSS(shootTimeSetting);
-    lcd.setCursor(0,2);
-    lcd.print("Interval:");
-    lcd.print( (shootTimeSetting / frameNumber[numberOfTransitions]) );  //displayAsDDHHMMSS
-    lcd.print(" sec  ");
-  }
-  // callback function "destructor"
-  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
-  {
-    ms.deselect_set_menu_item();
-    displayMenu();
-
-    if(nunchuk.userInput == 'C')  // if C is pressed, restore the orignal value
-    {
-      shootTimeSetting = tempShootTimeSetting;
-    }
-    else
-    {
-      shootTimeSetting = round(shootTimeSetting);    // make the final result a whole number
-    }
-  }
-}
-
 
 /////////////////////////////////////////////////////////////////////////////////
 // Set Start Delay
@@ -379,7 +420,6 @@ enum shootSequenceMode
   waitIntervalTime,
   sequenceFinished
 };
-
 
 void on_RunSequence_selected(MenuItem* p_menu_item)
 {
@@ -449,7 +489,7 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
       {
 //        Serial.println("releasing shutter button");
         releaseShutterButton();
-        generalPurposeTimer.init(exposureTime);
+        generalPurposeTimer.init(cameraExposureTime[selectedExposureIndex].value + EXPOSURE_TIME_BUFFER);
         mode = waitExposureTime;
       }
       break;

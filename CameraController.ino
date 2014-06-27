@@ -13,18 +13,19 @@ Navchuk nunchuk = Navchuk();
 /////////////////////////////////////////////////////////////////////////////////
 // Constants
 /////////////////////////////////////////////////////////////////////////////////
-#define MAX_NUMBER_OF_TRANSITIONS 5
+#define MAX_NUMBER_OF_TRANSITIONS 8
+#define EXPOSURE_TIME_BUFFER 100      // additional time (in mS) to wait after exposure before moving
 
 /////////////////////////////////////////////////////////////////////////////////
 // Global variables
 /////////////////////////////////////////////////////////////////////////////////
 // Timelapse Mode:
+int selectedExposureIndex = 0;
 int numberOfTransitions=1;
 int currentTransitionSelected=1;
 float shootTimeSetting = 3600;
 float startDelayTimeSetting = 0;
 int selectedMotionProfileIndex = 2;
-int exposureTime = 100;
 
 // Settings menu:
 int videoFramesPerSecond = 30;
@@ -41,6 +42,36 @@ enumeratedMenuList motionProfileList[]=
   { "Step  " ,0},  // corresponds to the spline.cpp setDegree() function
   { "Linear" ,1},
   { "Spline" ,11}  // we use the catmull spline type because it's easer to setup
+};
+
+enumeratedMenuList cameraExposureTime[]=
+{
+  { "Under 1/4"     ,0},
+  { "      1/4"   ,250},
+  { "      0.3"   ,300},
+  { "      0.4"   ,400},
+  { "      0.5"   ,500},
+  { "      0.6"   ,600},
+  { "      0.7"   ,700},
+  { "      0.8"   ,800},
+  { "      1.0"   ,1000},
+  { "      1.3"   ,1300},
+  { "      1.5"   ,1500},
+  { "      1.6"   ,1600},
+  { "      2.0"   ,2000},
+  { "      2.5"   ,2500},
+  { "      3.0"   ,3000},
+  { "      3.2"   ,3200},
+  { "        4"   ,4000},
+  { "        5"   ,5000},
+  { "        6"   ,6000},
+  { "        8"   ,8000},
+  { "       10"   ,10000},
+  { "       13"   ,13000},
+  { "       15"   ,15000},
+  { "       20"   ,20000},
+  { "       25"   ,25000},
+  { "       30"   ,30000}
 };
 
 //motor control and spline variables:

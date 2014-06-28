@@ -55,13 +55,12 @@ void on_transitionToSet_selected(MenuItem* p_menu_item)
 
   // callback function main:
   adjustIntValue(&currentTransitionSelected,1,numberOfTransitions);  // 1 - current number of transitions
-    
-    lcd.setCursor(5,1);
-    lcd.print(currentTransitionSelected);
-    lcd.print(" of ");
-    lcd.print(numberOfTransitions);
+  lcd.setCursor(5,1);
+  lcd.print(currentTransitionSelected);
+  lcd.print(" of ");
+  lcd.print(numberOfTransitions);
 
-  // callback function "destructor"
+// callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
     ms.deselect_set_menu_item();
@@ -293,8 +292,11 @@ void on_set_shootTime_selected(MenuItem* p_menu_item)
 
   // callback function main:
   if( adjustAnalogValue(&shootTimeSetting,
-    ((cameraExposureTime[selectedExposureIndex].value + EXPOSURE_TIME_BUFFER)*frameNumber[numberOfTransitions]/1000),
-       2592000,true) )   //calcuated min based on exposure time up to 30 days
+    ((cameraExposureTime[selectedExposureIndex].value 
+      + shutterButtonTimeSetting 
+      + motorSettleTimeSetting)
+      *frameNumber[numberOfTransitions]/1000)
+      ,2592000,true) )   //calcuated min based on exposure time up to 30 days
   {
     lcd.setCursor(2,1);
     displayAsDDHHMMSS(shootTimeSetting);
@@ -403,6 +405,8 @@ void on_setStartDelay_selected(MenuItem* p_menu_item)
 }
 
 NBtimer intervalTimer;
+NBtimer exposureTimer;
+NBtimer motorSettleTimer;
 NBtimer generalPurposeTimer;
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -415,6 +419,7 @@ enum shootSequenceMode
   waitStartDelay,
   shootFrame,
   waitExposureTime,
+  waitMotorSettleTime,
   incrementFrame,
   moveMotorsToPosition,
   waitIntervalTime,
@@ -478,7 +483,7 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
         lcd.setCursor(0,3);
         lcd.print("                    ");
         intervalTimer.init(intervalTime);    // start the interval time
-        generalPurposeTimer.init(shutterPressTime);
+        generalPurposeTimer.init(shutterButtonTimeSetting);
         mode = shootFrame;
       }
       break;  
@@ -489,13 +494,21 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
       {
 //        Serial.println("releasing shutter button");
         releaseShutterButton();
-        generalPurposeTimer.init(cameraExposureTime[selectedExposureIndex].value + EXPOSURE_TIME_BUFFER);
+        exposureTimer.init(cameraExposureTime[selectedExposureIndex].value);
+        motorSettleTimer.init(motorSettleTimeSetting);
         mode = waitExposureTime;
       }
       break;
     case waitExposureTime:
 //      Serial.println("waitExposureTime");
-      if(generalPurposeTimer.expired())
+      if(exposureTimer.expired())
+      {
+        mode = waitMotorSettleTime;
+      }
+      break;
+    case waitMotorSettleTime:
+//      Serial.println("waitMotorSettleTime");
+      if(motorSettleTimer.expired())
       {
         mode = incrementFrame;
       }
@@ -522,7 +535,7 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
       if (intervalTimer.expired())
       {
         intervalTimer.addTime(intervalTime);
-        generalPurposeTimer.init(shutterPressTime);
+        generalPurposeTimer.init(shutterButtonTimeSetting);
         mode = shootFrame;
 //        Serial.println(".");
       }

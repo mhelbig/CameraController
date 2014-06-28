@@ -14,13 +14,12 @@ Navchuk nunchuk = Navchuk();
 // Constants
 /////////////////////////////////////////////////////////////////////////////////
 #define MAX_NUMBER_OF_TRANSITIONS 8
-#define EXPOSURE_TIME_BUFFER 100      // additional time (in mS) to wait after exposure before moving
 
 /////////////////////////////////////////////////////////////////////////////////
 // Global variables
 /////////////////////////////////////////////////////////////////////////////////
 // Timelapse Mode:
-int selectedExposureIndex = 0;
+int selectedExposureIndex = 5;
 int numberOfTransitions=1;
 int currentTransitionSelected=1;
 float shootTimeSetting = 3600;
@@ -29,7 +28,8 @@ int selectedMotionProfileIndex = 2;
 
 // Settings menu:
 int videoFramesPerSecond = 30;
-long shutterPressTime = 100;
+int shutterButtonTimeSetting = 100;
+int motorSettleTimeSetting = 250;
 
 struct enumeratedMenuList
 {
@@ -46,32 +46,32 @@ enumeratedMenuList motionProfileList[]=
 
 enumeratedMenuList cameraExposureTime[]=
 {
-  { "Under 1/4"     ,0},
-  { "      1/4"   ,250},
-  { "      0.3"   ,300},
-  { "      0.4"   ,400},
-  { "      0.5"   ,500},
-  { "      0.6"   ,600},
-  { "      0.7"   ,700},
-  { "      0.8"   ,800},
-  { "      1.0"   ,1000},
-  { "      1.3"   ,1300},
-  { "      1.5"   ,1500},
-  { "      1.6"   ,1600},
-  { "      2.0"   ,2000},
-  { "      2.5"   ,2500},
-  { "      3.0"   ,3000},
-  { "      3.2"   ,3200},
-  { "        4"   ,4000},
-  { "        5"   ,5000},
-  { "        6"   ,6000},
-  { "        8"   ,8000},
-  { "       10"   ,10000},
-  { "       13"   ,13000},
-  { "       15"   ,15000},
-  { "       20"   ,20000},
+  { "       30"   ,30000},
   { "       25"   ,25000},
-  { "       30"   ,30000}
+  { "       20"   ,20000},
+  { "       15"   ,15000},
+  { "       13"   ,13000},
+  { "       10"   ,10000},
+  { "        8"   ,8000},
+  { "        6"   ,6000},
+  { "        5"   ,5000},
+  { "        4"   ,4000},
+  { "      3.2"   ,3200},
+  { "      3.0"   ,3000},
+  { "      2.5"   ,2500},
+  { "      2.0"   ,2000},
+  { "      1.6"   ,1600},
+  { "      1.5"   ,1500},
+  { "      1.3"   ,1300},
+  { "      1.0"   ,1000},
+  { "      0.8"   ,800},
+  { "      0.7"   ,700},
+  { "      0.6"   ,600},
+  { "      0.5"   ,500},
+  { "      0.4"   ,400},
+  { "      0.3"   ,300},
+  { "      1/4"   ,250},
+  { "Under 1/4"     ,0}
 };
 
 //motor control and spline variables:

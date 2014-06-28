@@ -187,7 +187,7 @@ void displayVideoTime(float frame)
 {
   lcd.setCursor(1,2);
   lcd.print("Video time:");
-  displayAsDDHHMMSS(round(frame / videoFramesPerSecond));
+  displayAsDDHHMMSS(round(frame / framesPerSecondList[videoFramesPerSecondIndex].value));
 }
 
 void displayFrameNumber(float frame, float numberOfFrames)

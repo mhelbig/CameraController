@@ -27,7 +27,7 @@ float startDelayTimeSetting = 0;
 int selectedMotionProfileIndex = 2;
 
 // Settings menu:
-int videoFramesPerSecond = 30;
+int videoFramesPerSecondIndex = 2;
 int shutterButtonTimeSetting = 100;
 int motorSettleTimeSetting = 250;
 
@@ -35,6 +35,14 @@ struct enumeratedMenuList
 {
   char menuText[21];
   int value;
+};
+
+enumeratedMenuList framesPerSecondList[]=
+{
+  { "120" ,120},
+  { " 60" ,60},
+  { " 30" ,30},
+  { " 24" ,24}
 };
 
 enumeratedMenuList motionProfileList[]=

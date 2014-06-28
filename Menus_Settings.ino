@@ -1,10 +1,38 @@
+/////////////////////////////////////////////////////////////////////////////////
+// Frames Per Second
+/////////////////////////////////////////////////////////////////////////////////
 void on_framesPerSecond_selected(MenuItem* p_menu_item)
 {
-  Serial.print("fps ");
-  lcd.setCursor(0,1);
-  lcd.print("Frames/sec = 30");
-  if(nunchuk.userInput == 'C') ms.deselect_set_menu_item();
-  //  displayMenu();
+  static int tempEnumIndex;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    tempEnumIndex = videoFramesPerSecondIndex;
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(5,2);
+    lcd.print(framesPerSecondList[tempEnumIndex].menuText);
+  }
+
+  // callback function main:
+  if(selectEnumeratedValue(&tempEnumIndex,(sizeof(framesPerSecondList)/sizeof(framesPerSecondList[0]))))
+    {
+      lcd.setCursor(5,2);
+      lcd.print(framesPerSecondList[tempEnumIndex].menuText);
+    }
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
+    {
+      videoFramesPerSecondIndex = tempEnumIndex;
+    }
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -73,6 +101,9 @@ void on_motorSettleTime_Selected(MenuItem* p_menu_item)
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+// Motion Profile
+/////////////////////////////////////////////////////////////////////////////////
 void on_motionProfile_selected(MenuItem* p_menu_item)
 {
   static int tempEnumIndex;
@@ -88,7 +119,7 @@ void on_motionProfile_selected(MenuItem* p_menu_item)
   }
 
   // callback function main:
-  if(selectEnumeratedValue(&tempEnumIndex,3))
+  if(selectEnumeratedValue(&tempEnumIndex,(sizeof(motionProfileList)/sizeof(motionProfileList[0]))))
     {
       lcd.setCursor(5,2);
       lcd.print(motionProfileList[tempEnumIndex].menuText);

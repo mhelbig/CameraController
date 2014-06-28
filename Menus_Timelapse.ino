@@ -99,7 +99,7 @@ void on_set_videoTime_selected(MenuItem* p_menu_item)
     lcd.print(currentTransitionSelected);
     
     tempVideoTimeSetting = frameNumber[currentTransitionSelected];  // save a copy of the current setting in case we cancel
-    localVideoTimeSetting = frameNumber[currentTransitionSelected] / videoFramesPerSecond;  // we will work with this value in time and convert it back to frames when we're done
+    localVideoTimeSetting = frameNumber[currentTransitionSelected] / framesPerSecondList[videoFramesPerSecondIndex].value;  // we will work with this value in time and convert it back to frames when we're done
   }
 
   // callback function main:
@@ -111,7 +111,7 @@ void on_set_videoTime_selected(MenuItem* p_menu_item)
     {
       lcd.setCursor(0,2);
       lcd.print("frames req'd: ");
-      lcd.print( round(localVideoTimeSetting) * videoFramesPerSecond);
+      lcd.print( round(localVideoTimeSetting) * framesPerSecondList[videoFramesPerSecondIndex].value);
       lcd.print(" ");
     }
 
@@ -128,7 +128,9 @@ void on_set_videoTime_selected(MenuItem* p_menu_item)
     }
     else
     {
-      frameNumber[currentTransitionSelected] = round(localVideoTimeSetting) * videoFramesPerSecond;    // make the final result a whole number
+      frameNumber[currentTransitionSelected] = 
+      round(localVideoTimeSetting) 
+      * framesPerSecondList[videoFramesPerSecondIndex].value;    // make the final result a whole number
     }
   }
 }
@@ -164,16 +166,17 @@ void on_setPositions_selected(MenuItem* p_menu_item)
     return;
   }
 
-  adjustMotorPositions(&XmotorPosition, &YmotorPosition);
-  
-  lcd.setCursor(0,1);
-  lcd.print("                    ");
-  lcd.setCursor(0,1);
-  lcd.print("X:");
-  lcd.print(round(XmotorPosition));
-  lcd.setCursor(10,1);
-  lcd.print("Y:");
-  lcd.print(round(YmotorPosition));
+  if(adjustMotorPositions(&XmotorPosition, &YmotorPosition))
+  {
+    lcd.setCursor(0,1);
+    lcd.print("                    ");
+    lcd.setCursor(0,1);
+    lcd.print("X:");
+    lcd.print(round(XmotorPosition));
+    lcd.setCursor(10,1);
+    lcd.print("Y:");
+    lcd.print(round(YmotorPosition));
+  }
 
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
@@ -505,6 +508,13 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
       {
         mode = waitMotorSettleTime;
       }
+      else
+      {
+        lcd.setCursor(13,3);
+        lcd.print((exposureTimer.remaining()/1000)+1);
+        lcd.print("s E ");
+        Serial.print(".");
+      }        
       break;
     case waitMotorSettleTime:
 //      Serial.println("waitMotorSettleTime");
@@ -535,10 +545,16 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
       if (intervalTimer.expired())
       {
         intervalTimer.addTime(intervalTime);
-        generalPurposeTimer.init(shutterButtonTimeSetting);
         mode = shootFrame;
+        
 //        Serial.println(".");
       }
+      else
+      {
+        lcd.setCursor(13,3);
+        lcd.print((intervalTimer.remaining()/1000)+1);
+        lcd.print("s I ");
+      }        
       break;
     case sequenceFinished:
 //      Serial.println("sequence finished");

@@ -8,7 +8,10 @@ void initializeSplines(void)
   XmotorSpline.setDegree(selectedMotionProfile);
   YmotorSpline.setDegree(selectedMotionProfile);
  
- // update the last index of the spline arrays for the Catmull tangent points 
+ // update the first and last index of the spline arrays for the Catmull tangent points 
+  XmotorSplinePoints_y[0] = XmotorSplinePoints_y[1];
+  YmotorSplinePoints_y[0] = YmotorSplinePoints_y[1];
+
   XmotorSplinePoints_y[numberOfTransitions+1] = XmotorSplinePoints_y[numberOfTransitions];
   YmotorSplinePoints_y[numberOfTransitions+1] = YmotorSplinePoints_y[numberOfTransitions];
   frameNumber[numberOfTransitions+1]          = frameNumber[numberOfTransitions];

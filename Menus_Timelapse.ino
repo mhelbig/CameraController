@@ -331,13 +331,13 @@ void on_set_shootTime_selected(MenuItem* p_menu_item)
 /////////////////////////////////////////////////////////////////////////////////
 void on_dryRun_selected (MenuItem* p_menu_item)
 {
-  static float frame = 0;
+  static float frame;
   
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
     setMotorDriverEnables(true);
-    if (currentTransitionSelected == 1) // if only one transition setup, we can't do the dry run
+    if (numberOfTransitions == 1) // if only one transition setup, we can't do the dry run
     {
       ms.deselect_set_menu_item();      // so boot them right out of the menu
       displayMenu();
@@ -346,6 +346,7 @@ void on_dryRun_selected (MenuItem* p_menu_item)
     lcd.clear();
     displaySetHeading();
     initializeSplines();
+    frame = 0;
   }
     
   if( adjustAnalogValue(&frame,0,(long)frameNumber[numberOfTransitions],false))

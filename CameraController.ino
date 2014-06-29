@@ -29,6 +29,7 @@ int selectedMotionProfileIndex = 2;
 // Settings menu:
 int videoFramesPerSecondIndex = 2;
 int shutterButtonTimeSetting = 100;
+int cameraRecoveryTimeSetting = 200;
 int motorSettleTimeSetting = 250;
 
 struct enumeratedMenuList

@@ -11,6 +11,16 @@ void releaseShutterButton(void)
   digitalWrite(SHUTTER_PIN,LOW);
 }
 
+void pressFocusButton(void)
+{
+  digitalWrite(FOCUS_PIN,HIGH);
+}
+
+void releaseFocusButton(void)
+{
+  digitalWrite(FOCUS_PIN,LOW);
+}
+
 void initializeShutterControl(void)
 {
   digitalWrite(FOCUS_PIN,LOW);

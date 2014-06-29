@@ -283,6 +283,7 @@ void on_delTransition_selected(MenuItem* p_menu_item)
 void on_set_shootTime_selected(MenuItem* p_menu_item)
 {
   static float tempShootTimeSetting;
+  static float minimumShootTime;
   
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
@@ -291,15 +292,14 @@ void on_set_shootTime_selected(MenuItem* p_menu_item)
     displaySetHeading();
     
     tempShootTimeSetting = shootTimeSetting;  // save a copy of the current setting in case we cancel
+    minimumShootTime = (cameraExposureTime[selectedExposureIndex].value 
+                        + cameraRecoveryTimeSetting 
+                        + motorSettleTimeSetting)
+                        *frameNumber[numberOfTransitions]/1000;
   }
 
   // callback function main:
-  if( adjustAnalogValue(&shootTimeSetting,
-    ((cameraExposureTime[selectedExposureIndex].value 
-      + shutterButtonTimeSetting 
-      + motorSettleTimeSetting)
-      *frameNumber[numberOfTransitions]/1000)
-      ,2592000,true) )   //calcuated min based on exposure time up to 30 days
+  if( adjustAnalogValue(&shootTimeSetting,minimumShootTime,2592000,true) )   //calcuated min based on exposure time up to 30 days
   {
     lcd.setCursor(2,1);
     displayAsDDHHMMSS(shootTimeSetting);
@@ -487,11 +487,14 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
         lcd.print("                    ");
         intervalTimer.init(intervalTime);    // start the interval time
         generalPurposeTimer.init(shutterButtonTimeSetting);
+
+        lcd.setCursor(19,3);
+        lcd.print("S");
+        pressFocusButton();
         mode = shootFrame;
       }
       break;  
     case shootFrame:
-//        Serial.println("pressing shutter button");
         pressShutterButton();
       if (generalPurposeTimer.expired())
       {
@@ -499,6 +502,9 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
         releaseShutterButton();
         exposureTimer.init(cameraExposureTime[selectedExposureIndex].value);
         motorSettleTimer.init(motorSettleTimeSetting);
+
+        lcd.setCursor(19,3);
+        lcd.print("E");
         mode = waitExposureTime;
       }
       break;
@@ -506,13 +512,16 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
 //      Serial.println("waitExposureTime");
       if(exposureTimer.expired())
       {
+
+        lcd.setCursor(19,3);
+        lcd.print("M");
         mode = waitMotorSettleTime;
       }
       else
       {
         lcd.setCursor(13,3);
-        lcd.print((exposureTimer.remaining()/1000)+1);
-        lcd.print("s E ");
+        lcd.print(((exposureTimer.remaining()+motorSettleTimer.remaining())/1000)+1);
+        lcd.print("s  ");
         Serial.print(".");
       }        
       break;
@@ -553,11 +562,12 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
       {
         lcd.setCursor(13,3);
         lcd.print((intervalTimer.remaining()/1000)+1);
-        lcd.print("s I ");
+        lcd.print("s ");
       }        
       break;
     case sequenceFinished:
 //      Serial.println("sequence finished");
+      releaseFocusButton();
       setMotorDriverEnables(false);
       break;
   }
@@ -567,6 +577,7 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
   if(nunchuk.userInput == 'C')
   {
     setMotorDriverEnables(false);
+    releaseFocusButton();
     ms.deselect_set_menu_item();
     displayMenu();
   }

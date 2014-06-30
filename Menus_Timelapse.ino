@@ -223,7 +223,6 @@ void on_addTransition_selected(MenuItem* p_menu_item)
   {
     ms.deselect_set_menu_item();
     ms.prev();  // move the user back to the position menu so they can set the next position
-    ms.prev();
     displayMenu();
 
     if(nunchuk.userInput == 'z')  // if Z is held we add another spot for a transition
@@ -288,6 +287,12 @@ void on_set_shootTime_selected(MenuItem* p_menu_item)
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
+    if (numberOfTransitions == 1) // if only one transition setup, we can't do the dry run
+    {
+      ms.deselect_set_menu_item();      // so boot them right out of the menu
+      displayMenu();
+      return;
+    }
     lcd.clear();
     displaySetHeading();
     
@@ -336,13 +341,13 @@ void on_dryRun_selected (MenuItem* p_menu_item)
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
-    setMotorDriverEnables(true);
     if (numberOfTransitions == 1) // if only one transition setup, we can't do the dry run
     {
       ms.deselect_set_menu_item();      // so boot them right out of the menu
       displayMenu();
       return;
     }
+    setMotorDriverEnables(true);
     lcd.clear();
     displaySetHeading();
     initializeSplines();
@@ -440,6 +445,12 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
 
   if (ms.menu_item_was_just_selected())
   {
+    if (numberOfTransitions == 1) // if only one transition setup, we can't do the dry run
+    {
+      ms.deselect_set_menu_item();      // so boot them right out of the menu
+      displayMenu();
+      return;
+    }
     frame = 0;
     intervalTime = (shootTimeSetting / frameNumber[numberOfTransitions] * 1000);
     setMotorDriverEnables(true);

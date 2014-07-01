@@ -6,6 +6,7 @@
 #include <AccelStepper.h>
 #include <TimerThree.h>
 #include <NBtimer.h>
+#include <EEPROMex.h>
 
 // Establish the input device
 Navchuk nunchuk = Navchuk();
@@ -19,18 +20,18 @@ Navchuk nunchuk = Navchuk();
 // Global variables
 /////////////////////////////////////////////////////////////////////////////////
 // Timelapse Mode:
-int selectedExposureIndex = 5;
 int numberOfTransitions=1;
 int currentTransitionSelected=1;
 float shootTimeSetting = 3600;
 float startDelayTimeSetting = 0;
-int selectedMotionProfileIndex = 2;
 
-// Settings menu:
-int videoFramesPerSecondIndex = 2;
-int shutterButtonTimeSetting = 100;
-int cameraRecoveryTimeSetting = 200;
-int motorSettleTimeSetting = 250;
+// Non-Volatile Settings:  (initialized values are loaded from EEPROM)
+int selectedExposureIndex;
+int shutterButtonTimeSetting;
+int cameraRecoveryTimeSetting;
+int motorSettleTimeSetting;
+int videoFramesPerSecondIndex;
+int selectedMotionProfileIndex;
 
 struct enumeratedMenuList
 {
@@ -99,6 +100,7 @@ void setup()
   Serial.begin(9600);
   Serial.print("Free memory = "); 
   Serial.println(freeMemory());
+  loadNonVolatileSettings();
   initializeShutterControl();
   initializeNavchuk();
   initializeLCD();

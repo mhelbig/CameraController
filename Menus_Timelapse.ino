@@ -47,6 +47,12 @@ void on_transitionToSet_selected(MenuItem* p_menu_item)
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
+    if (numberOfTransitions == 1) // if only one transition setup, we can't do the dry run
+    {
+      ms.deselect_set_menu_item();      // so boot them right out of the menu
+      displayMenu();
+      return;
+    }
     lcd.clear();
     displaySetHeading();
     

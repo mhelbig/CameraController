@@ -35,6 +35,9 @@ MenuItem cameraRecoveryTime ("Recovery time");
 MenuItem motorSettleTime    ("Motor settle time");
 MenuItem framesPerSecond    ("Frames/sec");
 MenuItem motionProfile      ("Motion Profile");
+MenuItem saveSettings       ("Save settings");
+MenuItem loadSettings       ("Load settings");
+MenuItem restoreDefaults    ("Restore Defaults");
 MenuItem FreeMem            ("Free Memory");
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -66,6 +69,9 @@ void initializeMenu(void)
   suMenu.add_item(&cameraRecoveryTime, &on_cameraRecoveryTime_selected);
   suMenu.add_item(&motorSettleTime,    &on_motorSettleTime_Selected);
   suMenu.add_item(&motionProfile,      &on_motionProfile_selected);
+  suMenu.add_item(&saveSettings,       &on_saveNonVolatileSettings_selected);
+  suMenu.add_item(&loadSettings,       &on_loadNonVolatileSettings_selected);
+  suMenu.add_item(&restoreDefaults,    &on_restoreNonVolatileSettings_selected);
   suMenu.add_item(&FreeMem,            &on_FreeMem_selected);
 
 //Root menu (always last)  

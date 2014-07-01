@@ -171,6 +171,96 @@ void on_motionProfile_selected(MenuItem* p_menu_item)
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+// Save settings to EEPROM
+/////////////////////////////////////////////////////////////////////////////////
+void on_saveNonVolatileSettings_selected(MenuItem* p_menu_item)
+{
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    displaySetHeading();
+    lcd.setCursor(0,2);
+    lcd.print("Hold Z to save");
+    lcd.setCursor(0,3);
+    lcd.print("Press C to cancel");
+  }
+
+  // callback function main:
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'z')  // if Z is held we do the deed
+    {
+      saveNonVolatileSettings();
+    }
+  }
+}
+  
+/////////////////////////////////////////////////////////////////////////////////
+// load settings from EEPROM
+/////////////////////////////////////////////////////////////////////////////////
+void on_loadNonVolatileSettings_selected(MenuItem* p_menu_item)
+{
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    displaySetHeading();
+    lcd.setCursor(0,2);
+    lcd.print("Hold Z to load");
+    lcd.setCursor(0,3);
+    lcd.print("Press C to cancel");
+  }
+
+  // callback function main:
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'z')  // if Z is held we do the deed
+    {
+      loadNonVolatileSettings();
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// Restore default settings
+/////////////////////////////////////////////////////////////////////////////////
+void on_restoreNonVolatileSettings_selected(MenuItem* p_menu_item)
+{
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    displaySetHeading();
+    lcd.setCursor(0,2);
+    lcd.print("Hold Z to restore");
+    lcd.setCursor(0,3);
+    lcd.print("Press C to cancel");
+  }
+
+  // callback function main:
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'z')  // if Z is held we do the deed
+    {
+      restoreDefaultSettings();
+    }
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // FREE MEMORY Display
 ///////////////////////////////////////////////////////////////////////////////////////////////////

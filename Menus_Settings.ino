@@ -261,6 +261,74 @@ void on_restoreNonVolatileSettings_selected(MenuItem* p_menu_item)
   }
 }
 
+
+/////////////////////////////////////////////////////////////////////////////////
+// Save motor positions
+/////////////////////////////////////////////////////////////////////////////////
+void on_saveMotorPositions_selected(MenuItem* p_menu_item)
+{
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    displaySetHeading();
+    lcd.setCursor(0,2);
+    lcd.print("Hold Z to save");
+    lcd.setCursor(0,3);
+    lcd.print("Press C to cancel");
+
+    setMotorDriverEnables(true);
+    initializeSplines();
+    lookupMotorSplinePosition(0);
+    updateMotorPositions();
+  }
+
+  // callback function main:
+  if(motorsAreRunning()) return;  //wait until the motors reach the home position
+ 
+  setMotorDriverEnables(false);
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'z')  // if Z is held we do the deed
+    {
+      saveMotorPositions();
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// Load motor positions
+/////////////////////////////////////////////////////////////////////////////////
+void on_loadMotorPositions_selected(MenuItem* p_menu_item)
+{
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    displaySetHeading();
+    lcd.setCursor(0,2);
+    lcd.print("Hold Z to load");
+    lcd.setCursor(0,3);
+    lcd.print("Press C to cancel");
+  }
+
+  // callback function main:
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'z')  // if Z is held we do the deed
+    {
+      loadMotorPositions();
+    }
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // FREE MEMORY Display
 ///////////////////////////////////////////////////////////////////////////////////////////////////

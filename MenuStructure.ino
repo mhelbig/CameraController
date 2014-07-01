@@ -38,6 +38,8 @@ MenuItem motionProfile      ("Motion Profile");
 MenuItem saveSettings       ("Save settings");
 MenuItem loadSettings       ("Load settings");
 MenuItem restoreDefaults    ("Restore Defaults");
+MenuItem saveMotorPos       ("Save Mtr Positions");
+MenuItem loadMotorPos       ("Load Mtr Positions");
 MenuItem FreeMem            ("Free Memory");
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -72,6 +74,8 @@ void initializeMenu(void)
   suMenu.add_item(&saveSettings,       &on_saveNonVolatileSettings_selected);
   suMenu.add_item(&loadSettings,       &on_loadNonVolatileSettings_selected);
   suMenu.add_item(&restoreDefaults,    &on_restoreNonVolatileSettings_selected);
+  suMenu.add_item(&saveMotorPos,       &on_saveMotorPositions_selected);
+  suMenu.add_item(&loadMotorPos,       &on_loadMotorPositions_selected);
   suMenu.add_item(&FreeMem,            &on_FreeMem_selected);
 
 //Root menu (always last)  

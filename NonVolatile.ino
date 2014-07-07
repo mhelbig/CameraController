@@ -8,6 +8,10 @@ int cameraRecoveryTimeSettingAddress  = EEPROM.getAddress(sizeof(int));
 int motorSettleTimeSettingAddress     = EEPROM.getAddress(sizeof(int));
 int videoFramesPerSecondIndexAddress  = EEPROM.getAddress(sizeof(int));
 int selectedMotionProfileIndexAddress = EEPROM.getAddress(sizeof(int));
+int selectedXmotorInvertIndexAddress  = EEPROM.getAddress(sizeof(int));
+int selectedYmotorInvertIndexAddress  = EEPROM.getAddress(sizeof(int));
+int selectedZmotorInvertIndexAddress  = EEPROM.getAddress(sizeof(int));
+int selectedDmotorInvertIndexAddress  = EEPROM.getAddress(sizeof(int));
 
 //motor position values to optionally store:
 int numberOfTransitionsAddress        = EEPROM.getAddress(sizeof(int));
@@ -26,6 +30,11 @@ void saveNonVolatileSettings(void)
   EEPROM.writeInt(videoFramesPerSecondIndexAddress,   videoFramesPerSecondIndex);
   EEPROM.writeInt(motorSettleTimeSettingAddress,      motorSettleTimeSetting);
   EEPROM.writeInt(selectedMotionProfileIndexAddress,  selectedMotionProfileIndex);
+  
+  EEPROM.writeInt(selectedXmotorInvertIndexAddress,   selectedXmotorInvertIndex);  
+  EEPROM.writeInt(selectedYmotorInvertIndexAddress,   selectedYmotorInvertIndex);  
+  EEPROM.writeInt(selectedZmotorInvertIndexAddress,   selectedZmotorInvertIndex);  
+  EEPROM.writeInt(selectedDmotorInvertIndexAddress,   selectedDmotorInvertIndex);  
 }
 
 void loadNonVolatileSettings(void)
@@ -37,6 +46,11 @@ void loadNonVolatileSettings(void)
   videoFramesPerSecondIndex   = EEPROM.readInt(videoFramesPerSecondIndexAddress);
   motorSettleTimeSetting      = EEPROM.readInt(motorSettleTimeSettingAddress);
   selectedMotionProfileIndex  = EEPROM.readInt(selectedMotionProfileIndexAddress);
+
+  selectedXmotorInvertIndex   = EEPROM.readInt(selectedXmotorInvertIndexAddress);
+  selectedYmotorInvertIndex   = EEPROM.readInt(selectedYmotorInvertIndexAddress);
+  selectedZmotorInvertIndex   = EEPROM.readInt(selectedZmotorInvertIndexAddress);
+  selectedDmotorInvertIndex   = EEPROM.readInt(selectedDmotorInvertIndexAddress);
 }
 
 void restoreDefaultSettings(void)
@@ -48,6 +62,10 @@ void restoreDefaultSettings(void)
   motorSettleTimeSetting      = 250;
   videoFramesPerSecondIndex   = 2;
   selectedMotionProfileIndex  = 2;
+  selectedXmotorInvertIndex   = 0;
+  selectedYmotorInvertIndex   = 0;
+  selectedZmotorInvertIndex   = 0;
+  selectedDmotorInvertIndex   = 0;
 }
 
 void saveMotorPositions(void)

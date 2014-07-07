@@ -33,6 +33,10 @@ int cameraRecoveryTimeSetting;
 int motorSettleTimeSetting;
 int videoFramesPerSecondIndex;
 int selectedMotionProfileIndex;
+int selectedXmotorInvertIndex;
+int selectedYmotorInvertIndex;
+int selectedZmotorInvertIndex;
+int selectedDmotorInvertIndex;
 
 struct enumeratedMenuList
 {
@@ -46,6 +50,12 @@ enumeratedMenuList framesPerSecondList[]=
   { " 60" ,60},
   { " 30" ,30},
   { " 24" ,24}
+};
+
+enumeratedMenuList motorInvertList[]=
+{
+  { "Normal" ,1},
+  { "Invert" ,-1}
 };
 
 enumeratedMenuList motionProfileList[]=

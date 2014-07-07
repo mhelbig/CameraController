@@ -112,7 +112,7 @@ int maxMotorLag(void)
 
 void updateMotorPositions(void)
 {
-  motorX.moveTo((long)XmotorPosition);
+  motorX.moveTo((long)XmotorPosition * motorInvertList[selectedXmotorInvertIndex].value);
   if (stepperMotorDriverEnableState == true)
   {
     digitalWrite(X_ENABLE_PIN, false );  // turn the motor drivers on anytime they're enabled
@@ -122,7 +122,7 @@ void updateMotorPositions(void)
     digitalWrite(X_ENABLE_PIN, true ); // only turn them off when they've finished their move
   }
  
-  motorY.moveTo((long)YmotorPosition);
+  motorY.moveTo((long)YmotorPosition * motorInvertList[selectedYmotorInvertIndex].value);
   if (stepperMotorDriverEnableState == true)
   {
     digitalWrite(Y_ENABLE_PIN, false );  // turn the motor drivers on anytime they're enabled
@@ -132,7 +132,7 @@ void updateMotorPositions(void)
     digitalWrite(Y_ENABLE_PIN, true ); // only turn them off when they've finished their move
   }
 
-  motorZ.moveTo((long)ZmotorPosition);
+  motorZ.moveTo((long)ZmotorPosition * motorInvertList[selectedZmotorInvertIndex].value);
   if (stepperMotorDriverEnableState == true)
   {
     digitalWrite(Z_ENABLE_PIN, false );  // turn the motor drivers on anytime they're enabled
@@ -142,7 +142,7 @@ void updateMotorPositions(void)
     digitalWrite(Z_ENABLE_PIN, true ); // only turn them off when they've finished their move
   }
 
-  motorD.moveTo((long)DmotorPosition);
+  motorD.moveTo((long)DmotorPosition * motorInvertList[selectedDmotorInvertIndex].value);
   if (stepperMotorDriverEnableState == true)
   {
     digitalWrite(D_ENABLE_PIN, false );  // turn the motor drivers on anytime they're enabled

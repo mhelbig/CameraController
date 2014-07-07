@@ -142,10 +142,10 @@ void on_set_videoTime_selected(MenuItem* p_menu_item)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-// Set Positions
+// Set Pan and Tilt positions
 /////////////////////////////////////////////////////////////////////////////////
 
-void on_setPositions_selected(MenuItem* p_menu_item)
+void on_setPanTilt_selected(MenuItem* p_menu_item)
 {
   static boolean waitForJoystickToBeCentered;
   
@@ -200,6 +200,64 @@ void on_setPositions_selected(MenuItem* p_menu_item)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
+// Set Zoom and Dolly positions
+/////////////////////////////////////////////////////////////////////////////////
+
+void on_setZoomDolly_selected(MenuItem* p_menu_item)
+{
+  static boolean waitForJoystickToBeCentered;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    setMotorDriverEnables(true);
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(0,3);
+    lcd.print("@ transition ");
+    lcd.print(currentTransitionSelected);
+    
+    ZmotorPosition = ZmotorSplinePoints_y[currentTransitionSelected]; // get the current position from the array
+    DmotorPosition = DmotorSplinePoints_y[currentTransitionSelected];
+    
+    waitForJoystickToBeCentered = 1;   // flag that stops the joystick shift from messing up the motor positions
+  }
+
+  // callback function main:
+  if(waitForJoystickToBeCentered)  // this keep the joystick being shifted as we enter the menu from messing with the motor postion
+  {
+    if(nunchuk.analogDisplacementX == 0) waitForJoystickToBeCentered = 0;
+    return;
+  }
+
+  if(adjustMotorPositions(&DmotorPosition, &ZmotorPosition))
+  {
+    lcd.setCursor(0,1);
+    lcd.print("                    ");
+    lcd.setCursor(0,1);
+    lcd.print("D:");
+    lcd.print(round(DmotorPosition));
+    lcd.setCursor(10,1);
+    lcd.print("Z:");
+    lcd.print(round(ZmotorPosition));
+  }
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    setMotorDriverEnables(false);
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'Z')  // if Z is pressed save the new values back into the motor array
+    {
+      ZmotorSplinePoints_y[currentTransitionSelected] = round(ZmotorPosition);
+      DmotorSplinePoints_y[currentTransitionSelected] = round(DmotorPosition);
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 // Add Transition
 /////////////////////////////////////////////////////////////////////////////////
 void on_addTransition_selected(MenuItem* p_menu_item)
@@ -228,7 +286,8 @@ void on_addTransition_selected(MenuItem* p_menu_item)
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'z')
   {
     ms.deselect_set_menu_item();
-    ms.prev();  // move the user back to the position menu so they can set the next position
+    ms.prev();  // move the user back to the pan/tilt menu so they can set the next position
+    ms.prev();
     displayMenu();
 
     if(nunchuk.userInput == 'z')  // if Z is held we add another spot for a transition

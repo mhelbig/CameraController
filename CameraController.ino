@@ -95,6 +95,14 @@ Spline YmotorSpline;
 float YmotorSplinePoints_y[MAX_NUMBER_OF_TRANSITIONS + 2] = {0,0,0,0,0,0,0};           // motor positions
 float YmotorPosition = 0;
 
+Spline ZmotorSpline;
+float ZmotorSplinePoints_y[MAX_NUMBER_OF_TRANSITIONS + 2] = {0,0,0,0,0,0,0};           // motor positions
+float ZmotorPosition = 0;
+
+Spline DmotorSpline;
+float DmotorSplinePoints_y[MAX_NUMBER_OF_TRANSITIONS + 2] = {0,0,0,0,0,0,0};           // motor positions
+float DmotorPosition = 0;
+
 void setup()
 {
   Serial.begin(9600);

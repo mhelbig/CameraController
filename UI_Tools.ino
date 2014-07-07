@@ -1,4 +1,4 @@
-#define UI_THROTTLE_TIME 100
+#define UI_THROTTLE_TIME 50
 
 /////////////////////////////////////////////////////////////////////////////////
 // Function to read the joystick positions as digital and adjust an integer value on the lcd display
@@ -31,12 +31,12 @@ boolean adjustMotorPositions(float *Xvalue, float *Yvalue)
   *Xvalue = *Xvalue + (
   pow( (float)nunchuk.analogDisplacementX, 2)
     * (float)nunchuk.analogDirectionX
-    / 40);     // fudge factor - adjust this value to affect the overall responsiveness
+    / 80);     // fudge factor - adjust this value to affect the overall responsiveness
 
   *Yvalue = *Yvalue + (
   pow( (float)nunchuk.analogDisplacementY, 2)
     * (float)nunchuk.analogDirectionY
-    / 40);     // fudge factor - adjust this value to affect the overall responsiveness
+    / 80);     // fudge factor - adjust this value to affect the overall responsiveness
 
   return (true); // this flag synchronizes display updates with the uiThrottle
 }
@@ -67,7 +67,7 @@ boolean adjustAnalogValue(float *value, long min, long max, boolean adjustRateFo
     * (float)nunchuk.analogDirectionY
     * timeAdjust
     * coarseAdjust
-    / 20000);     // fudge factor - adjust this value to affect the overall responsiveness
+    / 40000);     // fudge factor - adjust this value to affect the overall responsiveness
 
   if(*value > max) *value = max;
   if(*value < min) *value = min;

@@ -181,14 +181,24 @@ void displayXYmotorPositions(void)
   lcd.print("Y: ");
   lcd.print(round(YmotorPosition));
   lcd.print("  ");
+
+  lcd.setCursor(1,2);
+  lcd.print("Z: ");
+  lcd.print(round(ZmotorPosition));
+  lcd.print("  ");
+
+  lcd.setCursor(10,2);
+  lcd.print("D: ");
+  lcd.print(round(DmotorPosition));
+  lcd.print("  ");
 }
 
-void displayVideoTime(float frame)
+/*void displayVideoTime(float frame)
 {
-  lcd.setCursor(1,2);
-  lcd.print("Video time:");
+  lcd.setCursor(1,3);
   displayAsDDHHMMSS(round(frame / framesPerSecondList[videoFramesPerSecondIndex].value));
 }
+*/
 
 void displayFrameNumber(float frame, float numberOfFrames)
 {

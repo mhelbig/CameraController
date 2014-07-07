@@ -1,3 +1,4 @@
+// Define the pins used by the motors and thier drivers
 #define X_STEP_PIN         54
 #define X_DIR_PIN          55
 #define X_ENABLE_PIN       38
@@ -14,11 +15,12 @@
 #define D_DIR_PIN          28
 #define D_ENABLE_PIN       24
 
-// Define the steppers and the pins they will use
 AccelStepper motorX(AccelStepper::DRIVER,X_STEP_PIN,X_DIR_PIN);
 AccelStepper motorY(AccelStepper::DRIVER,Y_STEP_PIN,Y_DIR_PIN);
 AccelStepper motorZ(AccelStepper::DRIVER,Z_STEP_PIN,Z_DIR_PIN);
 AccelStepper motorD(AccelStepper::DRIVER,D_STEP_PIN,D_DIR_PIN);
+
+#define MOTOR_LAGGING_THRESHOLD 10  // Motors are considered lagging if they are behind this many steps
 
 boolean stepperMotorDriverEnableState;
 
@@ -88,9 +90,24 @@ boolean motorsAreRunning(void)
   if (motorX.distanceToGo() != 0 ||
       motorY.distanceToGo() != 0 ||
       motorZ.distanceToGo() != 0 ||
-      motorD.distanceToGo() != 0)
+      motorD.distanceToGo() != 0   )
   return (true);
   else return (false);
+}
+
+int maxMotorLag(void)
+{
+  int xLag = abs(motorX.distanceToGo());
+  int yLag = abs(motorY.distanceToGo());
+  int zLag = abs(motorZ.distanceToGo());
+  int dLag = abs(motorD.distanceToGo());
+  int maxLag = 1;
+
+  maxLag = max(maxLag, xLag);
+  maxLag = max(maxLag, yLag);
+  maxLag = max(maxLag, zLag);
+  maxLag = max(maxLag, dLag);
+  return(maxLag);  
 }
 
 void updateMotorPositions(void)

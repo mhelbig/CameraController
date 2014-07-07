@@ -69,6 +69,39 @@ void on_shutterButtonTime_selected(MenuItem* p_menu_item)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
+// Post-shoot Time Delay
+/////////////////////////////////////////////////////////////////////////////////
+void on_postShootTimeDelay_selected(MenuItem* p_menu_item)
+{
+  static long tempPostShootTimeDelaySetting;
+ 
+// callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    tempPostShootTimeDelaySetting = postShootTimeDelaySetting;
+    displaySetHeading();
+    lcd.setCursor(5,2);
+  }  
+  
+// callback function main:
+    adjustIntValue(&postShootTimeDelaySetting,25,500);
+    lcd.setCursor(5,2);
+    lcd.print(postShootTimeDelaySetting);
+    lcd.print("mS ");
+// callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'C')  // if c is pressed, restore the original value
+    {
+      postShootTimeDelaySetting = tempPostShootTimeDelaySetting;
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 // Camera Recovery Time
 /////////////////////////////////////////////////////////////////////////////////
 void on_cameraRecoveryTime_selected(MenuItem* p_menu_item)
@@ -117,7 +150,7 @@ void on_motorSettleTime_Selected(MenuItem* p_menu_item)
   }  
   
 // callback function main:
-    adjustIntValue(&motorSettleTimeSetting,25,500);
+    adjustIntValue(&motorSettleTimeSetting,25,1000);
     lcd.setCursor(5,2);
     lcd.print(motorSettleTimeSetting);
     lcd.print("mS ");

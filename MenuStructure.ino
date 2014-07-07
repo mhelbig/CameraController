@@ -32,6 +32,7 @@ MenuItem pm_autoMode        ("Panograph Auto");
 //Setup menu
 Menu suMenu                 ("Change Settings");
 MenuItem shutterButtonTime  ("Shutter active time");
+MenuItem postShootTimeDelay ("Post Shoot time");
 MenuItem cameraRecoveryTime ("Recovery time");
 MenuItem motorSettleTime    ("Motor settle time");
 MenuItem framesPerSecond    ("Frames/sec");
@@ -70,6 +71,7 @@ void initializeMenu(void)
   mm.add_menu(&suMenu);
   suMenu.add_item(&framesPerSecond,    &on_framesPerSecond_selected);
   suMenu.add_item(&shutterButtonTime,  &on_shutterButtonTime_selected);
+  suMenu.add_item(&postShootTimeDelay, &on_postShootTimeDelay_selected);
   suMenu.add_item(&cameraRecoveryTime, &on_cameraRecoveryTime_selected);
   suMenu.add_item(&motorSettleTime,    &on_motorSettleTime_Selected);
   suMenu.add_item(&motionProfile,      &on_motionProfile_selected);

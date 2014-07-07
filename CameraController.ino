@@ -28,6 +28,7 @@ float startDelayTimeSetting = 0;
 // Non-Volatile Settings:  (initialized values are loaded from EEPROM)
 int selectedExposureIndex;
 int shutterButtonTimeSetting;
+int postShootTimeDelaySetting;
 int cameraRecoveryTimeSetting;
 int motorSettleTimeSetting;
 int videoFramesPerSecondIndex;

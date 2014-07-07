@@ -296,6 +296,8 @@ void on_addTransition_selected(MenuItem* p_menu_item)
       currentTransitionSelected=numberOfTransitions;
       XmotorSplinePoints_y[numberOfTransitions] = XmotorSplinePoints_y[numberOfTransitions-1];
       YmotorSplinePoints_y[numberOfTransitions] = YmotorSplinePoints_y[numberOfTransitions-1];
+      ZmotorSplinePoints_y[numberOfTransitions] = ZmotorSplinePoints_y[numberOfTransitions-1];
+      DmotorSplinePoints_y[numberOfTransitions] = DmotorSplinePoints_y[numberOfTransitions-1];
       frameNumber[numberOfTransitions] = frameNumber[numberOfTransitions-1] + 300;
       
     }
@@ -362,7 +364,8 @@ void on_set_shootTime_selected(MenuItem* p_menu_item)
     displaySetHeading();
     
     tempShootTimeSetting = shootTimeSetting;  // save a copy of the current setting in case we cancel
-    minimumShootTime = (cameraExposureTime[selectedExposureIndex].value 
+    minimumShootTime = (cameraExposureTime[selectedExposureIndex].value
+                        + postShootTimeDelaySetting
                         + cameraRecoveryTimeSetting 
                         + motorSettleTimeSetting)
                         *frameNumber[numberOfTransitions]/1000;
@@ -425,7 +428,7 @@ void on_dryRun_selected (MenuItem* p_menu_item)
     updateMotorPositions();
     
     displayXYmotorPositions();
-    displayVideoTime(frame);
+//    displayVideoTime(frame);
     displayFrameNumber(frame,frameNumber[numberOfTransitions]);
   }
 
@@ -546,7 +549,7 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
       {
         lcd.setCursor(0,1);
         lcd.print("Starting in:       ");
-        generalPurposeTimer.init(startDelayTimeSetting);
+        generalPurposeTimer.init(startDelayTimeSetting+500);  // Add a half second to allow for the focus button to process
         mode = waitStartDelay;
       }
       break;
@@ -563,11 +566,12 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
         lcd.setCursor(0,3);
         lcd.print("                    ");
         intervalTimer.init(intervalTime);    // start the interval time
-        generalPurposeTimer.init(shutterButtonTimeSetting);
+        generalPurposeTimer.init(shutterButtonTimeSetting + postShootTimeDelaySetting);
 
-        lcd.setCursor(19,3);
-        lcd.print("S");
-        pressFocusButton();
+        if(generalPurposeTimer.remaining() < 250);
+        {
+          pressFocusButton();
+        }
         mode = shootFrame;
       }
       break;  
@@ -596,9 +600,9 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
       }
       else
       {
-        lcd.setCursor(13,3);
-        lcd.print(((exposureTimer.remaining()+motorSettleTimer.remaining())/1000)+1);
-        lcd.print("s  ");
+        lcd.setCursor(15,3);
+        lcd.print(((intervalTimer.remaining())/1000)+1);
+        lcd.print("s ");
         Serial.print(".");
       }        
       break;
@@ -606,24 +610,30 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
 //      Serial.println("waitMotorSettleTime");
       if(motorSettleTimer.expired())
       {
+        lcd.setCursor(19,3);
+        lcd.print("I");
         mode = incrementFrame;
       }
+      else
+      {
+        lcd.setCursor(15,3);
+        lcd.print(((intervalTimer.remaining())/1000)+1);
+        lcd.print("s ");
+        Serial.print(".");
+      }        
       break;
     case incrementFrame:
-//      Serial.println("incrementFrame:");
       frame ++;
       if(frame > frameNumber[numberOfTransitions]) mode = sequenceFinished;
       else mode = moveMotorsToPosition;
       break;
     case moveMotorsToPosition:
-//      Serial.println("moveMotorsToPosition:");
       setMotorDriverEnables(true);
       lookupMotorSplinePosition(frame);
       updateMotorPositions();
       setMotorDriverEnables(false);
       mode = waitIntervalTime;
       displayXYmotorPositions();
-      displayVideoTime(frame);
       displayFrameNumber(frame,frameNumber[numberOfTransitions]);
       break;
     case waitIntervalTime:
@@ -637,7 +647,7 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
       }
       else
       {
-        lcd.setCursor(13,3);
+        lcd.setCursor(15,3);
         lcd.print((intervalTimer.remaining()/1000)+1);
         lcd.print("s ");
       }        

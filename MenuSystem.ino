@@ -12,11 +12,11 @@ void navigationHandler()
    if(nunchuk.userInput == 'I')
        lcd.setBacklight(false);
 
-  if(ms.menu_item_is_selected())
+  if(ms.menu_item_is_selected())  // jump right into the active menu
   {
     ms.select(0);
   }
-  else
+  else                             // if no menu active, let the user choose one
   {
     switch (nunchuk.userInput)
     {

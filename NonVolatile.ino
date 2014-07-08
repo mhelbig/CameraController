@@ -1,6 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////
-// initialize EEPROM NonVolatile Storage Addresses
+// assign EEPROM NonVolatile Storage Addresses
 /////////////////////////////////////////////////////////////////////////////////
+// Setup menu parameters:
 int selectedExposureIndexAddress      = EEPROM.getAddress(sizeof(int));
 int shutterButtonTimeSettingAddress   = EEPROM.getAddress(sizeof(int));
 int postShootTimeDelaySettingAddress  = EEPROM.getAddress(sizeof(int));
@@ -21,6 +22,9 @@ int YmotorSplinePointsAddress         = EEPROM.getAddress(sizeof(float) * (MAX_N
 int ZmotorSplinePointsAddress         = EEPROM.getAddress(sizeof(float) * (MAX_NUMBER_OF_TRANSITIONS + 2));
 int DmotorSplinePointsAddress         = EEPROM.getAddress(sizeof(float) * (MAX_NUMBER_OF_TRANSITIONS + 2));
 
+/////////////////////////////////////////////////////////////////////////////////
+// Save Settings
+/////////////////////////////////////////////////////////////////////////////////
 void saveNonVolatileSettings(void)
 {
   EEPROM.writeInt(selectedExposureIndexAddress,       selectedExposureIndex);
@@ -37,6 +41,9 @@ void saveNonVolatileSettings(void)
   EEPROM.writeInt(selectedDmotorInvertIndexAddress,   selectedDmotorInvertIndex);  
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+// Load Settings
+/////////////////////////////////////////////////////////////////////////////////
 void loadNonVolatileSettings(void)
 {
   selectedExposureIndex       = EEPROM.readInt(selectedExposureIndexAddress);
@@ -53,6 +60,9 @@ void loadNonVolatileSettings(void)
   selectedDmotorInvertIndex   = EEPROM.readInt(selectedDmotorInvertIndexAddress);
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+// Restore Default Settings
+/////////////////////////////////////////////////////////////////////////////////
 void restoreDefaultSettings(void)
 {
   selectedExposureIndex       = 5;
@@ -68,6 +78,9 @@ void restoreDefaultSettings(void)
   selectedDmotorInvertIndex   = 0;
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+// Save motor position arrays
+/////////////////////////////////////////////////////////////////////////////////
 void saveMotorPositions(void)
 {
   EEPROM.writeInt  (numberOfTransitionsAddress, numberOfTransitions);
@@ -78,6 +91,9 @@ void saveMotorPositions(void)
   EEPROM.writeBlock(DmotorSplinePointsAddress,  DmotorSplinePoints_y, MAX_NUMBER_OF_TRANSITIONS + 2);
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+// Load motor position arrays
+/////////////////////////////////////////////////////////////////////////////////
 void loadMotorPositions(void)
 {
   numberOfTransitions  = EEPROM.readInt(numberOfTransitionsAddress);

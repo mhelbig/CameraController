@@ -15,6 +15,7 @@
 #define D_DIR_PIN          28
 #define D_ENABLE_PIN       24
 
+// Setup the motor drivers
 AccelStepper motorX(AccelStepper::DRIVER,X_STEP_PIN,X_DIR_PIN);
 AccelStepper motorY(AccelStepper::DRIVER,Y_STEP_PIN,Y_DIR_PIN);
 AccelStepper motorZ(AccelStepper::DRIVER,Z_STEP_PIN,Z_DIR_PIN);
@@ -24,6 +25,9 @@ AccelStepper motorD(AccelStepper::DRIVER,D_STEP_PIN,D_DIR_PIN);
 
 boolean stepperMotorDriverEnableState;
 
+/////////////////////////////////////////////////////////////////////////////////
+// Initialize Steppers
+/////////////////////////////////////////////////////////////////////////////////
 void initializeSteppers()
 {
   pinMode(X_STEP_PIN, OUTPUT);
@@ -57,6 +61,9 @@ void initializeSteppers()
   Serial.println("Stepper motors initialized");
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+// Initialize Stepper Timer Interrupt Service Routine
+/////////////////////////////////////////////////////////////////////////////////
 void initializeStepperTimerISR(void)
 {
   Timer3.initialize(250);         // initialize timer3 to 4KHz
@@ -64,6 +71,9 @@ void initializeStepperTimerISR(void)
   Serial.println("Stepper Interrupt Service Routine Started");
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+// Run Motors Interrupt Service Routine
+/////////////////////////////////////////////////////////////////////////////////
 void _ISRrunSteppers(void)  // stepper motor ISR callback function
 {
   motorX.run();
@@ -72,11 +82,17 @@ void _ISRrunSteppers(void)  // stepper motor ISR callback function
   motorD.run();
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+// Set motor driver enables
+/////////////////////////////////////////////////////////////////////////////////
 void setMotorDriverEnables(boolean state)
 {
   stepperMotorDriverEnableState = state;
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+// Lookup motor positions from spline array
+/////////////////////////////////////////////////////////////////////////////////
 void lookupMotorSplinePosition(float frame)
 {
   XmotorPosition = XmotorSpline.value(frame);
@@ -85,6 +101,9 @@ void lookupMotorSplinePosition(float frame)
   DmotorPosition = DmotorSpline.value(frame);
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+// Motor run status
+/////////////////////////////////////////////////////////////////////////////////
 boolean motorsAreRunning(void)
 {
   if (motorX.distanceToGo() != 0 ||
@@ -95,6 +114,9 @@ boolean motorsAreRunning(void)
   else return (false);
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+// Maximum motor lag
+/////////////////////////////////////////////////////////////////////////////////
 int maxMotorLag(void)
 {
   int xLag = abs(motorX.distanceToGo());
@@ -110,6 +132,9 @@ int maxMotorLag(void)
   return(maxLag);  
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+// Update motor positions
+/////////////////////////////////////////////////////////////////////////////////
 void updateMotorPositions(void)
 {
   motorX.moveTo((long)XmotorPosition * motorInvertList[selectedXmotorInvertIndex].value);
@@ -152,3 +177,4 @@ void updateMotorPositions(void)
     digitalWrite(D_ENABLE_PIN, true ); // only turn them off when they've finished their move
   }
 }
+

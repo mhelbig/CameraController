@@ -427,7 +427,7 @@ void on_dryRun_selected (MenuItem* p_menu_item)
     lookupMotorSplinePosition(frame);
     updateMotorPositions();
     
-    displayXYmotorPositions();
+    displayMotorPositions();
 //    displayVideoTime(frame);
     displayFrameNumber(frame,frameNumber[numberOfTransitions]);
   }
@@ -633,7 +633,7 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
       updateMotorPositions();
       setMotorDriverEnables(false);
       mode = waitIntervalTime;
-      displayXYmotorPositions();
+      displayMotorPositions();
       displayFrameNumber(frame,frameNumber[numberOfTransitions]);
       break;
     case waitIntervalTime:

@@ -193,12 +193,11 @@ void displayXYmotorPositions(void)
   lcd.print("  ");
 }
 
-/*void displayVideoTime(float frame)
+void displayVideoTime(float frame)
 {
   lcd.setCursor(1,3);
   displayAsDDHHMMSS(round(frame / framesPerSecondList[videoFramesPerSecondIndex].value));
 }
-*/
 
 void displayFrameNumber(float frame, float numberOfFrames)
 {
@@ -208,6 +207,13 @@ void displayFrameNumber(float frame, float numberOfFrames)
   lcd.print("/");
   lcd.print(round(numberOfFrames));
   lcd.print(" ");
+}
+
+void displayError(char *errorMessage)
+{
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print(errorMessage);
 }
 
 /////////////////////////////////////////////////////////////////////////////////

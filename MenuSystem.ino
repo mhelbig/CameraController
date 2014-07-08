@@ -38,6 +38,9 @@ void navigationHandler()
       if(ms.select())
         displayMenu();
       break;
+    case 'E': // error condition
+      displayError("Nunchuk not detected");
+      while(1);  //Freeze here forever until we find a way to hot restart the Nunchuk device
     case 'C': // Not assigned - used inside menus for cancelling last adjustment
       break;
     case 'Z': // Not assigned - used inside menus for accepting last adjustment

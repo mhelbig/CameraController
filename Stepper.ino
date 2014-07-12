@@ -23,8 +23,6 @@ AccelStepper motorD(AccelStepper::DRIVER,D_STEP_PIN,D_DIR_PIN);
 
 #define MOTOR_LAGGING_THRESHOLD 10  // Motors are considered lagging if they are behind this many steps
 
-boolean stepperMotorDriverEnableState;
-
 /////////////////////////////////////////////////////////////////////////////////
 // Initialize Steppers
 /////////////////////////////////////////////////////////////////////////////////
@@ -83,11 +81,14 @@ void _ISRrunSteppers(void)  // stepper motor ISR callback function
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-// Set motor driver enables
+// Enable motor drivers
 /////////////////////////////////////////////////////////////////////////////////
-void setMotorDriverEnables(boolean state)
+void enableMotorDrivers(void)
 {
-  stepperMotorDriverEnableState = state;
+  digitalWrite(X_ENABLE_PIN, false );
+  digitalWrite(Y_ENABLE_PIN, false );
+  digitalWrite(Z_ENABLE_PIN, false );
+  digitalWrite(D_ENABLE_PIN, false );
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -137,44 +138,42 @@ int maxMotorLag(void)
 /////////////////////////////////////////////////////////////////////////////////
 void updateMotorPositions(void)
 {
+  static float PreviousXmotorPosition;
+  static float PreviousYmotorPosition;
+  static float PreviousZmotorPosition;
+  static float PreviousDmotorPosition;
+  
+  if (PreviousXmotorPosition != XmotorPosition ||
+      PreviousYmotorPosition != YmotorPosition ||
+      PreviousZmotorPosition != ZmotorPosition ||
+      PreviousDmotorPosition != DmotorPosition)
+  {
+    enableMotorDrivers();
+  }
+  
   motorX.moveTo((long)XmotorPosition * motorInvertList[selectedXmotorInvertIndex].value);
-  if (stepperMotorDriverEnableState == true)
-  {
-    digitalWrite(X_ENABLE_PIN, false );  // turn the motor drivers on anytime they're enabled
-  }
-  else if (motorX.distanceToGo() == 0)
-  {
-    digitalWrite(X_ENABLE_PIN, true ); // only turn them off when they've finished their move
-  }
- 
   motorY.moveTo((long)YmotorPosition * motorInvertList[selectedYmotorInvertIndex].value);
-  if (stepperMotorDriverEnableState == true)
-  {
-    digitalWrite(Y_ENABLE_PIN, false );  // turn the motor drivers on anytime they're enabled
-  }
-  else if(motorY.distanceToGo() == 0)
-  {
-    digitalWrite(Y_ENABLE_PIN, true ); // only turn them off when they've finished their move
-  }
-
   motorZ.moveTo((long)ZmotorPosition * motorInvertList[selectedZmotorInvertIndex].value);
-  if (stepperMotorDriverEnableState == true)
-  {
-    digitalWrite(Z_ENABLE_PIN, false );  // turn the motor drivers on anytime they're enabled
-  }
-  else if(motorZ.distanceToGo() == 0)
-  {
-    digitalWrite(Z_ENABLE_PIN, true ); // only turn them off when they've finished their move
-  }
-
   motorD.moveTo((long)DmotorPosition * motorInvertList[selectedDmotorInvertIndex].value);
-  if (stepperMotorDriverEnableState == true)
-  {
-    digitalWrite(D_ENABLE_PIN, false );  // turn the motor drivers on anytime they're enabled
-  }
-  else if(motorD.distanceToGo() == 0)
-  {
-    digitalWrite(D_ENABLE_PIN, true ); // only turn them off when they've finished their move
-  }
+  
+  PreviousXmotorPosition = XmotorPosition;
+  PreviousYmotorPosition = YmotorPosition;
+  PreviousZmotorPosition = ZmotorPosition;
+  PreviousDmotorPosition = DmotorPosition;
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// Process motor driver enable lines
+/////////////////////////////////////////////////////////////////////////////////
+void processMotorDriverEnables(void)
+{
+  if (motorX.distanceToGo() == 0)  // turn each motor driver off when they've finished their move
+    digitalWrite(X_ENABLE_PIN, true ); 
+  if(motorY.distanceToGo() == 0)
+    digitalWrite(Y_ENABLE_PIN, true );
+  if(motorZ.distanceToGo() == 0)
+    digitalWrite(Z_ENABLE_PIN, true );
+  if(motorD.distanceToGo() == 0)
+    digitalWrite(D_ENABLE_PIN, true );
 }
 

@@ -27,6 +27,7 @@ float startDelayTimeSetting = 0;
 
 // Non-Volatile Settings:  (initialized values are loaded from EEPROM)
 int selectedExposureIndex;
+int lensDefoggerModeIndex;
 int shutterButtonTimeSetting;
 int postShootTimeDelaySetting;
 int cameraRecoveryTimeSetting;
@@ -46,6 +47,13 @@ struct enumeratedMenuList
 {
   char menuText[21];
   int value;
+};
+
+enumeratedMenuList lensDefoggerModeList[]=
+{
+  { "Always Off     " ,0},  // Never turn on the defogger
+  { "Always On      " ,1},  // Always have on the defogger
+  { "On During Shoot" ,2}   // Only turn on the defogger during the shoot sequence
 };
 
 enumeratedMenuList framesPerSecondList[]=
@@ -96,7 +104,7 @@ enumeratedMenuList cameraExposureTime[]=
   { "      0.4"   ,400},
   { "      0.3"   ,300},
   { "      1/4"   ,250},
-  { "Under 1/4"     ,0}
+  { "Under 1/4"   ,200}
 };
 
 //motor control and spline variables:
@@ -131,6 +139,7 @@ void setup()
   initializeSteppers();
   initializeStepperTimerISR();
   initializeSplines();
+  initializeLensDefogger();
 
   Serial.print("Free memory = "); 
   Serial.println(freeMemory());
@@ -142,6 +151,7 @@ void loop()
 {
   navigationHandler();
   updateMotorPositions();
+  processMotorDriverEnables();
 //  cycleTime = micros();
 
 //  Serial.println(micros()-cycleTime);

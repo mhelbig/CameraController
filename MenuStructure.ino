@@ -33,11 +33,12 @@ MenuItem pm_autoMode        ("Panograph Auto");
 
 //Setup menu
 Menu suMenu                 ("Change Settings");
+MenuItem lensDefoggerMode   ("Lens defogger mode");
+MenuItem framesPerSecond    ("Frames/sec");
 MenuItem shutterButtonTime  ("Shutter active time");
 MenuItem postShootTimeDelay ("Post Shoot time");
 MenuItem cameraRecoveryTime ("Recovery time");
 MenuItem motorSettleTime    ("Motor settle time");
-MenuItem framesPerSecond    ("Frames/sec");
 MenuItem motionProfile      ("Motion Profile");
 MenuItem XmotorInvert       ("X motor Invert");
 MenuItem YmotorInvert       ("Y motor Invert");
@@ -77,6 +78,7 @@ void initializeMenu(void)
 
 //Setup menu
   mm.add_menu(&suMenu);
+  suMenu.add_item(&lensDefoggerMode,   &on_lensDefoggerMode_selected);
   suMenu.add_item(&framesPerSecond,    &on_framesPerSecond_selected);
   suMenu.add_item(&shutterButtonTime,  &on_shutterButtonTime_selected);
   suMenu.add_item(&postShootTimeDelay, &on_postShootTimeDelay_selected);

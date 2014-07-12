@@ -1,4 +1,41 @@
 /////////////////////////////////////////////////////////////////////////////////
+// Lens defogger mode
+/////////////////////////////////////////////////////////////////////////////////
+void on_lensDefoggerMode_selected(MenuItem* p_menu_item)
+{
+  static int tempEnumIndex;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    tempEnumIndex = lensDefoggerModeIndex;
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(5,2);
+    lcd.print(lensDefoggerModeList[tempEnumIndex].menuText);
+  }
+
+  // callback function main:
+  if(selectEnumeratedValue(&tempEnumIndex,(sizeof(lensDefoggerModeList)/sizeof(lensDefoggerModeList[0]))))
+    {
+      lcd.setCursor(5,2);
+      lcd.print(lensDefoggerModeList[tempEnumIndex].menuText);
+    }
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
+    {
+      lensDefoggerModeIndex = tempEnumIndex;
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 // Frames Per Second
 /////////////////////////////////////////////////////////////////////////////////
 void on_framesPerSecond_selected(MenuItem* p_menu_item)
@@ -457,16 +494,14 @@ void on_saveMotorPositions_selected(MenuItem* p_menu_item)
     lcd.setCursor(0,3);
     lcd.print("Press C to cancel");
 
-    setMotorDriverEnables(true);
     initializeSplines();
-    lookupMotorSplinePosition(0);
+    lookupMotorSplinePosition(0);  // move all the motors back to their starting reference positions
     updateMotorPositions();
   }
 
   // callback function main:
-  if(motorsAreRunning()) return;  //wait until the motors reach the home position
+  if(motorsAreRunning()) return;  //wait until the motors get back
  
-  setMotorDriverEnables(false);
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'z')
   {

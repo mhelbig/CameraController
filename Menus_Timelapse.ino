@@ -12,7 +12,6 @@ void on_calZoomDollyMin_selected(MenuItem* p_menu_item)
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
-    setMotorDriverEnables(true);
     lcd.clear();
     displaySetHeading();
     lcd.setCursor(0,2);
@@ -30,7 +29,7 @@ void on_calZoomDollyMin_selected(MenuItem* p_menu_item)
   }
 
   // callback function main:
-  if(waitForJoystickToBeCentered)  // this keep the joystick being shifted as we enter the menu from messing with the motor postion
+  if(waitForJoystickToBeCentered)  // this keeps the joystick being shifted as we enter the menu from messing with the motor postion
   {
     if(nunchuk.analogDisplacementX == 0) waitForJoystickToBeCentered--;
     return;
@@ -54,7 +53,6 @@ void on_calZoomDollyMin_selected(MenuItem* p_menu_item)
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
-    setMotorDriverEnables(false);
     ms.deselect_set_menu_item();
     displayMenu();
 
@@ -80,7 +78,6 @@ void on_calZoomDollyMax_selected(MenuItem* p_menu_item)
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
-    setMotorDriverEnables(true);
     lcd.clear();
     displaySetHeading();
     lcd.setCursor(0,2);
@@ -121,7 +118,6 @@ void on_calZoomDollyMax_selected(MenuItem* p_menu_item)
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
-    setMotorDriverEnables(false);
     ms.deselect_set_menu_item();
     displayMenu();
 
@@ -287,7 +283,6 @@ void on_setPanTilt_selected(MenuItem* p_menu_item)
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
-    setMotorDriverEnables(true);
     lcd.clear();
     displaySetHeading();
     lcd.setCursor(0,3);
@@ -322,7 +317,6 @@ void on_setPanTilt_selected(MenuItem* p_menu_item)
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
-    setMotorDriverEnables(false);
     ms.deselect_set_menu_item();
     displayMenu();
 
@@ -345,7 +339,6 @@ void on_setZoomDolly_selected(MenuItem* p_menu_item)
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
   {
-    setMotorDriverEnables(true);
     lcd.clear();
     displaySetHeading();
     lcd.setCursor(0,3);
@@ -380,7 +373,6 @@ void on_setZoomDolly_selected(MenuItem* p_menu_item)
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
-    setMotorDriverEnables(false);
     ms.deselect_set_menu_item();
     displayMenu();
 
@@ -550,7 +542,6 @@ void on_dryRun_selected (MenuItem* p_menu_item)
       displayMenu();
       return;
     }
-    setMotorDriverEnables(true);
     lcd.clear();
     displaySetHeading();
     initializeSplines();
@@ -570,7 +561,6 @@ void on_dryRun_selected (MenuItem* p_menu_item)
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
-    setMotorDriverEnables(false);
     ms.deselect_set_menu_item();
     displayMenu();
   }
@@ -656,10 +646,12 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
     }
     frame = 0;
     intervalTime = (shootTimeSetting / frameNumber[numberOfTransitions] * 1000);
-    setMotorDriverEnables(true);
     initializeSplines();
     lookupMotorSplinePosition(frame);
     updateMotorPositions();
+    
+    if(lensDefoggerModeList[lensDefoggerModeIndex].value == 2)
+      setLensDefoggerState(true);
 
     displaySetHeading();
     lcd.setCursor(0,1);
@@ -763,10 +755,8 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
       else mode = moveMotorsToPosition;
       break;
     case moveMotorsToPosition:
-      setMotorDriverEnables(true);
       lookupMotorSplinePosition(frame);
       updateMotorPositions();
-      setMotorDriverEnables(false);
       mode = waitIntervalTime;
       displayMotorPositions();
       displayFrameNumber(frame,frameNumber[numberOfTransitions]);
@@ -788,18 +778,19 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
       }        
       break;
     case sequenceFinished:
-//      Serial.println("sequence finished");
       releaseFocusButton();
-      setMotorDriverEnables(false);
+      if(lensDefoggerModeList[lensDefoggerModeIndex].value == 2)
+        setLensDefoggerState(false);
       break;
   }
- 
 
 // callback function "destructor"
   if(nunchuk.userInput == 'C')
   {
-    setMotorDriverEnables(false);
     releaseFocusButton();
+    if(lensDefoggerModeList[lensDefoggerModeIndex].value == 2)
+      setLensDefoggerState(false);
+
     ms.deselect_set_menu_item();
     displayMenu();
   }

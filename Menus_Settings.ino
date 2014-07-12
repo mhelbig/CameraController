@@ -1,4 +1,69 @@
 /////////////////////////////////////////////////////////////////////////////////
+// Load motor positions
+/////////////////////////////////////////////////////////////////////////////////
+void on_loadMotorPositions_selected(MenuItem* p_menu_item)
+{
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    displaySetHeading();
+    lcd.setCursor(0,2);
+    lcd.print("Hold Z to load");
+    lcd.setCursor(0,3);
+    lcd.print("Press C to cancel");
+  }
+
+  // callback function main:
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'z')  // if Z is held we do the deed
+    {
+      loadMotorPositions();
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// Save motor positions
+/////////////////////////////////////////////////////////////////////////////////
+void on_saveMotorPositions_selected(MenuItem* p_menu_item)
+{
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    displaySetHeading();
+    lcd.setCursor(0,2);
+    lcd.print("Hold Z to save");
+    lcd.setCursor(0,3);
+    lcd.print("Press C to cancel");
+
+    initializeSplines();
+    lookupMotorSplinePosition(0);  // move all the motors back to their starting reference positions
+    updateMotorPositions();
+  }
+
+  // callback function main:
+  if(motorsAreRunning()) return;  //wait until the motors get back
+ 
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'z')  // if Z is held we do the deed
+    {
+      saveMotorPositions();
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 // Lens defogger mode
 /////////////////////////////////////////////////////////////////////////////////
 void on_lensDefoggerMode_selected(MenuItem* p_menu_item)
@@ -475,72 +540,6 @@ void on_restoreNonVolatileSettings_selected(MenuItem* p_menu_item)
     if(nunchuk.userInput == 'z')  // if Z is held we do the deed
     {
       restoreDefaultSettings();
-    }
-  }
-}
-
-
-/////////////////////////////////////////////////////////////////////////////////
-// Save motor positions
-/////////////////////////////////////////////////////////////////////////////////
-void on_saveMotorPositions_selected(MenuItem* p_menu_item)
-{
-  // callback function "constructor"
-  if (ms.menu_item_was_just_selected())
-  {
-    displaySetHeading();
-    lcd.setCursor(0,2);
-    lcd.print("Hold Z to save");
-    lcd.setCursor(0,3);
-    lcd.print("Press C to cancel");
-
-    initializeSplines();
-    lookupMotorSplinePosition(0);  // move all the motors back to their starting reference positions
-    updateMotorPositions();
-  }
-
-  // callback function main:
-  if(motorsAreRunning()) return;  //wait until the motors get back
- 
-  // callback function "destructor"
-  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'z')
-  {
-    ms.deselect_set_menu_item();
-    displayMenu();
-
-    if(nunchuk.userInput == 'z')  // if Z is held we do the deed
-    {
-      saveMotorPositions();
-    }
-  }
-}
-
-/////////////////////////////////////////////////////////////////////////////////
-// Load motor positions
-/////////////////////////////////////////////////////////////////////////////////
-void on_loadMotorPositions_selected(MenuItem* p_menu_item)
-{
-  // callback function "constructor"
-  if (ms.menu_item_was_just_selected())
-  {
-    displaySetHeading();
-    lcd.setCursor(0,2);
-    lcd.print("Hold Z to load");
-    lcd.setCursor(0,3);
-    lcd.print("Press C to cancel");
-  }
-
-  // callback function main:
-
-  // callback function "destructor"
-  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'z')
-  {
-    ms.deselect_set_menu_item();
-    displayMenu();
-
-    if(nunchuk.userInput == 'z')  // if Z is held we do the deed
-    {
-      loadMotorPositions();
     }
   }
 }

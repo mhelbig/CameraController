@@ -650,9 +650,6 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
     lookupMotorSplinePosition(frame);
     updateMotorPositions();
     
-    if(lensDefoggerModeList[lensDefoggerModeIndex].value == 2)
-      setLensDefoggerState(true);
-
     displaySetHeading();
     lcd.setCursor(0,1);
     lcd.print("Hold Z to Start");
@@ -674,16 +671,28 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
 //      Serial.println("waitToStart:");
       if(nunchuk.userInput == 'z')
       {
-        lcd.setCursor(0,1);
-        lcd.print("Starting in:       ");
-        generalPurposeTimer.init(startDelayTimeSetting+500);  // Add a half second to allow for the focus button to process
+        if(startDelayTimeSetting > 0)
+        {
+          lcd.setCursor(0,1);
+          lcd.print("Starting in:       ");
+          generalPurposeTimer.init((startDelayTimeSetting * 1000));
+        }
+        else
+        {
+           generalPurposeTimer.init(500);  // Give a 1/2 second for the camera to process the focus button
+        }
         mode = waitStartDelay;
+        
+        if(lensDefoggerModeList[lensDefoggerModeIndex].value == 2)
+          setLensDefoggerState(true);
       }
       break;
     case waitStartDelay:
-//      Serial.println("waitStartDelay:");
-      lcd.setCursor(0,2);
-      displayAsDDHHMMSS(generalPurposeTimer.remaining() / 1000);
+      if(startDelayTimeSetting > 0)
+      {
+        lcd.setCursor(0,2);
+        displayAsDDHHMMSS(generalPurposeTimer.remaining() / 1000);
+      }
       if (generalPurposeTimer.expired())
       {
         lcd.setCursor(0,1);
@@ -698,6 +707,7 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
         if(generalPurposeTimer.remaining() < 250);
         {
           pressFocusButton();
+          displayMotorPositions();
         }
         mode = shootFrame;
       }
@@ -706,7 +716,6 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
         pressShutterButton();
       if (generalPurposeTimer.expired())
       {
-//        Serial.println("releasing shutter button");
         releaseShutterButton();
         exposureTimer.init(cameraExposureTime[selectedExposureIndex].value);
         motorSettleTimer.init(motorSettleTimeSetting);
@@ -762,13 +771,10 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
       displayFrameNumber(frame,frameNumber[numberOfTransitions]);
       break;
     case waitIntervalTime:
-//      Serial.println("waitIntervalTime:");
       if (intervalTimer.expired())
       {
         intervalTimer.addTime(intervalTime);
         mode = shootFrame;
-        
-//        Serial.println(".");
       }
       else
       {

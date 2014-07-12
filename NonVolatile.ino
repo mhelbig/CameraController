@@ -15,8 +15,10 @@ int selectedYmotorInvertIndexAddress  = EEPROM.getAddress(sizeof(int));
 int selectedZmotorInvertIndexAddress  = EEPROM.getAddress(sizeof(int));
 int selectedDmotorInvertIndexAddress  = EEPROM.getAddress(sizeof(int));
 
-//motor position values to optionally store:
+// saved sequence values:
 int numberOfTransitionsAddress        = EEPROM.getAddress(sizeof(int));
+int shootTimeSettingAddress           = EEPROM.getAddress(sizeof(float));
+int startDelayTimeSettingAddress      = EEPROM.getAddress(sizeof(float));
 int frameNumberPointsAddress          = EEPROM.getAddress(sizeof(float) * (MAX_NUMBER_OF_TRANSITIONS + 2));
 int XmotorSplinePointsAddress         = EEPROM.getAddress(sizeof(float) * (MAX_NUMBER_OF_TRANSITIONS + 2));
 int YmotorSplinePointsAddress         = EEPROM.getAddress(sizeof(float) * (MAX_NUMBER_OF_TRANSITIONS + 2));
@@ -33,7 +35,6 @@ int DmotorMaxPositionAddress          = EEPROM.getAddress(sizeof(float));
 void saveNonVolatileSettings(void)
 {
   EEPROM.writeInt(lensDefoggerModeIndexAddress,       lensDefoggerModeIndex);
-  EEPROM.writeInt(selectedExposureIndexAddress,       selectedExposureIndex);
   EEPROM.writeInt(shutterButtonTimeSettingAddress,    shutterButtonTimeSetting);
   EEPROM.writeInt(postShootTimeDelaySettingAddress,   postShootTimeDelaySetting);
   EEPROM.writeInt(cameraRecoveryTimeSettingAddress,   cameraRecoveryTimeSetting);
@@ -53,7 +54,6 @@ void saveNonVolatileSettings(void)
 void loadNonVolatileSettings(void)
 {
   lensDefoggerModeIndex       = EEPROM.readInt(lensDefoggerModeIndexAddress);
-  selectedExposureIndex       = EEPROM.readInt(selectedExposureIndexAddress);
   shutterButtonTimeSetting    = EEPROM.readInt(shutterButtonTimeSettingAddress);
   postShootTimeDelaySetting   = EEPROM.readInt(postShootTimeDelaySettingAddress);
   cameraRecoveryTimeSetting   = EEPROM.readInt(cameraRecoveryTimeSettingAddress);
@@ -73,7 +73,7 @@ void loadNonVolatileSettings(void)
 void restoreDefaultSettings(void)
 {
   lensDefoggerModeIndex       = 0;
-  selectedExposureIndex       = 5;
+  selectedExposureIndex       = 21;
   shutterButtonTimeSetting    = 100;
   postShootTimeDelaySetting   = 100;
   cameraRecoveryTimeSetting   = 200;
@@ -91,29 +91,43 @@ void restoreDefaultSettings(void)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-// Save motor position arrays
+// Save sequence
 /////////////////////////////////////////////////////////////////////////////////
 void saveMotorPositions(void)
 {
-  EEPROM.writeInt  (numberOfTransitionsAddress, numberOfTransitions);
-  EEPROM.writeBlock(frameNumberPointsAddress,   frameNumber,          MAX_NUMBER_OF_TRANSITIONS + 2);
-  EEPROM.writeBlock(XmotorSplinePointsAddress,  XmotorSplinePoints_y, MAX_NUMBER_OF_TRANSITIONS + 2);
-  EEPROM.writeBlock(YmotorSplinePointsAddress,  YmotorSplinePoints_y, MAX_NUMBER_OF_TRANSITIONS + 2);
-  EEPROM.writeBlock(ZmotorSplinePointsAddress,  ZmotorSplinePoints_y, MAX_NUMBER_OF_TRANSITIONS + 2);
-  EEPROM.writeBlock(DmotorSplinePointsAddress,  DmotorSplinePoints_y, MAX_NUMBER_OF_TRANSITIONS + 2);
+  EEPROM.writeInt(numberOfTransitionsAddress,     numberOfTransitions);
+  EEPROM.writeInt(selectedExposureIndexAddress,   selectedExposureIndex);
+  EEPROM.writeFloat(shootTimeSettingAddress,      shootTimeSetting);
+  EEPROM.writeFloat(startDelayTimeSettingAddress, startDelayTimeSetting);
+  
+  EEPROM.writeFloat(ZmotorMinPositionAddress,     ZmotorMinPosition);
+  EEPROM.writeFloat(ZmotorMaxPositionAddress,     ZmotorMaxPosition);
+  EEPROM.writeFloat(DmotorMinPositionAddress,     DmotorMinPosition);
+  EEPROM.writeFloat(DmotorMaxPositionAddress,     DmotorMaxPosition);
 
-  EEPROM.writeFloat(ZmotorMinPositionAddress,   ZmotorMinPosition);
-  EEPROM.writeFloat(ZmotorMaxPositionAddress,   ZmotorMaxPosition);
-  EEPROM.writeFloat(DmotorMinPositionAddress,   DmotorMinPosition);
-  EEPROM.writeFloat(DmotorMaxPositionAddress,   DmotorMaxPosition);
+  EEPROM.writeBlock(frameNumberPointsAddress,     frameNumber,          MAX_NUMBER_OF_TRANSITIONS + 2);
+  EEPROM.writeBlock(XmotorSplinePointsAddress,    XmotorSplinePoints_y, MAX_NUMBER_OF_TRANSITIONS + 2);
+  EEPROM.writeBlock(YmotorSplinePointsAddress,    YmotorSplinePoints_y, MAX_NUMBER_OF_TRANSITIONS + 2);
+  EEPROM.writeBlock(ZmotorSplinePointsAddress,    ZmotorSplinePoints_y, MAX_NUMBER_OF_TRANSITIONS + 2);
+  EEPROM.writeBlock(DmotorSplinePointsAddress,    DmotorSplinePoints_y, MAX_NUMBER_OF_TRANSITIONS + 2);
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-// Load motor position arrays
+// Load sequence
 /////////////////////////////////////////////////////////////////////////////////
 void loadMotorPositions(void)
 {
-  numberOfTransitions  = EEPROM.readInt(numberOfTransitionsAddress);
+  numberOfTransitions         = EEPROM.readInt(numberOfTransitionsAddress);
+  selectedExposureIndex       = EEPROM.readInt(selectedExposureIndexAddress);
+  shootTimeSetting            = EEPROM.readFloat(shootTimeSettingAddress);
+  startDelayTimeSetting       = EEPROM.readFloat(startDelayTimeSettingAddress);
+  
+  ZmotorMinPosition           = EEPROM.readFloat(ZmotorMinPositionAddress);
+  ZmotorMaxPosition           = EEPROM.readFloat(ZmotorMaxPositionAddress);
+  DmotorMinPosition           = EEPROM.readFloat(DmotorMinPositionAddress);
+  DmotorMaxPosition           = EEPROM.readFloat(DmotorMaxPositionAddress);
+  
   EEPROM.readBlock(frameNumberPointsAddress,  frameNumber,           MAX_NUMBER_OF_TRANSITIONS + 2);
   EEPROM.readBlock(XmotorSplinePointsAddress, XmotorSplinePoints_y,  MAX_NUMBER_OF_TRANSITIONS + 2);
   EEPROM.readBlock(YmotorSplinePointsAddress, YmotorSplinePoints_y,  MAX_NUMBER_OF_TRANSITIONS + 2);

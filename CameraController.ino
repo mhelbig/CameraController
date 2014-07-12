@@ -20,13 +20,17 @@ Navchuk nunchuk = Navchuk();
 // Global variables
 /////////////////////////////////////////////////////////////////////////////////
 // Timelapse Mode:
-int numberOfTransitions=1;
-int currentTransitionSelected=1;
-float shootTimeSetting = 3600;
-float startDelayTimeSetting = 0;
+int selectedExposureIndex     = 21;
+int numberOfTransitions       = 1;
+int currentTransitionSelected = 1;
+float shootTimeSetting        = 600;
+float startDelayTimeSetting   = 0;
+float ZmotorMinPosition       = 0;
+float ZmotorMaxPosition       = 0;
+float DmotorMinPosition       = 0;
+float DmotorMaxPosition       = 0;
 
-// Non-Volatile Settings:  (initialized values are loaded from EEPROM)
-int selectedExposureIndex;
+// Non-Volatile Settings:  (values are loaded from EEPROM on startup)
 int lensDefoggerModeIndex;
 int shutterButtonTimeSetting;
 int postShootTimeDelaySetting;
@@ -38,11 +42,30 @@ int selectedXmotorInvertIndex;
 int selectedYmotorInvertIndex;
 int selectedZmotorInvertIndex;
 int selectedDmotorInvertIndex;
-float ZmotorMinPosition;
-float ZmotorMaxPosition;
-float DmotorMinPosition;
-float DmotorMaxPosition;
 
+//motor control and spline variables:
+float frameNumber[MAX_NUMBER_OF_TRANSITIONS + 2] = {000,000,900,1200,1500,1800,1800};  // first and last values set tangent points
+
+Spline XmotorSpline;
+float XmotorSplinePoints_y[MAX_NUMBER_OF_TRANSITIONS + 2] = {0,0,0,0,0,0,0};           // motor positions
+float XmotorPosition = 0;
+
+Spline YmotorSpline;
+float YmotorSplinePoints_y[MAX_NUMBER_OF_TRANSITIONS + 2] = {0,0,0,0,0,0,0};           // motor positions
+float YmotorPosition = 0;
+
+Spline ZmotorSpline;
+float ZmotorSplinePoints_y[MAX_NUMBER_OF_TRANSITIONS + 2] = {0,0,0,0,0,0,0};           // motor positions
+float ZmotorPosition = 0;
+
+Spline DmotorSpline;
+float DmotorSplinePoints_y[MAX_NUMBER_OF_TRANSITIONS + 2] = {0,0,0,0,0,0,0};           // motor positions
+float DmotorPosition = 0;
+
+
+/////////////////////////////////////////////////////////////////////////////////
+// Enumerated menu lists
+/////////////////////////////////////////////////////////////////////////////////
 struct enumeratedMenuList
 {
   char menuText[21];
@@ -107,25 +130,9 @@ enumeratedMenuList cameraExposureTime[]=
   { "Under 1/4"   ,200}
 };
 
-//motor control and spline variables:
-float frameNumber[MAX_NUMBER_OF_TRANSITIONS + 2] = {000,000,900,1200,1500,1800,1800};  // first and last values set tangent points
-
-Spline XmotorSpline;
-float XmotorSplinePoints_y[MAX_NUMBER_OF_TRANSITIONS + 2] = {0,0,0,0,0,0,0};           // motor positions
-float XmotorPosition = 0;
-
-Spline YmotorSpline;
-float YmotorSplinePoints_y[MAX_NUMBER_OF_TRANSITIONS + 2] = {0,0,0,0,0,0,0};           // motor positions
-float YmotorPosition = 0;
-
-Spline ZmotorSpline;
-float ZmotorSplinePoints_y[MAX_NUMBER_OF_TRANSITIONS + 2] = {0,0,0,0,0,0,0};           // motor positions
-float ZmotorPosition = 0;
-
-Spline DmotorSpline;
-float DmotorSplinePoints_y[MAX_NUMBER_OF_TRANSITIONS + 2] = {0,0,0,0,0,0,0};           // motor positions
-float DmotorPosition = 0;
-
+/////////////////////////////////////////////////////////////////////////////////
+// Setup
+/////////////////////////////////////////////////////////////////////////////////
 void setup()
 {
   Serial.begin(9600);
@@ -145,16 +152,14 @@ void setup()
   Serial.println(freeMemory());
 }
 
-long cycleTime;
-
+/////////////////////////////////////////////////////////////////////////////////
+// Main
+/////////////////////////////////////////////////////////////////////////////////
 void loop() 
 {
   navigationHandler();
   updateMotorPositions();
   processMotorDriverEnables();
-//  cycleTime = micros();
-
-//  Serial.println(micros()-cycleTime);
 }
 
 

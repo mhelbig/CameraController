@@ -32,24 +32,24 @@ Menu pmMenu                 ("360 Panograph");
 MenuItem pm_autoMode        ("Panograph Auto");
 
 //Setup menu
-Menu suMenu                 ("Change Settings");
+Menu suMenu                 ("System Settings");
+MenuItem loadMotorPos       ("Load Sequence");
+MenuItem saveMotorPos       ("Save Sequence");
 MenuItem lensDefoggerMode   ("Lens defogger mode");
-MenuItem framesPerSecond    ("Frames/sec");
-MenuItem shutterButtonTime  ("Shutter active time");
+MenuItem framesPerSecond    ("Video frames/sec");
+MenuItem shutterButtonTime  ("Shutter button time");
 MenuItem postShootTimeDelay ("Post Shoot time");
 MenuItem cameraRecoveryTime ("Recovery time");
 MenuItem motorSettleTime    ("Motor settle time");
 MenuItem motionProfile      ("Motion Profile");
-MenuItem XmotorInvert       ("X motor Invert");
-MenuItem YmotorInvert       ("Y motor Invert");
-MenuItem ZmotorInvert       ("Z motor Invert");
-MenuItem DmotorInvert       ("D motor Invert");
-MenuItem saveSettings       ("Save settings");
+MenuItem XmotorInvert       ("X motor direction");
+MenuItem YmotorInvert       ("Y motor direction");
+MenuItem ZmotorInvert       ("Z motor direction");
+MenuItem DmotorInvert       ("D motor direction");
 MenuItem loadSettings       ("Load settings");
-MenuItem restoreDefaults    ("Restore Defaults");
-MenuItem saveMotorPos       ("Save Mtr Positions");
-MenuItem loadMotorPos       ("Load Mtr Positions");
-MenuItem FreeMem            ("Free Memory");
+MenuItem saveSettings       ("Save settings");
+MenuItem restoreDefaults    ("Restore defaults");
+MenuItem FreeMem            ("System Free Memory");
 
 /////////////////////////////////////////////////////////////////////////////////
 // Initialize
@@ -78,6 +78,8 @@ void initializeMenu(void)
 
 //Setup menu
   mm.add_menu(&suMenu);
+  suMenu.add_item(&loadMotorPos,       &on_loadMotorPositions_selected);
+  suMenu.add_item(&saveMotorPos,       &on_saveMotorPositions_selected);
   suMenu.add_item(&lensDefoggerMode,   &on_lensDefoggerMode_selected);
   suMenu.add_item(&framesPerSecond,    &on_framesPerSecond_selected);
   suMenu.add_item(&shutterButtonTime,  &on_shutterButtonTime_selected);
@@ -92,8 +94,6 @@ void initializeMenu(void)
   suMenu.add_item(&saveSettings,       &on_saveNonVolatileSettings_selected);
   suMenu.add_item(&loadSettings,       &on_loadNonVolatileSettings_selected);
   suMenu.add_item(&restoreDefaults,    &on_restoreNonVolatileSettings_selected);
-  suMenu.add_item(&saveMotorPos,       &on_saveMotorPositions_selected);
-  suMenu.add_item(&loadMotorPos,       &on_loadMotorPositions_selected);
   suMenu.add_item(&FreeMem,            &on_FreeMem_selected);
 
 //Root menu (always last)  

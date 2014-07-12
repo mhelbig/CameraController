@@ -1,4 +1,139 @@
 /////////////////////////////////////////////////////////////////////////////////
+// Calibrate Zoom MIN position
+/////////////////////////////////////////////////////////////////////////////////
+
+void on_calZoomDollyMin_selected(MenuItem* p_menu_item)
+{
+  static boolean waitForJoystickToBeCentered;
+  
+  static float tempZmotorMinPosition;
+  static float tempDmotorMinPosition;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    setMotorDriverEnables(true);
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(0,2);
+    lcd.print("Carefully adjust");
+    lcd.setCursor(0,3);
+    lcd.print("Zoom to Min position");
+
+    
+    tempZmotorMinPosition = ZmotorMinPosition;
+    tempDmotorMinPosition = DmotorMinPosition;
+    ZmotorPosition = ZmotorMinPosition; // get the current Min motor position
+    DmotorPosition = DmotorMinPosition;
+    
+    waitForJoystickToBeCentered = 10;   // flag that stops the joystick shift from messing up the motor positions
+  }
+
+  // callback function main:
+  if(waitForJoystickToBeCentered)  // this keep the joystick being shifted as we enter the menu from messing with the motor postion
+  {
+    if(nunchuk.analogDisplacementX == 0) waitForJoystickToBeCentered--;
+    return;
+  }
+
+  if(adjustMotorPositions(&DmotorMinPosition, &ZmotorMinPosition, -1000000, 1000000, -1000000, 1000000))
+  {
+    ZmotorPosition = ZmotorMinPosition; // update the actual motor positions in real time
+    DmotorPosition = DmotorMinPosition;
+    
+    lcd.setCursor(0,1);
+    lcd.print("                    ");
+//    lcd.setCursor(0,1);
+//    lcd.print("D:");
+//    lcd.print(round(DmotorPosition));
+    lcd.setCursor(10,1);
+    lcd.print("Z:");
+    lcd.print(round(ZmotorPosition));
+  }
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    setMotorDriverEnables(false);
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'C')  // if C is pressed put the original values back
+    {
+      ZmotorMinPosition = tempZmotorMinPosition;
+      DmotorMinPosition = tempDmotorMinPosition;
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// Calibrate Zoom MAX position
+/////////////////////////////////////////////////////////////////////////////////
+
+void on_calZoomDollyMax_selected(MenuItem* p_menu_item)
+{
+  static boolean waitForJoystickToBeCentered;
+  
+  static float tempZmotorMaxPosition;
+  static float tempDmotorMaxPosition;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    setMotorDriverEnables(true);
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(0,2);
+    lcd.print("Carefully adjust");
+    lcd.setCursor(0,3);
+    lcd.print("Zoom to Max position");
+    
+    tempZmotorMaxPosition = ZmotorMaxPosition;
+    tempDmotorMaxPosition = DmotorMaxPosition;
+    ZmotorPosition = ZmotorMaxPosition; // get the current Min motor position
+    DmotorPosition = DmotorMaxPosition;
+    
+    waitForJoystickToBeCentered = 10;   // flag that stops the joystick shift from messing up the motor positions
+  }
+
+  // callback function main:
+  if(waitForJoystickToBeCentered)  // this keep the joystick being shifted as we enter the menu from messing with the motor postion
+  {
+    if(nunchuk.analogDisplacementX == 0) waitForJoystickToBeCentered--;
+    return;
+  }
+
+  if(adjustMotorPositions(&DmotorMaxPosition, &ZmotorMaxPosition, -1000000, 1000000, -1000000, 1000000))
+  {
+    ZmotorPosition = ZmotorMaxPosition; // update the actual motor positions in real time
+    DmotorPosition = DmotorMaxPosition;
+    
+    lcd.setCursor(0,1);
+    lcd.print("                    ");
+//    lcd.setCursor(0,1);
+//    lcd.print("D:");
+//    lcd.print(round(DmotorPosition));
+    lcd.setCursor(10,1);
+    lcd.print("Z:");
+    lcd.print(round(ZmotorPosition));
+  }
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    setMotorDriverEnables(false);
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'C')  // if C is pressed put the original values back
+    {
+      ZmotorMaxPosition = tempZmotorMaxPosition;
+      DmotorMaxPosition = tempDmotorMaxPosition;
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 // Set Camera Exposure Time
 /////////////////////////////////////////////////////////////////////////////////
 void on_setExposureTime_selected(MenuItem* p_menu_item)
@@ -162,17 +297,17 @@ void on_setPanTilt_selected(MenuItem* p_menu_item)
     XmotorPosition = XmotorSplinePoints_y[currentTransitionSelected]; // get the current position from the array
     YmotorPosition = YmotorSplinePoints_y[currentTransitionSelected];
     
-    waitForJoystickToBeCentered = 1;   // flag that stops the joystick shift from messing up the motor positions
+    waitForJoystickToBeCentered = 10;   // flag that stops the joystick shift from messing up the motor positions
   }
 
   // callback function main:
   if(waitForJoystickToBeCentered)  // this keep the joystick being shifted as we enter the menu from messing with the motor postion
   {
-    if(nunchuk.analogDisplacementX == 0) waitForJoystickToBeCentered = 0;
+    if(nunchuk.analogDisplacementX == 0) waitForJoystickToBeCentered--;
     return;
   }
 
-  if(adjustMotorPositions(&XmotorPosition, &YmotorPosition))
+  if(adjustMotorPositions(&XmotorPosition, &YmotorPosition, -1000000, 1000000, -1000000, 1000000))  // no real limits on positions for pan and tilt
   {
     lcd.setCursor(0,1);
     lcd.print("                    ");
@@ -220,17 +355,17 @@ void on_setZoomDolly_selected(MenuItem* p_menu_item)
     ZmotorPosition = ZmotorSplinePoints_y[currentTransitionSelected]; // get the current position from the array
     DmotorPosition = DmotorSplinePoints_y[currentTransitionSelected];
     
-    waitForJoystickToBeCentered = 1;   // flag that stops the joystick shift from messing up the motor positions
+    waitForJoystickToBeCentered = 10;   // flag that stops the joystick shift from messing up the motor positions
   }
 
   // callback function main:
   if(waitForJoystickToBeCentered)  // this keep the joystick being shifted as we enter the menu from messing with the motor postion
   {
-    if(nunchuk.analogDisplacementX == 0) waitForJoystickToBeCentered = 0;
+    if(nunchuk.analogDisplacementX == 0) waitForJoystickToBeCentered--;
     return;
   }
 
-  if(adjustMotorPositions(&DmotorPosition, &ZmotorPosition))
+  if(adjustMotorPositions(&DmotorPosition, &ZmotorPosition, -100, 100, ZmotorMinPosition, ZmotorMaxPosition))
   {
     lcd.setCursor(0,1);
     lcd.print("                    ");

@@ -21,6 +21,10 @@ int XmotorSplinePointsAddress         = EEPROM.getAddress(sizeof(float) * (MAX_N
 int YmotorSplinePointsAddress         = EEPROM.getAddress(sizeof(float) * (MAX_NUMBER_OF_TRANSITIONS + 2));
 int ZmotorSplinePointsAddress         = EEPROM.getAddress(sizeof(float) * (MAX_NUMBER_OF_TRANSITIONS + 2));
 int DmotorSplinePointsAddress         = EEPROM.getAddress(sizeof(float) * (MAX_NUMBER_OF_TRANSITIONS + 2));
+int ZmotorMinPositionAddress          = EEPROM.getAddress(sizeof(float));
+int ZmotorMaxPositionAddress          = EEPROM.getAddress(sizeof(float));
+int DmotorMinPositionAddress          = EEPROM.getAddress(sizeof(float));
+int DmotorMaxPositionAddress          = EEPROM.getAddress(sizeof(float));
 
 /////////////////////////////////////////////////////////////////////////////////
 // Save Settings
@@ -76,6 +80,10 @@ void restoreDefaultSettings(void)
   selectedYmotorInvertIndex   = 0;
   selectedZmotorInvertIndex   = 0;
   selectedDmotorInvertIndex   = 0;
+  ZmotorMinPosition = 0;
+  ZmotorMaxPosition = 0;
+  DmotorMinPosition = 0;
+  DmotorMaxPosition = 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -89,6 +97,11 @@ void saveMotorPositions(void)
   EEPROM.writeBlock(YmotorSplinePointsAddress,  YmotorSplinePoints_y, MAX_NUMBER_OF_TRANSITIONS + 2);
   EEPROM.writeBlock(ZmotorSplinePointsAddress,  ZmotorSplinePoints_y, MAX_NUMBER_OF_TRANSITIONS + 2);
   EEPROM.writeBlock(DmotorSplinePointsAddress,  DmotorSplinePoints_y, MAX_NUMBER_OF_TRANSITIONS + 2);
+
+  EEPROM.writeFloat(ZmotorMinPositionAddress,   ZmotorMinPosition);
+  EEPROM.writeFloat(ZmotorMaxPositionAddress,   ZmotorMaxPosition);
+  EEPROM.writeFloat(DmotorMinPositionAddress,   DmotorMinPosition);
+  EEPROM.writeFloat(DmotorMaxPositionAddress,   DmotorMaxPosition);
 }
 
 /////////////////////////////////////////////////////////////////////////////////

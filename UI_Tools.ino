@@ -24,7 +24,7 @@ void adjustIntValue(int *value, int min, int max)
 // Function to read the analog joystick X and Y axes and adjust motor positions
 // All the math in the function is done with a float to maintain fractional precision
 // result is converted back to an int or long as necessary by the calling function
-boolean adjustMotorPositions(float *Xvalue, float *Yvalue)
+boolean adjustMotorPositions(float *Xvalue, float *Yvalue, float XvalueMin, float XvalueMax, float YvalueMin, float YvalueMax)
 {
   if (uiThrottle()) return (false);  // this keeps the timing and adjust rates of UI functions consistent
 
@@ -32,11 +32,15 @@ boolean adjustMotorPositions(float *Xvalue, float *Yvalue)
   pow( (float)nunchuk.analogDisplacementX, 2)
     * (float)nunchuk.analogDirectionX
     / 80);     // fudge factor - adjust this value to affect the overall responsiveness
+  if(*Xvalue < XvalueMin) *Xvalue = XvalueMin;
+  if(*Xvalue > XvalueMax) *Xvalue = XvalueMax;
 
   *Yvalue = *Yvalue + (
   pow( (float)nunchuk.analogDisplacementY, 2)
     * (float)nunchuk.analogDirectionY
     / 80);     // fudge factor - adjust this value to affect the overall responsiveness
+  if(*Yvalue < YvalueMin) *Yvalue = YvalueMin;
+  if(*Yvalue > YvalueMax) *Yvalue = YvalueMax;
 
   return (true); // this flag synchronizes display updates with the uiThrottle
 }

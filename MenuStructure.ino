@@ -13,6 +13,8 @@ Menu mm("    PanTron 4000");
 
 //Timelapse menu
 Menu tlMenu                 ("Timelapse Video");
+MenuItem calZoomDollyMin    ("Calibrate Zoom Min");
+MenuItem calZoomDollyMax    ("Calibrate Zoom Max");
 MenuItem setExposureTime    ("Set exposure time");
 MenuItem transitionToSet    ("Select transition");
 MenuItem setVideoTime       ("Set video time");
@@ -55,6 +57,8 @@ void initializeMenu(void)
 {
 //Timelapse menu
   mm.add_menu(&tlMenu);
+  tlMenu.add_item(&calZoomDollyMin,  &on_calZoomDollyMin_selected);
+  tlMenu.add_item(&calZoomDollyMax,  &on_calZoomDollyMax_selected);
   tlMenu.add_item(&setExposureTime,  &on_setExposureTime_selected);
   tlMenu.add_item(&transitionToSet,  &on_transitionToSet_selected);
   tlMenu.add_item(&setVideoTime,     &on_set_videoTime_selected);

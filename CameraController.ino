@@ -37,6 +37,10 @@ int selectedXmotorInvertIndex;
 int selectedYmotorInvertIndex;
 int selectedZmotorInvertIndex;
 int selectedDmotorInvertIndex;
+float ZmotorMinPosition;
+float ZmotorMaxPosition;
+float DmotorMinPosition;
+float DmotorMaxPosition;
 
 struct enumeratedMenuList
 {

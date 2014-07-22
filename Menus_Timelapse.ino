@@ -289,8 +289,10 @@ void on_setPanTilt_selected(MenuItem* p_menu_item)
     lcd.print("@ transition ");
     lcd.print(currentTransitionSelected);
     
-    XmotorPosition = XmotorSplinePoints_y[currentTransitionSelected]; // get the current position from the array
+    XmotorPosition = XmotorSplinePoints_y[currentTransitionSelected]; // get the current positions from the array
     YmotorPosition = YmotorSplinePoints_y[currentTransitionSelected];
+    ZmotorPosition = ZmotorSplinePoints_y[currentTransitionSelected];
+    DmotorPosition = DmotorSplinePoints_y[currentTransitionSelected];
     
     waitForJoystickToBeCentered = 10;   // flag that stops the joystick shift from messing up the motor positions
   }
@@ -345,7 +347,9 @@ void on_setZoomDolly_selected(MenuItem* p_menu_item)
     lcd.print("@ transition ");
     lcd.print(currentTransitionSelected);
     
-    ZmotorPosition = ZmotorSplinePoints_y[currentTransitionSelected]; // get the current position from the array
+    XmotorPosition = XmotorSplinePoints_y[currentTransitionSelected]; // get the current positions from the array
+    YmotorPosition = YmotorSplinePoints_y[currentTransitionSelected];
+    ZmotorPosition = ZmotorSplinePoints_y[currentTransitionSelected];
     DmotorPosition = DmotorSplinePoints_y[currentTransitionSelected];
     
     waitForJoystickToBeCentered = 10;   // flag that stops the joystick shift from messing up the motor positions

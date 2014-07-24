@@ -33,8 +33,9 @@ MenuItem pm_autoMode        ("Panograph Auto");
 
 //Setup menu
 Menu suMenu                 ("System Settings");
-MenuItem loadMotorPos       ("Load Sequence");
-MenuItem saveMotorPos       ("Save Sequence");
+MenuItem loadMotorPos       ("Load last sequence");
+//MenuItem saveMotorPos       ("Save Sequence");
+MenuItem lensDefoggerPWM    ("Lens defogger power");
 MenuItem lensDefoggerMode   ("Lens defogger mode");
 MenuItem framesPerSecond    ("Video frames/sec");
 MenuItem shutterButtonTime  ("Shutter button time");
@@ -79,7 +80,8 @@ void initializeMenu(void)
 //Setup menu
   mm.add_menu(&suMenu);
   suMenu.add_item(&loadMotorPos,       &on_loadMotorPositions_selected);
-  suMenu.add_item(&saveMotorPos,       &on_saveMotorPositions_selected);
+//  suMenu.add_item(&saveMotorPos,       &on_saveMotorPositions_selected);  // motor positions are now automatically saved when we do a run sequence
+  suMenu.add_item(&lensDefoggerPWM,    &on_lensDefoggerPWM_selected);
   suMenu.add_item(&lensDefoggerMode,   &on_lensDefoggerMode_selected);
   suMenu.add_item(&framesPerSecond,    &on_framesPerSecond_selected);
   suMenu.add_item(&shutterButtonTime,  &on_shutterButtonTime_selected);

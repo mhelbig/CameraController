@@ -18,7 +18,10 @@ void initializeLensDefogger()
 /////////////////////////////////////////////////////////////////////////////////
 void setLensDefoggerState(boolean state)
 {
-  digitalWrite(LENS_DEFOG_OUTPUT, state);
+  if(state == true)
+    analogWrite(LENS_DEFOG_OUTPUT, lensDefoggerPWMsetting * 2.55);
+  else
+    analogWrite(LENS_DEFOG_OUTPUT, 0);
 }
 
 

@@ -64,6 +64,43 @@ void on_saveMotorPositions_selected(MenuItem* p_menu_item)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
+// Lens defogger PWM setting
+/////////////////////////////////////////////////////////////////////////////////
+void on_lensDefoggerPWM_selected(MenuItem* p_menu_item)
+{
+  static int tempPWMsetting;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    tempPWMsetting = lensDefoggerPWMsetting;
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(5,2);
+    lcd.print(lensDefoggerPWMsetting);
+  }
+
+  // callback function main:
+    adjustIntValue(&lensDefoggerPWMsetting,5,100);
+    lcd.setCursor(5,2);
+    lcd.print(lensDefoggerPWMsetting);
+    lcd.print("% ");
+    initializeLensDefogger();  // also set the defogger to the new state right away
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'C')  // if C is pressed we keep the old value
+    {
+      lensDefoggerPWMsetting = tempPWMsetting;
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 // Lens defogger mode
 /////////////////////////////////////////////////////////////////////////////////
 void on_lensDefoggerMode_selected(MenuItem* p_menu_item)
@@ -96,6 +133,7 @@ void on_lensDefoggerMode_selected(MenuItem* p_menu_item)
     if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
     {
       lensDefoggerModeIndex = tempEnumIndex;
+      initializeLensDefogger();  // also set the defogger to the new state right away
     }
   }
 }

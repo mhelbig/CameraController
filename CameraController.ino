@@ -31,6 +31,7 @@ float DmotorMinPosition       = 0;
 float DmotorMaxPosition       = 0;
 
 // Non-Volatile Settings:  (values are loaded from EEPROM on startup)
+int lensDefoggerPWMsetting;
 int lensDefoggerModeIndex;
 int shutterButtonTimeSetting;
 int postShootTimeDelaySetting;

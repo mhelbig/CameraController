@@ -2,6 +2,7 @@
 // assign EEPROM NonVolatile Storage Addresses
 /////////////////////////////////////////////////////////////////////////////////
 // Setup menu parameters:
+int lensDefoggerPWMsettingAddress     = EEPROM.getAddress(sizeof(int));
 int lensDefoggerModeIndexAddress      = EEPROM.getAddress(sizeof(int));
 int selectedExposureIndexAddress      = EEPROM.getAddress(sizeof(int));
 int shutterButtonTimeSettingAddress   = EEPROM.getAddress(sizeof(int));
@@ -34,6 +35,7 @@ int DmotorMaxPositionAddress          = EEPROM.getAddress(sizeof(float));
 /////////////////////////////////////////////////////////////////////////////////
 void saveNonVolatileSettings(void)
 {
+  EEPROM.writeInt(lensDefoggerPWMsettingAddress,      lensDefoggerPWMsetting);
   EEPROM.writeInt(lensDefoggerModeIndexAddress,       lensDefoggerModeIndex);
   EEPROM.writeInt(shutterButtonTimeSettingAddress,    shutterButtonTimeSetting);
   EEPROM.writeInt(postShootTimeDelaySettingAddress,   postShootTimeDelaySetting);
@@ -53,6 +55,7 @@ void saveNonVolatileSettings(void)
 /////////////////////////////////////////////////////////////////////////////////
 void loadNonVolatileSettings(void)
 {
+  lensDefoggerPWMsetting      = EEPROM.readInt(lensDefoggerPWMsettingAddress);
   lensDefoggerModeIndex       = EEPROM.readInt(lensDefoggerModeIndexAddress);
   shutterButtonTimeSetting    = EEPROM.readInt(shutterButtonTimeSettingAddress);
   postShootTimeDelaySetting   = EEPROM.readInt(postShootTimeDelaySettingAddress);
@@ -72,6 +75,7 @@ void loadNonVolatileSettings(void)
 /////////////////////////////////////////////////////////////////////////////////
 void restoreDefaultSettings(void)
 {
+  lensDefoggerPWMsetting      = 50;
   lensDefoggerModeIndex       = 0;
   selectedExposureIndex       = 21;
   shutterButtonTimeSetting    = 100;

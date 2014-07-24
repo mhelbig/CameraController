@@ -648,6 +648,7 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
       displayMenu();
       return;
     }
+    saveMotorPositions();    // Automatically save for now, since we've had a couple cases where the nunchuk lost comm
     frame = 0;
     intervalTime = (shootTimeSetting / frameNumber[numberOfTransitions] * 1000);
     initializeSplines();

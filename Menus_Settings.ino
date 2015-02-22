@@ -224,7 +224,7 @@ void on_postShootTimeDelay_selected(MenuItem* p_menu_item)
   }  
   
 // callback function main:
-    adjustIntValue(&postShootTimeDelaySetting,25,500);
+    adjustIntValue(&postShootTimeDelaySetting,25,1000);
     lcd.setCursor(5,2);
     lcd.print(postShootTimeDelaySetting);
     lcd.print("mS ");
@@ -257,7 +257,7 @@ void on_cameraRecoveryTime_selected(MenuItem* p_menu_item)
   }  
   
 // callback function main:
-    adjustIntValue(&cameraRecoveryTimeSetting,25,500);
+    adjustIntValue(&cameraRecoveryTimeSetting,25,1000);
     lcd.setCursor(5,2);
     lcd.print(cameraRecoveryTimeSetting);
     lcd.print("mS ");

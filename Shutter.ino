@@ -4,29 +4,29 @@
 void pressShutterButton(void)
 {
   digitalWrite(SHUTTER_PIN,HIGH);
-  lcd.setCursor(19,0);
-  lcd.print("S");
+  lcd.setCursor(17,3);
+  lcd.print("_");
 }
 
 void releaseShutterButton(void)
 {
   digitalWrite(SHUTTER_PIN,LOW);
-  lcd.setCursor(19,0);
-  lcd.print(" ");
+  lcd.setCursor(17,3);
+  lcd.print("S");
 }
 
 void pressFocusButton(void)
 {
   digitalWrite(FOCUS_PIN,HIGH);
-  lcd.setCursor(18,0);
-  lcd.print("F");
+  lcd.setCursor(16,3);
+  lcd.print("_");
 }
 
 void releaseFocusButton(void)
 {
   digitalWrite(FOCUS_PIN,LOW);
-  lcd.setCursor(18,0);
-  lcd.print(" ");
+  lcd.setCursor(16,3);
+  lcd.print("F");
 }
 
 void initializeShutterControl(void)

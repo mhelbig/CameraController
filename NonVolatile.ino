@@ -6,7 +6,7 @@ int lensDefoggerPWMsettingAddress     = EEPROM.getAddress(sizeof(int));
 int lensDefoggerModeIndexAddress      = EEPROM.getAddress(sizeof(int));
 int selectedExposureIndexAddress      = EEPROM.getAddress(sizeof(int));
 int shutterButtonTimeSettingAddress   = EEPROM.getAddress(sizeof(int));
-int postShootTimeDelaySettingAddress  = EEPROM.getAddress(sizeof(int));
+int backlightTimeIndexAddress         = EEPROM.getAddress(sizeof(int));
 int cameraRecoveryTimeSettingAddress  = EEPROM.getAddress(sizeof(int));
 int motorSettleTimeSettingAddress     = EEPROM.getAddress(sizeof(int));
 int videoFramesPerSecondIndexAddress  = EEPROM.getAddress(sizeof(int));
@@ -37,8 +37,9 @@ void saveNonVolatileSettings(void)
 {
   EEPROM.writeInt(lensDefoggerPWMsettingAddress,      lensDefoggerPWMsetting);
   EEPROM.writeInt(lensDefoggerModeIndexAddress,       lensDefoggerModeIndex);
+  EEPROM.writeInt(selectedExposureIndexAddress,       selectedExposureIndex);
   EEPROM.writeInt(shutterButtonTimeSettingAddress,    shutterButtonTimeSetting);
-  EEPROM.writeInt(postShootTimeDelaySettingAddress,   postShootTimeDelaySetting);
+  EEPROM.writeInt(backlightTimeIndexAddress,          backlightTimeIndex);
   EEPROM.writeInt(cameraRecoveryTimeSettingAddress,   cameraRecoveryTimeSetting);
   EEPROM.writeInt(videoFramesPerSecondIndexAddress,   videoFramesPerSecondIndex);
   EEPROM.writeInt(motorSettleTimeSettingAddress,      motorSettleTimeSetting);
@@ -57,8 +58,9 @@ void loadNonVolatileSettings(void)
 {
   lensDefoggerPWMsetting      = EEPROM.readInt(lensDefoggerPWMsettingAddress);
   lensDefoggerModeIndex       = EEPROM.readInt(lensDefoggerModeIndexAddress);
+  selectedExposureIndex       = EEPROM.readInt(selectedExposureIndexAddress);
   shutterButtonTimeSetting    = EEPROM.readInt(shutterButtonTimeSettingAddress);
-  postShootTimeDelaySetting   = EEPROM.readInt(postShootTimeDelaySettingAddress);
+  backlightTimeIndex          = EEPROM.readInt(backlightTimeIndexAddress);
   cameraRecoveryTimeSetting   = EEPROM.readInt(cameraRecoveryTimeSettingAddress);
   videoFramesPerSecondIndex   = EEPROM.readInt(videoFramesPerSecondIndexAddress);
   motorSettleTimeSetting      = EEPROM.readInt(motorSettleTimeSettingAddress);
@@ -79,7 +81,7 @@ void restoreDefaultSettings(void)
   lensDefoggerModeIndex       = 0;
   selectedExposureIndex       = 21;
   shutterButtonTimeSetting    = 100;
-  postShootTimeDelaySetting   = 100;
+  backlightTimeIndex          = 1;
   cameraRecoveryTimeSetting   = 200;
   motorSettleTimeSetting      = 250;
   videoFramesPerSecondIndex   = 2;

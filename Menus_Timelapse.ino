@@ -481,6 +481,7 @@ void on_set_shootTime_selected(MenuItem* p_menu_item)
 {
   static float tempShootTimeSetting;
   static float minimumShootTime;
+  float cycleTime;
   
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
@@ -495,11 +496,14 @@ void on_set_shootTime_selected(MenuItem* p_menu_item)
     displaySetHeading();
     
     tempShootTimeSetting = shootTimeSetting;  // save a copy of the current setting in case we cancel
-    minimumShootTime = (cameraExposureTime[selectedExposureIndex].value
-                        + postShootTimeDelaySetting
-                        + cameraRecoveryTimeSetting 
-                        + motorSettleTimeSetting)
-                        *frameNumber[numberOfTransitions]/1000;
+    
+    cycleTime = cameraExposureTime[selectedExposureIndex].value;
+    if (cameraRecoveryTimeSetting > motorSettleTimeSetting) // take the larger of the two times since they occur concurently
+      cycleTime += cameraRecoveryTimeSetting;
+    else
+      cycleTime += motorSettleTimeSetting;
+      
+    minimumShootTime = cycleTime * frameNumber[numberOfTransitions]/1000;
   }
 
   // callback function main:
@@ -547,7 +551,6 @@ void on_dryRun_selected (MenuItem* p_menu_item)
       return;
     }
     lcd.clear();
-    displaySetHeading();
     initializeSplines();
     frame = 0;
   }
@@ -556,10 +559,10 @@ void on_dryRun_selected (MenuItem* p_menu_item)
   {
     lookupMotorSplinePosition(frame);
     updateMotorPositions();
-    
+
+    displayFrameNumbers(frameNumber[numberOfTransitions],frame);
+    displayShootTime( shootTimeSetting*(frame)/frameNumber[numberOfTransitions]);
     displayMotorPositions();
-//    displayVideoTime(frame);
-    displayFrameNumber(frame,frameNumber[numberOfTransitions]);
   }
 
   // callback function "destructor"
@@ -623,11 +626,13 @@ enum shootSequenceMode
   waitForMotors,
   waitToStart,
   waitStartDelay,
+  getFirstShotReady,
   shootFrame,
   waitExposureTime,
-  waitMotorSettleTime,
   incrementFrame,
   moveMotorsToPosition,
+  waitMotorSettleTime,
+  waitCameraRecoveryTime,
   waitIntervalTime,
   sequenceFinished
 };
@@ -642,7 +647,7 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
 
   if (ms.menu_item_was_just_selected())
   {
-    if (numberOfTransitions == 1) // if only one transition setup, we can't do the dry run
+    if (numberOfTransitions == 1) // if only one transition setup, we can't run the sequence
     {
       ms.deselect_set_menu_item();      // so boot them right out of the menu
       displayMenu();
@@ -659,7 +664,7 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
     lcd.setCursor(0,1);
     lcd.print("Hold Z to Start");
     lcd.setCursor(0,3);
-    lcd.print("Press C to cancel");
+    lcd.print("C to cancel");
     
     mode = waitForMotors;
   }
@@ -669,12 +674,12 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
   {
     case waitForMotors:
 //      Serial.println("waitForMotors:");
-      lcd.setCursor(16,0);
+      lcd.setCursor(18,3);
       lcd.print("M");
       if(motorsAreRunning()) return;  //wait until the motors reach the home position
       else
      {
-        lcd.setCursor(16,0);
+        lcd.setCursor(18,3);
         lcd.print(" ");
         mode = waitToStart;
      }
@@ -683,48 +688,43 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
 //      Serial.println("waitToStart:");
       if(nunchuk.userInput == 'z')
       {
+        if(lensDefoggerModeList[lensDefoggerModeIndex].value == 2)
+          setLensDefoggerState(true);
+
         if(startDelayTimeSetting > 0)
         {
           lcd.setCursor(0,1);
           lcd.print("Starting in:       ");
           generalPurposeTimer.init((startDelayTimeSetting * 1000));
+          mode = waitStartDelay;
         }
         else
         {
-           generalPurposeTimer.init(500);  // Give a 1/2 second for the camera to process the focus button
+          mode = getFirstShotReady;
         }
-        mode = waitStartDelay;
-        
-        if(lensDefoggerModeList[lensDefoggerModeIndex].value == 2)
-          setLensDefoggerState(true);
       }
       break;
     case waitStartDelay:
-      if(startDelayTimeSetting > 0)
+      if (generalPurposeTimer.expired())
+      {
+        mode = getFirstShotReady;
+      }
+      else
       {
         lcd.setCursor(0,2);
         displayAsDDHHMMSS(generalPurposeTimer.remaining() / 1000);
       }
-      if (generalPurposeTimer.expired())
-      {
-        lcd.setCursor(0,1);
-        lcd.print("                    ");
-        lcd.setCursor(0,2);
-        lcd.print("                    ");
-        lcd.setCursor(0,3);
-        lcd.print("                    ");
-        intervalTimer.init(intervalTime);    // start the interval time
-        generalPurposeTimer.init(shutterButtonTimeSetting + postShootTimeDelaySetting);
-
-        if(generalPurposeTimer.remaining() < 250);
-        {
-//          pressFocusButton();
-          displayMotorPositions();
-        }
-        mode = shootFrame;
-      }
-      break;  
+      break;
+    case getFirstShotReady:
+      lcd.clear();
+      intervalTimer.init(intervalTime);    // start the interval time
+      generalPurposeTimer.init(shutterButtonTimeSetting);
+      mode = shootFrame;
+      break;
     case shootFrame:
+      displayRemainingFrames(frameNumber[numberOfTransitions]-frame);
+      displayRemainingShootTime( shootTimeSetting*(frameNumber[numberOfTransitions]-frame)/frameNumber[numberOfTransitions]);
+      displayMotorPositions();
       pressFocusButton();
       pressShutterButton();
       if (generalPurposeTimer.expired())
@@ -732,11 +732,7 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
         releaseShutterButton();
         releaseFocusButton();
         exposureTimer.init(cameraExposureTime[selectedExposureIndex].value*OSCILLATOR_COMPENSATION);
-        motorSettleTimer.init(motorSettleTimeSetting);
-        lcd.setCursor(16,0);
-        lcd.print("M");
-
-        lcd.setCursor(17,0);
+        lcd.setCursor(19,3);
         lcd.print("E");
         mode = waitExposureTime;
       }
@@ -746,66 +742,91 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
       if(exposureTimer.expired())
       {
 
-        lcd.setCursor(17,0);
-        lcd.print(" ");
-        lcd.setCursor(16,0);
-        lcd.print("M");
-        mode = waitMotorSettleTime;
-      }
-      else
-      {
-        lcd.setCursor(15,3);
-        lcd.print(((intervalTimer.remaining())/1000)+1);
-        lcd.print("s ");
-        Serial.print(".");
-      }        
-      break;
-    case waitMotorSettleTime:
-//      Serial.println("waitMotorSettleTime");
-      if(motorSettleTimer.expired())
-      {
-        lcd.setCursor(16,0);
-        lcd.print(" ");
+        lcd.setCursor(19,3);
+        lcd.print("s");
+        generalPurposeTimer.init(cameraRecoveryTimeSetting);
         mode = incrementFrame;
       }
       else
       {
-        lcd.setCursor(15,3);
-        lcd.print(((intervalTimer.remaining())/1000)+1);
-        lcd.print("s ");
+        displayRemainingIntervalTime();
         Serial.print(".");
       }        
       break;
     case incrementFrame:
       frame ++;
-      if(frame > frameNumber[numberOfTransitions]) mode = sequenceFinished;
-      else mode = moveMotorsToPosition;
+      if(frame >= frameNumber[numberOfTransitions]) mode = sequenceFinished;
+      else
+     {
+        lcd.setCursor(18,3);
+        lcd.print("M");
+        mode = moveMotorsToPosition;
+     }
       break;
     case moveMotorsToPosition:
       lookupMotorSplinePosition(frame);
       updateMotorPositions();
-      mode = waitIntervalTime;
-      displayMotorPositions();
-      displayFrameNumber(frame,frameNumber[numberOfTransitions]);
+      if(motorsAreRunning())
+      {
+        displayRemainingIntervalTime();
+        return;  //wait until the motors reach the home position
+      }
+      motorSettleTimer.init(motorSettleTimeSetting);
+      lcd.setCursor(18,3);
+      lcd.print("m");
+      mode = waitMotorSettleTime;
+      break;
+    case waitMotorSettleTime:
+//      Serial.println("waitMotorSettleTime");
+      if (generalPurposeTimer.expired())  // Check if the Camera recovery timer has expired and clear the 'e' off the screen if it has
+      {
+        lcd.setCursor(19,3);
+        lcd.print(" ");
+      }
+      if(motorSettleTimer.expired())
+      {
+        lcd.setCursor(18,3);
+        lcd.print(" ");
+        mode = waitCameraRecoveryTime;
+      }
+      else
+      {
+        displayRemainingIntervalTime();
+        Serial.print(".");
+      }        
+      break;
+    case waitCameraRecoveryTime:
+//      Serial.println("waitCameraRecoveryTime");
+      if (generalPurposeTimer.expired())
+      {
+        lcd.setCursor(19,3);
+        lcd.print(" ");
+        mode = waitIntervalTime;
+      }
+      else
+      {
+        displayRemainingIntervalTime();
+        Serial.print(".");
+      }        
       break;
     case waitIntervalTime:
+      displayRemainingIntervalTime();
       if (intervalTimer.expired())
       {
         intervalTimer.addTime(intervalTime);
         generalPurposeTimer.init(shutterButtonTimeSetting);
         mode = shootFrame;
       }
-      else
-      {
-        lcd.setCursor(15,3);
-        lcd.print((intervalTimer.remaining()/1000)+1);
-        lcd.print("s ");
-      }        
       break;
     case sequenceFinished:
 //      releaseFocusButton();
       if(lensDefoggerModeList[lensDefoggerModeIndex].value == 2)
         setLensDefoggerState(false);
+        lcd.setCursor(0,0);
+        lcd.print("Completed. Press 'C'");
+        lcd.setCursor(17,3);  // clear off any residual motor settle or camera save flags on the screen
+        lcd.print("  ");
+
       break;
   }
 
@@ -820,5 +841,4 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
     displayMenu();
   }
 }
-
 

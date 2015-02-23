@@ -64,6 +64,44 @@ void on_saveMotorPositions_selected(MenuItem* p_menu_item)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
+// Backlight Time
+/////////////////////////////////////////////////////////////////////////////////
+void on_backlightTime_selected(MenuItem* p_menu_item)
+{
+  static int tempEnumIndex;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    tempEnumIndex = backlightTimeIndex;
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(5,2);
+    lcd.print(backlightTimeList[tempEnumIndex].menuText);
+  }
+
+  // callback function main:
+  if(selectEnumeratedValue(&tempEnumIndex,(sizeof(backlightTimeList)/sizeof(backlightTimeList[0]))))
+    {
+      lcd.setCursor(5,2);
+      lcd.print(backlightTimeList[tempEnumIndex].menuText);
+    }
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
+    {
+      backlightTimeIndex = tempEnumIndex;
+      nunchuk.setIdleTime (backlightTimeList[backlightTimeIndex].value);
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 // Lens defogger PWM setting
 /////////////////////////////////////////////////////////////////////////////////
 void on_lensDefoggerPWM_selected(MenuItem* p_menu_item)
@@ -191,7 +229,7 @@ void on_shutterButtonTime_selected(MenuItem* p_menu_item)
   }  
   
 // callback function main:
-    adjustIntValue(&shutterButtonTimeSetting,25,500);
+    adjustIntValue(&shutterButtonTimeSetting,25,1000);
     lcd.setCursor(5,2);
     lcd.print(shutterButtonTimeSetting);
     lcd.print("mS ");
@@ -204,39 +242,6 @@ void on_shutterButtonTime_selected(MenuItem* p_menu_item)
     if(nunchuk.userInput == 'C')  // if c is pressed, restore the original value
     {
       shutterButtonTimeSetting = tempShutterButtonTimeSetting;
-    }
-  }
-}
-
-/////////////////////////////////////////////////////////////////////////////////
-// Post-shoot Time Delay
-/////////////////////////////////////////////////////////////////////////////////
-void on_postShootTimeDelay_selected(MenuItem* p_menu_item)
-{
-  static long tempPostShootTimeDelaySetting;
- 
-// callback function "constructor"
-  if (ms.menu_item_was_just_selected())
-  {
-    tempPostShootTimeDelaySetting = postShootTimeDelaySetting;
-    displaySetHeading();
-    lcd.setCursor(5,2);
-  }  
-  
-// callback function main:
-    adjustIntValue(&postShootTimeDelaySetting,25,1000);
-    lcd.setCursor(5,2);
-    lcd.print(postShootTimeDelaySetting);
-    lcd.print("mS ");
-// callback function "destructor"
-  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
-  {
-    ms.deselect_set_menu_item();
-    displayMenu();
-
-    if(nunchuk.userInput == 'C')  // if c is pressed, restore the original value
-    {
-      postShootTimeDelaySetting = tempPostShootTimeDelaySetting;
     }
   }
 }
@@ -257,7 +262,7 @@ void on_cameraRecoveryTime_selected(MenuItem* p_menu_item)
   }  
   
 // callback function main:
-    adjustIntValue(&cameraRecoveryTimeSetting,25,1000);
+    adjustIntValue(&cameraRecoveryTimeSetting,25,5000);
     lcd.setCursor(5,2);
     lcd.print(cameraRecoveryTimeSetting);
     lcd.print("mS ");
@@ -290,7 +295,7 @@ void on_motorSettleTime_Selected(MenuItem* p_menu_item)
   }  
   
 // callback function main:
-    adjustIntValue(&motorSettleTimeSetting,25,1000);
+    adjustIntValue(&motorSettleTimeSetting,25,5000);
     lcd.setCursor(5,2);
     lcd.print(motorSettleTimeSetting);
     lcd.print("mS ");

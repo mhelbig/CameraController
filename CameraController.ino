@@ -33,6 +33,7 @@ float DmotorMinPosition       = 0;
 float DmotorMaxPosition       = 0;
 
 // Non-Volatile Settings:  (values are loaded from EEPROM on startup)
+int backlightTimeIndex;
 int lensDefoggerPWMsetting;
 int lensDefoggerModeIndex;
 int shutterButtonTimeSetting;
@@ -73,6 +74,13 @@ struct enumeratedMenuList
 {
   char menuText[21];
   int value;
+};
+
+enumeratedMenuList backlightTimeList[]=
+{
+  { "5 minutes      " ,300}, // Generally used for development or AC powered setups
+  { "30 seconds     " ,30},  // Generally used for day time
+  { "2 seconds      " ,2}    // Generally used for night mode to minimize eye strain going from menus to camera
 };
 
 enumeratedMenuList lensDefoggerModeList[]=

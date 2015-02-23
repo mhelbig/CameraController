@@ -17,6 +17,7 @@
 void initializeNavchuk(void)
 {
   nunchuk.init();
+  nunchuk.setIdleTime (backlightTimeList[backlightTimeIndex].value);
   Serial.println("Nunchuk input device initialized");
 }
 

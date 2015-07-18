@@ -92,6 +92,17 @@ void enableMotorDrivers(void)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
+// Disable motor drivers
+/////////////////////////////////////////////////////////////////////////////////
+void disableMotorDrivers(void)
+{
+  digitalWrite(X_ENABLE_PIN, true );
+  digitalWrite(Y_ENABLE_PIN, true );
+  digitalWrite(Z_ENABLE_PIN, true );
+  digitalWrite(D_ENABLE_PIN, true );
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 // Lookup motor positions from spline array
 /////////////////////////////////////////////////////////////////////////////////
 void lookupMotorSplinePosition(float frame)
@@ -169,8 +180,8 @@ void processMotorDriverEnables(void)
 {
   if (motorX.distanceToGo() == 0)  // turn each motor driver off when they've finished their move
     digitalWrite(X_ENABLE_PIN, true ); 
-  if(motorY.distanceToGo() == 0)
-    digitalWrite(Y_ENABLE_PIN, true );
+//  if(motorY.distanceToGo() == 0)  // The Y axis is having trouble holding position, so for now, we will leave this driver enabled
+//    digitalWrite(Y_ENABLE_PIN, true );
   if(motorZ.distanceToGo() == 0)
     digitalWrite(Z_ENABLE_PIN, true );
   if(motorD.distanceToGo() == 0)

@@ -568,6 +568,7 @@ void on_dryRun_selected (MenuItem* p_menu_item)
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
+    disableMotorDrivers();
     ms.deselect_set_menu_item();
     displayMenu();
   }
@@ -822,6 +823,7 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
 //      releaseFocusButton();
       if(lensDefoggerModeList[lensDefoggerModeIndex].value == 2)
         setLensDefoggerState(false);
+        disableMotorDrivers();
         lcd.setCursor(0,0);
         lcd.print("Completed. Press 'C'");
         lcd.setCursor(18,3);  // clear off any residual motor settle or camera save flags on the screen

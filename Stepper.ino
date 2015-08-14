@@ -178,8 +178,9 @@ void updateMotorPositions(void)
 /////////////////////////////////////////////////////////////////////////////////
 void processMotorDriverEnables(void)
 {
-  if (motorX.distanceToGo() == 0)  // turn each motor driver off when they've finished their move
-    digitalWrite(X_ENABLE_PIN, true ); 
+// turn each motor driver off when they've finished their move
+//  if (motorX.distanceToGo() == 0)  // The X axis is having trouble holding position, so for now, we will leave this driver enabled
+//    digitalWrite(X_ENABLE_PIN, true ); 
 //  if(motorY.distanceToGo() == 0)  // The Y axis is having trouble holding position, so for now, we will leave this driver enabled
 //    digitalWrite(Y_ENABLE_PIN, true );
   if(motorZ.distanceToGo() == 0)

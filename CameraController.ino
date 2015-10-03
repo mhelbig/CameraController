@@ -42,10 +42,18 @@ int cameraRecoveryTimeSetting;
 int motorSettleTimeSetting;
 int videoFramesPerSecondIndex;
 int selectedMotionProfileIndex;
+
 int selectedXmotorInvertIndex;
+int selectedXmotorEnableIndex;
+
 int selectedYmotorInvertIndex;
+int selectedYmotorEnableIndex;
+
 int selectedZmotorInvertIndex;
+int selectedZmotorEnableIndex;
+
 int selectedDmotorInvertIndex;
+int selectedDmotorEnableIndex;
 
 //motor control and spline variables:
 float frameNumber[MAX_NUMBER_OF_TRANSITIONS + 2] = {000,000,900,1200,1500,1800,1800};  // first and last values set tangent points
@@ -104,6 +112,13 @@ enumeratedMenuList motorInvertList[]=
   { "Invert" ,-1}
 };
 
+enumeratedMenuList motorEnableList[]=
+{
+  { "During Moves" ,0},
+  { "During Shoot" ,1},
+  { "Always On   " ,2}
+};
+
 enumeratedMenuList motionProfileList[]=
 {
   { "Step  " ,0},  // corresponds to the spline.cpp setDegree() function
@@ -158,6 +173,7 @@ void setup()
   initializeStepperTimerISR();
   initializeSplines();
   initializeLensDefogger();
+  disableMotorDrivers();
 
   Serial.print("Free memory = "); 
   Serial.println(freeMemory());

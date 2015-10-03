@@ -35,6 +35,7 @@ void on_calZoomDollyMin_selected(MenuItem* p_menu_item)
     return;
   }
 
+  setMotorEnableState(1);  // Turn on the motor enable lines
   if(adjustMotorPositions(&DmotorMinPosition, &ZmotorMinPosition, -1000000, 1000000, -1000000, 1000000))
   {
     ZmotorPosition = ZmotorMinPosition; // update the actual motor positions in real time
@@ -53,6 +54,7 @@ void on_calZoomDollyMin_selected(MenuItem* p_menu_item)
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
+    setMotorEnableState(0);  // Turn off the motor enable lines
     ms.deselect_set_menu_item();
     displayMenu();
 
@@ -100,6 +102,7 @@ void on_calZoomDollyMax_selected(MenuItem* p_menu_item)
     return;
   }
 
+  setMotorEnableState(1);  // Turn on the motor enable lines
   if(adjustMotorPositions(&DmotorMaxPosition, &ZmotorMaxPosition, -1000000, 1000000, -1000000, 1000000))
   {
     ZmotorPosition = ZmotorMaxPosition; // update the actual motor positions in real time
@@ -118,6 +121,7 @@ void on_calZoomDollyMax_selected(MenuItem* p_menu_item)
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
+    setMotorEnableState(0);  // Turn off the motor enable lines
     ms.deselect_set_menu_item();
     displayMenu();
 
@@ -304,6 +308,7 @@ void on_setPanTilt_selected(MenuItem* p_menu_item)
     return;
   }
 
+  setMotorEnableState(1);  // Turn on the motor enable lines
   if(adjustMotorPositions(&XmotorPosition, &YmotorPosition, -1000000, 1000000, -1000000, 1000000))  // no real limits on positions for pan and tilt
   {
     lcd.setCursor(0,1);
@@ -319,6 +324,7 @@ void on_setPanTilt_selected(MenuItem* p_menu_item)
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
+    setMotorEnableState(0);  // Turn off the motor enable lines
     ms.deselect_set_menu_item();
     displayMenu();
 
@@ -362,6 +368,7 @@ void on_setZoomDolly_selected(MenuItem* p_menu_item)
     return;
   }
 
+  setMotorEnableState(1);  // Turn on the motor enable lines
   if(adjustMotorPositions(&DmotorPosition, &ZmotorPosition, -100, 100, ZmotorMinPosition, ZmotorMaxPosition))
   {
     lcd.setCursor(0,1);
@@ -377,6 +384,7 @@ void on_setZoomDolly_selected(MenuItem* p_menu_item)
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
+    setMotorEnableState(0);  // Turn off the motor enable lines
     ms.deselect_set_menu_item();
     displayMenu();
 
@@ -550,6 +558,7 @@ void on_dryRun_selected (MenuItem* p_menu_item)
       displayMenu();
       return;
     }
+    setMotorEnableState(1);  // Turn on the motor enable lines
     lcd.clear();
     initializeSplines();
     frame = 0;
@@ -568,7 +577,7 @@ void on_dryRun_selected (MenuItem* p_menu_item)
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
-    disableMotorDrivers();
+    setMotorEnableState(0);  // Turn off the motor enable lines
     ms.deselect_set_menu_item();
     displayMenu();
   }
@@ -654,6 +663,7 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
       displayMenu();
       return;
     }
+    setMotorEnableState(1);  // Turn on the motor enable lines
     saveMotorPositions();    // Automatically save for now, since we've had a couple cases where the nunchuk lost comm
     frame = 0;
     intervalTime = (shootTimeSetting / frameNumber[numberOfTransitions] * 1000);
@@ -822,12 +832,15 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
     case sequenceFinished:
 //      releaseFocusButton();
       if(lensDefoggerModeList[lensDefoggerModeIndex].value == 2)
+      {
         setLensDefoggerState(false);
-        disableMotorDrivers();
-        lcd.setCursor(0,0);
-        lcd.print("Completed. Press 'C'");
-        lcd.setCursor(18,3);  // clear off any residual motor settle or camera save flags on the screen
-        lcd.print("  ");
+      }
+      
+      setMotorEnableState(0);  // Turn off the motor enable lines
+      lcd.setCursor(0,0);
+      lcd.print("Completed. Press 'C'");
+      lcd.setCursor(18,3);  // clear off any residual motor settle or camera save flags on the screen
+      lcd.print("  ");
 
       break;
   }

@@ -387,6 +387,43 @@ void on_XmotorInvert_selected(MenuItem* p_menu_item)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
+// X Motor Enable
+/////////////////////////////////////////////////////////////////////////////////
+void on_XmotorEnable_selected(MenuItem* p_menu_item)
+{
+  static int tempEnumIndex;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    tempEnumIndex = selectedXmotorEnableIndex;
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(5,2);
+    lcd.print(motorEnableList[tempEnumIndex].menuText);
+  }
+
+  // callback function main:
+  if(selectEnumeratedValue(&tempEnumIndex,(sizeof(motorEnableList)/sizeof(motorEnableList[0]))))
+    {
+      lcd.setCursor(5,2);
+      lcd.print(motorEnableList[tempEnumIndex].menuText);
+    }
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
+    {
+      selectedXmotorEnableIndex = tempEnumIndex;
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 // Y Motor Invert
 /////////////////////////////////////////////////////////////////////////////////
 void on_YmotorInvert_selected(MenuItem* p_menu_item)
@@ -419,6 +456,43 @@ void on_YmotorInvert_selected(MenuItem* p_menu_item)
     if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
     {
       selectedYmotorInvertIndex = tempEnumIndex;
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// Y Motor Enable
+/////////////////////////////////////////////////////////////////////////////////
+void on_YmotorEnable_selected(MenuItem* p_menu_item)
+{
+  static int tempEnumIndex;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    tempEnumIndex = selectedYmotorEnableIndex;
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(5,2);
+    lcd.print(motorEnableList[tempEnumIndex].menuText);
+  }
+
+  // callback function main:
+  if(selectEnumeratedValue(&tempEnumIndex,(sizeof(motorEnableList)/sizeof(motorEnableList[0]))))
+    {
+      lcd.setCursor(5,2);
+      lcd.print(motorEnableList[tempEnumIndex].menuText);
+    }
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
+    {
+      selectedYmotorEnableIndex = tempEnumIndex;
     }
   }
 }
@@ -461,6 +535,43 @@ void on_ZmotorInvert_selected(MenuItem* p_menu_item)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
+// Z Motor Enable
+/////////////////////////////////////////////////////////////////////////////////
+void on_ZmotorEnable_selected(MenuItem* p_menu_item)
+{
+  static int tempEnumIndex;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    tempEnumIndex = selectedZmotorEnableIndex;
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(5,2);
+    lcd.print(motorEnableList[tempEnumIndex].menuText);
+  }
+
+  // callback function main:
+  if(selectEnumeratedValue(&tempEnumIndex,(sizeof(motorEnableList)/sizeof(motorEnableList[0]))))
+    {
+      lcd.setCursor(5,2);
+      lcd.print(motorEnableList[tempEnumIndex].menuText);
+    }
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
+    {
+      selectedZmotorEnableIndex = tempEnumIndex;
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 // D Motor Invert
 /////////////////////////////////////////////////////////////////////////////////
 void on_DmotorInvert_selected(MenuItem* p_menu_item)
@@ -493,6 +604,43 @@ void on_DmotorInvert_selected(MenuItem* p_menu_item)
     if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
     {
       selectedDmotorInvertIndex = tempEnumIndex;
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// D Motor Enable
+/////////////////////////////////////////////////////////////////////////////////
+void on_DmotorEnable_selected(MenuItem* p_menu_item)
+{
+  static int tempEnumIndex;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    tempEnumIndex = selectedDmotorEnableIndex;
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(5,2);
+    lcd.print(motorEnableList[tempEnumIndex].menuText);
+  }
+
+  // callback function main:
+  if(selectEnumeratedValue(&tempEnumIndex,(sizeof(motorEnableList)/sizeof(motorEnableList[0]))))
+    {
+      lcd.setCursor(5,2);
+      lcd.print(motorEnableList[tempEnumIndex].menuText);
+    }
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
+    {
+      selectedDmotorEnableIndex = tempEnumIndex;
     }
   }
 }

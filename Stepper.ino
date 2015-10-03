@@ -15,6 +15,8 @@
 #define D_DIR_PIN          28
 #define D_ENABLE_PIN       24
 
+bool motorsEnabled = 0;    // flag used to control when in menus that run the motors
+
 // Setup the motor drivers
 AccelStepper motorX(AccelStepper::DRIVER,X_STEP_PIN,X_DIR_PIN);
 AccelStepper motorY(AccelStepper::DRIVER,Y_STEP_PIN,Y_DIR_PIN);
@@ -64,8 +66,9 @@ void initializeSteppers()
 /////////////////////////////////////////////////////////////////////////////////
 void initializeStepperTimerISR(void)
 {
-  Timer3.initialize(250);         // initialize timer3 to 4KHz
+  Timer3.initialize(250);                   // initialize timer3 to 4KHz
   Timer3.attachInterrupt(_ISRrunSteppers);  // attach stepper motor update as a timer overflow interrupt
+  setMotorEnableState(0);                   // start out with the motor enables off
   Serial.println("Stepper Interrupt Service Routine Started");
 }
 
@@ -89,6 +92,14 @@ void enableMotorDrivers(void)
   digitalWrite(Y_ENABLE_PIN, false );
   digitalWrite(Z_ENABLE_PIN, false );
   digitalWrite(D_ENABLE_PIN, false );
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// Set global motor enable state
+/////////////////////////////////////////////////////////////////////////////////
+void setMotorEnableState(bool state)
+{
+  motorsEnabled = state;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -149,10 +160,10 @@ int maxMotorLag(void)
 /////////////////////////////////////////////////////////////////////////////////
 void updateMotorPositions(void)
 {
-  static float PreviousXmotorPosition;
-  static float PreviousYmotorPosition;
-  static float PreviousZmotorPosition;
-  static float PreviousDmotorPosition;
+  static float PreviousXmotorPosition = XmotorPosition;  // Initialize these to the current motor positions
+  static float PreviousYmotorPosition = YmotorPosition;  // this ensures that the motor enables do not
+  static float PreviousZmotorPosition = ZmotorPosition;  // get turned on at the beginning for no reason
+  static float PreviousDmotorPosition = DmotorPosition;
   
   if (PreviousXmotorPosition != XmotorPosition ||
       PreviousYmotorPosition != YmotorPosition ||
@@ -178,14 +189,21 @@ void updateMotorPositions(void)
 /////////////////////////////////////////////////////////////////////////////////
 void processMotorDriverEnables(void)
 {
-// turn each motor driver off when they've finished their move
-//  if (motorX.distanceToGo() == 0)  // The X axis is having trouble holding position, so for now, we will leave this driver enabled
-//    digitalWrite(X_ENABLE_PIN, true ); 
-//  if(motorY.distanceToGo() == 0)  // The Y axis is having trouble holding position, so for now, we will leave this driver enabled
-//    digitalWrite(Y_ENABLE_PIN, true );
-  if(motorZ.distanceToGo() == 0)
+// turn each motor driver off when they've finished their move if the enable mode is set to "During Moves"
+  if(motorX.distanceToGo() == 0 && disableMotorOK(selectedXmotorEnableIndex))
+    digitalWrite(X_ENABLE_PIN, true ); 
+  if(motorY.distanceToGo() == 0 && disableMotorOK(selectedYmotorEnableIndex))
+    digitalWrite(Y_ENABLE_PIN, true );
+  if(motorZ.distanceToGo() == 0 && disableMotorOK(selectedZmotorEnableIndex))
     digitalWrite(Z_ENABLE_PIN, true );
-  if(motorD.distanceToGo() == 0)
+  if(motorD.distanceToGo() == 0 && disableMotorOK(selectedDmotorEnableIndex))
     digitalWrite(D_ENABLE_PIN, true );
 }
 
+bool disableMotorOK(int index)
+{
+  if(index == 2) return 0;                      // "Always on" = never disable
+  if(index == 1) return !motorsEnabled;         // "During Shoot" = disable if global enable is off
+  if(index == 0) return 1;                      // "During Moves" = let the "distance to go" turn them off
+}
+    

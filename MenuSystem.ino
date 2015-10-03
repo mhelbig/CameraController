@@ -47,7 +47,7 @@ void navigationHandler()
       break;
     case 'c': // Not assigned, C button held, used inside some menus
       break;
-    case 'z': // Not assigned, C button held, used inside some menus
+    case 'z': // Not assigned, Z button held, used inside some menus
       break;
     default:
       break;

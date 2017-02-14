@@ -55,8 +55,8 @@ void initializeSteppers()
   motorZ.setMaxSpeed(2000.0);
   motorZ.setAcceleration(3000.0);
 
-  motorD.setMaxSpeed(2000.0);
-  motorD.setAcceleration(3000.0);
+  motorD.setMaxSpeed(10000.0);
+  motorD.setAcceleration(50000.0);
 
   Serial.println("Stepper motors initialized");
 }

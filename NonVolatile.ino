@@ -94,7 +94,7 @@ void restoreDefaultSettings(void)
   selectedExposureIndex       = 21;
   shutterButtonTimeSetting    = 300;
   backlightTimeIndex          = 2;
-  cameraRecoveryTimeSetting   = 1600;
+  cameraRecoveryTimeSetting   = 2850;
   motorSettleTimeSetting      = 500;
   videoFramesPerSecondIndex   = 2;
   selectedMotionProfileIndex  = 2;

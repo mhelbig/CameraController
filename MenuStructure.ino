@@ -13,13 +13,13 @@ Menu mm("    PanTron 4000");
 
 //Timelapse menu
 Menu tlMenu                 ("Timelapse Video");
-MenuItem calZoomDollyMin    ("Calibrate Zoom Min");
-MenuItem calZoomDollyMax    ("Calibrate Zoom Max");
+MenuItem calZoomMin         ("Calibrate Zoom Min");
+MenuItem calZoomMax         ("Calibrate Zoom Max");
 MenuItem setExposureTime    ("Camera Shutter Time");
 MenuItem transitionToSet    ("Select transition");
 MenuItem setVideoTime       ("Set video time");
 MenuItem setPanTilt         ("Set pan/tilt");
-MenuItem setZoomDolly       ("Set zoom");
+MenuItem setZoomSlide       ("Set zoom/slide");
 MenuItem addTransition      ("Add transition");
 MenuItem delTransition      ("Delete transition");
 MenuItem setShootTime       ("Set shoot time");
@@ -63,13 +63,13 @@ void initializeMenu(void)
 {
 //Timelapse menu
   mm.add_menu(&tlMenu);
-  tlMenu.add_item(&calZoomDollyMin,  &on_calZoomDollyMin_selected);
-  tlMenu.add_item(&calZoomDollyMax,  &on_calZoomDollyMax_selected);
+  tlMenu.add_item(&calZoomMin,       &on_calZoomMin_selected);
+  tlMenu.add_item(&calZoomMax,       &on_calZoomMax_selected);
   tlMenu.add_item(&setExposureTime,  &on_setExposureTime_selected);
   tlMenu.add_item(&transitionToSet,  &on_transitionToSet_selected);
   tlMenu.add_item(&setVideoTime,     &on_set_videoTime_selected);
   tlMenu.add_item(&setPanTilt,       &on_setPanTilt_selected);
-  tlMenu.add_item(&setZoomDolly,     &on_setZoomDolly_selected);
+  tlMenu.add_item(&setZoomSlide,     &on_setZoomSlide_selected);
   tlMenu.add_item(&addTransition,    &on_addTransition_selected);
   tlMenu.add_item(&delTransition,    &on_delTransition_selected);
   tlMenu.add_item(&setShootTime,     &on_set_shootTime_selected);

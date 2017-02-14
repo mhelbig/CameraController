@@ -2,7 +2,7 @@
 // Calibrate Zoom MIN position
 /////////////////////////////////////////////////////////////////////////////////
 
-void on_calZoomDollyMin_selected(MenuItem* p_menu_item)
+void on_calZoomMin_selected(MenuItem* p_menu_item)
 {
   static boolean waitForJoystickToBeCentered;
   
@@ -70,7 +70,7 @@ void on_calZoomDollyMin_selected(MenuItem* p_menu_item)
 // Calibrate Zoom MAX position
 /////////////////////////////////////////////////////////////////////////////////
 
-void on_calZoomDollyMax_selected(MenuItem* p_menu_item)
+void on_calZoomMax_selected(MenuItem* p_menu_item)
 {
   static boolean waitForJoystickToBeCentered;
   
@@ -337,10 +337,10 @@ void on_setPanTilt_selected(MenuItem* p_menu_item)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-// Set Zoom and Dolly positions
+// Set Zoom and Slide positions
 /////////////////////////////////////////////////////////////////////////////////
 
-void on_setZoomDolly_selected(MenuItem* p_menu_item)
+void on_setZoomSlide_selected(MenuItem* p_menu_item)
 {
   static boolean waitForJoystickToBeCentered;
   
@@ -369,7 +369,7 @@ void on_setZoomDolly_selected(MenuItem* p_menu_item)
   }
 
   setMotorEnableState(1);  // Turn on the motor enable lines
-  if(adjustMotorPositions(&DmotorPosition, &ZmotorPosition, -100, 100, ZmotorMinPosition, ZmotorMaxPosition))
+  if(adjustMotorPositions(&DmotorPosition, &ZmotorPosition, -1000000, 1000000, ZmotorMinPosition, ZmotorMaxPosition))
   {
     lcd.setCursor(0,1);
     lcd.print("                    ");

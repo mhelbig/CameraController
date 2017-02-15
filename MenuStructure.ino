@@ -20,6 +20,7 @@ MenuItem transitionToSet    ("Select transition");
 MenuItem setVideoTime       ("Set video time");
 MenuItem setPanTilt         ("Set pan/tilt");
 MenuItem setZoomSlide       ("Set zoom/slide");
+MenuItem setRotateSteps     ("Set Rotate");
 MenuItem addTransition      ("Add transition");
 MenuItem delTransition      ("Delete transition");
 MenuItem setShootTime       ("Set shoot time");
@@ -72,6 +73,7 @@ void initializeMenu(void)
   tlMenu.add_item(&setVideoTime,     &on_set_videoTime_selected);
   tlMenu.add_item(&setPanTilt,       &on_setPanTilt_selected);
   tlMenu.add_item(&setZoomSlide,     &on_setZoomSlide_selected);
+  tlMenu.add_item(&setRotateSteps,   &on_setRotateSteps_selected);
   tlMenu.add_item(&addTransition,    &on_addTransition_selected);
   tlMenu.add_item(&delTransition,    &on_delTransition_selected);
   tlMenu.add_item(&setShootTime,     &on_set_shootTime_selected);

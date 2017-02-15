@@ -357,6 +357,7 @@ void on_setZoomSlide_selected(MenuItem* p_menu_item)
     YmotorPosition = YmotorSplinePoints_y[currentTransitionSelected];
     ZmotorPosition = ZmotorSplinePoints_y[currentTransitionSelected];
     DmotorPosition = DmotorSplinePoints_y[currentTransitionSelected];
+    // add in the R motor here and to all the other functions like it
     
     waitForJoystickToBeCentered = 10;   // flag that stops the joystick shift from messing up the motor positions
   }
@@ -392,6 +393,50 @@ void on_setZoomSlide_selected(MenuItem* p_menu_item)
     {
       ZmotorSplinePoints_y[currentTransitionSelected] = round(ZmotorPosition);
       DmotorSplinePoints_y[currentTransitionSelected] = round(DmotorPosition);
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// Set Rotate Steps
+/////////////////////////////////////////////////////////////////////////////////
+
+void on_setRotateSteps_selected(MenuItem* p_menu_item)
+{
+  static long tempRmotorIncrementValue;
+
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    tempRmotorIncrementValue = RmotorIncrementValue;
+    lcd.clear();
+    displaySetHeading();
+  }
+
+  // callback function main:
+  adjustAnalogValue(&RmotorIncrementValue,-20000,20000,false);
+  {
+    RmotorIncrementValue=round(RmotorIncrementValue);
+    lcd.setCursor(0,1);
+    lcd.print("                    ");
+    lcd.setCursor(0,1);
+    lcd.print(RmotorIncrementValue,1);
+    lcd.print(" Steps/frame");
+    lcd.setCursor(0,3);
+    lcd.print("Total:");
+    lcd.print(RmotorIncrementValue*frameNumber[numberOfTransitions],0);
+    lcd.print("   ");
+  }
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'C')  // if C is pressed save the old value back into the rotational steps variable
+    {
+      RmotorIncrementValue = tempRmotorIncrementValue;
     }
   }
 }

@@ -646,6 +646,80 @@ void on_DmotorEnable_selected(MenuItem* p_menu_item)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
+// R Motor Invert
+/////////////////////////////////////////////////////////////////////////////////
+void on_RmotorInvert_selected(MenuItem* p_menu_item)
+{
+  static int tempEnumIndex;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    tempEnumIndex = selectedRmotorInvertIndex;
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(5,2);
+    lcd.print(motorInvertList[tempEnumIndex].menuText);
+  }
+
+  // callback function main:
+  if(selectEnumeratedValue(&tempEnumIndex,(sizeof(motorInvertList)/sizeof(motorInvertList[0]))))
+    {
+      lcd.setCursor(5,2);
+      lcd.print(motorInvertList[tempEnumIndex].menuText);
+    }
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
+    {
+      selectedRmotorInvertIndex = tempEnumIndex;
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// R Motor Enable
+/////////////////////////////////////////////////////////////////////////////////
+void on_RmotorEnable_selected(MenuItem* p_menu_item)
+{
+  static int tempEnumIndex;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    tempEnumIndex = selectedRmotorEnableIndex;
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(5,2);
+    lcd.print(motorEnableList[tempEnumIndex].menuText);
+  }
+
+  // callback function main:
+  if(selectEnumeratedValue(&tempEnumIndex,(sizeof(motorEnableList)/sizeof(motorEnableList[0]))))
+    {
+      lcd.setCursor(5,2);
+      lcd.print(motorEnableList[tempEnumIndex].menuText);
+    }
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
+    {
+      selectedRmotorEnableIndex = tempEnumIndex;
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 // Save settings to EEPROM
 /////////////////////////////////////////////////////////////////////////////////
 void on_saveNonVolatileSettings_selected(MenuItem* p_menu_item)

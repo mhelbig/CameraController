@@ -51,6 +51,8 @@ MenuItem ZmotorInvert       ("Z motor direction");
 MenuItem ZmotorEnable       ("Z motor enable");
 MenuItem DmotorInvert       ("D motor direction");
 MenuItem DmotorEnable       ("D motor enable");
+MenuItem RmotorInvert       ("R motor direction");
+MenuItem RmotorEnable       ("R motor enable");
 MenuItem loadSettings       ("Load settings");
 MenuItem saveSettings       ("Save settings");
 MenuItem restoreDefaults    ("Restore defaults");
@@ -101,6 +103,8 @@ void initializeMenu(void)
   suMenu.add_item(&ZmotorEnable,       &on_ZmotorEnable_selected);
   suMenu.add_item(&DmotorInvert,       &on_DmotorInvert_selected);
   suMenu.add_item(&DmotorEnable,       &on_DmotorEnable_selected);
+  suMenu.add_item(&RmotorInvert,       &on_RmotorInvert_selected);
+  suMenu.add_item(&RmotorEnable,       &on_RmotorEnable_selected);
   suMenu.add_item(&saveSettings,       &on_saveNonVolatileSettings_selected);
   suMenu.add_item(&loadSettings,       &on_loadNonVolatileSettings_selected);
   suMenu.add_item(&restoreDefaults,    &on_restoreNonVolatileSettings_selected);

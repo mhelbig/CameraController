@@ -15,6 +15,10 @@
 #define D_DIR_PIN          28
 #define D_ENABLE_PIN       24
 
+#define R_STEP_PIN         36
+#define R_DIR_PIN          34
+#define R_ENABLE_PIN       30
+
 bool motorsEnabled = 0;    // flag used to control when in menus that run the motors
 
 // Setup the motor drivers
@@ -22,6 +26,7 @@ AccelStepper motorX(AccelStepper::DRIVER,X_STEP_PIN,X_DIR_PIN);
 AccelStepper motorY(AccelStepper::DRIVER,Y_STEP_PIN,Y_DIR_PIN);
 AccelStepper motorZ(AccelStepper::DRIVER,Z_STEP_PIN,Z_DIR_PIN);
 AccelStepper motorD(AccelStepper::DRIVER,D_STEP_PIN,D_DIR_PIN);
+AccelStepper motorR(AccelStepper::DRIVER,R_STEP_PIN,R_DIR_PIN);
 
 #define MOTOR_LAGGING_THRESHOLD 10  // Motors are considered lagging if they are behind this many steps
 
@@ -46,6 +51,10 @@ void initializeSteppers()
   pinMode(D_DIR_PIN, OUTPUT);
   pinMode(D_ENABLE_PIN, OUTPUT);
 
+  pinMode(R_STEP_PIN, OUTPUT);
+  pinMode(R_DIR_PIN, OUTPUT);
+  pinMode(R_ENABLE_PIN, OUTPUT);
+
   motorX.setMaxSpeed(2000.0);
   motorX.setAcceleration(3000.0);
 
@@ -55,8 +64,11 @@ void initializeSteppers()
   motorZ.setMaxSpeed(2000.0);
   motorZ.setAcceleration(3000.0);
 
-  motorD.setMaxSpeed(10000.0);
+  motorD.setMaxSpeed(10000.0);         // These drive a PID servo controller, so we can max out the speed and accelleration and let the servo manage the rest
   motorD.setAcceleration(50000.0);
+
+  motorR.setMaxSpeed(2000.0);
+  motorR.setAcceleration(3000.0);
 
   Serial.println("Stepper motors initialized");
 }
@@ -81,6 +93,7 @@ void _ISRrunSteppers(void)  // stepper motor ISR callback function
   motorY.run();
   motorZ.run();
   motorD.run();
+  motorR.run();
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -92,6 +105,7 @@ void enableMotorDrivers(void)
   digitalWrite(Y_ENABLE_PIN, false );
   digitalWrite(Z_ENABLE_PIN, false );
   digitalWrite(D_ENABLE_PIN, false );
+  digitalWrite(R_ENABLE_PIN, false );
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -111,17 +125,19 @@ void disableMotorDrivers(void)
   digitalWrite(Y_ENABLE_PIN, true );
   digitalWrite(Z_ENABLE_PIN, true );
   digitalWrite(D_ENABLE_PIN, true );
+  digitalWrite(R_ENABLE_PIN, true );
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-// Lookup motor positions from spline array
+// Lookup motor positions
 /////////////////////////////////////////////////////////////////////////////////
-void lookupMotorSplinePosition(float frame)
+void lookupMotorPositions(float frame)
 {
   XmotorPosition = XmotorSpline.value(frame);
   YmotorPosition = YmotorSpline.value(frame);
   ZmotorPosition = ZmotorSpline.value(frame);
   DmotorPosition = DmotorSpline.value(frame);
+  RmotorPosition = RmotorIncrementValue * frame;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -132,7 +148,8 @@ boolean motorsAreRunning(void)
   if (motorX.distanceToGo() != 0 ||
       motorY.distanceToGo() != 0 ||
       motorZ.distanceToGo() != 0 ||
-      motorD.distanceToGo() != 0   )
+      motorD.distanceToGo() != 0 ||
+      motorR.distanceToGo() != 0   )
   return (true);
   else return (false);
 }
@@ -146,12 +163,14 @@ int maxMotorLag(void)
   int yLag = abs(motorY.distanceToGo());
   int zLag = abs(motorZ.distanceToGo());
   int dLag = abs(motorD.distanceToGo());
+  int rLag = abs(motorR.distanceToGo());
   int maxLag = 1;
 
   maxLag = max(maxLag, xLag);
   maxLag = max(maxLag, yLag);
   maxLag = max(maxLag, zLag);
   maxLag = max(maxLag, dLag);
+  maxLag = max(maxLag, rLag);
   return(maxLag);  
 }
 
@@ -164,11 +183,13 @@ void updateMotorPositions(void)
   static float PreviousYmotorPosition = YmotorPosition;  // this ensures that the motor enables do not
   static float PreviousZmotorPosition = ZmotorPosition;  // get turned on at the beginning for no reason
   static float PreviousDmotorPosition = DmotorPosition;
+  static float PreviousRmotorPosition = RmotorPosition;
   
   if (PreviousXmotorPosition != XmotorPosition ||
       PreviousYmotorPosition != YmotorPosition ||
       PreviousZmotorPosition != ZmotorPosition ||
-      PreviousDmotorPosition != DmotorPosition)
+      PreviousDmotorPosition != DmotorPosition ||
+      PreviousRmotorPosition != RmotorPosition)
   {
     enableMotorDrivers();
   }
@@ -177,11 +198,13 @@ void updateMotorPositions(void)
   motorY.moveTo((long)YmotorPosition * motorInvertList[selectedYmotorInvertIndex].value);
   motorZ.moveTo((long)ZmotorPosition * motorInvertList[selectedZmotorInvertIndex].value);
   motorD.moveTo((long)DmotorPosition * motorInvertList[selectedDmotorInvertIndex].value);
+  motorR.moveTo((long)RmotorPosition * motorInvertList[selectedRmotorInvertIndex].value);
   
   PreviousXmotorPosition = XmotorPosition;
   PreviousYmotorPosition = YmotorPosition;
   PreviousZmotorPosition = ZmotorPosition;
   PreviousDmotorPosition = DmotorPosition;
+  PreviousRmotorPosition = RmotorPosition;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -198,6 +221,8 @@ void processMotorDriverEnables(void)
     digitalWrite(Z_ENABLE_PIN, true );
   if(motorD.distanceToGo() == 0 && disableMotorOK(selectedDmotorEnableIndex))
     digitalWrite(D_ENABLE_PIN, true );
+  if(motorR.distanceToGo() == 0 && disableMotorOK(selectedRmotorEnableIndex))
+    digitalWrite(R_ENABLE_PIN, true );
 }
 
 bool disableMotorOK(int index)

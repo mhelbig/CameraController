@@ -14,7 +14,7 @@ Navchuk nunchuk = Navchuk();
 /////////////////////////////////////////////////////////////////////////////////
 // Constants
 /////////////////////////////////////////////////////////////////////////////////
-#define MAX_NUMBER_OF_TRANSITIONS 8
+#define MAX_NUMBER_OF_TRANSITIONS 5
 #define OSCILLATOR_COMPENSATION 1.05  // Use this to correct for long exposure time sync issues
                                       // between the Arduino clock and the camera 1.0 = 100%
 
@@ -31,6 +31,7 @@ float ZmotorMinPosition       = 0;
 float ZmotorMaxPosition       = 0;
 float DmotorMinPosition       = 0;
 float DmotorMaxPosition       = 0;
+float RmotorIncrementValue    = 10;
 
 // Non-Volatile Settings:  (values are loaded from EEPROM on startup)
 int backlightTimeIndex;
@@ -55,6 +56,9 @@ int selectedZmotorEnableIndex;
 int selectedDmotorInvertIndex;
 int selectedDmotorEnableIndex;
 
+int selectedRmotorInvertIndex;
+int selectedRmotorEnableIndex;
+
 //motor control and spline variables:
 float frameNumber[MAX_NUMBER_OF_TRANSITIONS + 2] = {000,000,900,1200,1500,1800,1800};  // first and last values set tangent points
 
@@ -74,6 +78,7 @@ Spline DmotorSpline;
 float DmotorSplinePoints_y[MAX_NUMBER_OF_TRANSITIONS + 2] = {0,0,0,0,0,0,0};           // motor positions
 float DmotorPosition = 0;
 
+float RmotorPosition = 0;                                                              // Rotation does not use a spline function, just an increment each frame
 
 /////////////////////////////////////////////////////////////////////////////////
 // Enumerated menu lists

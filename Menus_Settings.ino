@@ -43,7 +43,7 @@ void on_saveMotorPositions_selected(MenuItem* p_menu_item)
     lcd.print("Press C to cancel");
 
     initializeSplines();
-    lookupMotorSplinePosition(0);  // move all the motors back to their starting reference positions
+    lookupMotorPositions(0);  // move all the motors back to their starting reference positions
     updateMotorPositions();
   }
 

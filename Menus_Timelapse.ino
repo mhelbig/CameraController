@@ -566,7 +566,7 @@ void on_dryRun_selected (MenuItem* p_menu_item)
     
   if( adjustAnalogValue(&frame,0,(long)frameNumber[numberOfTransitions],false))
   {
-    lookupMotorSplinePosition(frame);
+    lookupMotorPositions(frame);
     updateMotorPositions();
 
     displayFrameNumbers(frameNumber[numberOfTransitions],frame);
@@ -668,7 +668,7 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
     frame = 0;
     intervalTime = (shootTimeSetting / frameNumber[numberOfTransitions] * 1000);
     initializeSplines();
-    lookupMotorSplinePosition(frame);
+    lookupMotorPositions(frame);
     updateMotorPositions();
     
     displaySetHeading();
@@ -775,7 +775,8 @@ void on_RunSequence_selected(MenuItem* p_menu_item)
      }
       break;
     case moveMotorsToPosition:
-      lookupMotorSplinePosition(frame);
+      lookupMotorPositions(frame);
+      
       updateMotorPositions();
       if(motorsAreRunning())
       {

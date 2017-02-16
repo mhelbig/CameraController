@@ -411,21 +411,23 @@ void on_setRotateSteps_selected(MenuItem* p_menu_item)
     tempRmotorIncrementValue = RmotorIncrementValue;
     lcd.clear();
     displaySetHeading();
+    lcd.setCursor(0,1);
+    lcd.print("Steps/frame:");
+    lcd.setCursor(0,2);
+    lcd.print("Total Steps:");
+    lcd.setCursor(0,3);
+    lcd.print("Revolutions:");
   }
 
   // callback function main:
-  adjustAnalogValue(&RmotorIncrementValue,-20000,20000,false);
+  adjustIntValue(&RmotorIncrementValue,-1000,1000);
   {
-    RmotorIncrementValue=round(RmotorIncrementValue);
-    lcd.setCursor(0,1);
-    lcd.print("                    ");
-    lcd.setCursor(0,1);
+    lcd.setCursor(12,1);
     lcd.print(RmotorIncrementValue,1);
-    lcd.print(" Steps/frame");
-    lcd.setCursor(0,3);
-    lcd.print("Total:");
-    lcd.print(RmotorIncrementValue*frameNumber[numberOfTransitions],0);
-    lcd.print("   ");
+    lcd.print(" ");
+    lcd.setCursor(12,2);
+    lcd.print(RmotorIncrementValue*frameNumber[numberOfTransitions]/1000,0);
+    lcd.print("K ");
   }
 
   // callback function "destructor"

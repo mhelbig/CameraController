@@ -31,7 +31,7 @@ float ZmotorMinPosition       = 0;
 float ZmotorMaxPosition       = 0;
 float DmotorMinPosition       = 0;
 float DmotorMaxPosition       = 0;
-float RmotorIncrementValue    = 0;
+int   RmotorIncrementValue    = 0;
 
 // Non-Volatile Settings:  (values are loaded from EEPROM on startup)
 int backlightTimeIndex;

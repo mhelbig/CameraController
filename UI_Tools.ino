@@ -208,7 +208,7 @@ void displayMotorPositions(void)
   lcd.setCursor(1,3);
   lcd.print("R: ");
   lcd.print(round(RmotorPosition));
-  lcd.print("  ");
+  lcd.print("      ");
 }
 
 /////////////////////////////////////////////////////////////////////////////////

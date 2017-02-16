@@ -423,13 +423,13 @@ void on_setRotateSteps_selected(MenuItem* p_menu_item)
   adjustIntValue(&RmotorIncrementValue,-1000,1000);
   {
     lcd.setCursor(12,1);
-    lcd.print(RmotorIncrementValue,1);
+    lcd.print(RmotorIncrementValue);
     lcd.print(" ");
     lcd.setCursor(12,2);
     lcd.print(RmotorIncrementValue*frameNumber[numberOfTransitions]/1000,0);
     lcd.print("K ");
     lcd.setCursor(12,3);
-    lcd.print(RmotorIncrementValue*frameNumber[numberOfTransitions]/RmotorStepsPerRev,1);
+    lcd.print(RmotorIncrementValue*frameNumber[numberOfTransitions]/RmotorStepsPerRev,3);
     lcd.print(" ");
   }
 

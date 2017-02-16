@@ -33,6 +33,10 @@ float DmotorMinPosition       = 0;
 float DmotorMaxPosition       = 0;
 int   RmotorIncrementValue    = 0;
 
+// Video Pan Mode:
+float panTimeSetting          = 30;
+float panRevsSetting          = 1;
+
 // Non-Volatile Settings:  (values are loaded from EEPROM on startup)
 int backlightTimeIndex;
 int lensDefoggerPWMsetting;

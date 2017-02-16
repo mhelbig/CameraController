@@ -28,9 +28,10 @@ MenuItem dryRun             ("Dry Run");
 MenuItem setStartDelay      ("Set start delay");
 MenuItem RunSequence        ("Run sequence");
 
-//panoramic menu
-Menu pmMenu                 ("360 Panograph");
-MenuItem pm_autoMode        ("Panograph Auto");
+//video pan mode
+Menu vpMenu                 ("Video Pan");
+MenuItem setPanTime         ("Set Pan Time");
+MenuItem setPanRevs         ("Set Pan Revolutions");
 
 //Setup menu
 Menu suMenu                 ("System Settings");
@@ -68,24 +69,25 @@ void initializeMenu(void)
 {
 //Timelapse menu
   mm.add_menu(&tlMenu);
-  tlMenu.add_item(&calZoomMin,       &on_calZoomMin_selected);
-  tlMenu.add_item(&calZoomMax,       &on_calZoomMax_selected);
-  tlMenu.add_item(&setExposureTime,  &on_setExposureTime_selected);
-  tlMenu.add_item(&transitionToSet,  &on_transitionToSet_selected);
-  tlMenu.add_item(&setVideoTime,     &on_set_videoTime_selected);
-  tlMenu.add_item(&setPanTilt,       &on_setPanTilt_selected);
-  tlMenu.add_item(&setZoomSlide,     &on_setZoomSlide_selected);
-  tlMenu.add_item(&setRotateSteps,   &on_setRotateSteps_selected);
-  tlMenu.add_item(&addTransition,    &on_addTransition_selected);
-  tlMenu.add_item(&delTransition,    &on_delTransition_selected);
-  tlMenu.add_item(&setShootTime,     &on_set_shootTime_selected);
-  tlMenu.add_item(&dryRun,           &on_dryRun_selected);
-  tlMenu.add_item(&setStartDelay,    &on_setStartDelay_selected);
-  tlMenu.add_item(&RunSequence,      &on_RunSequence_selected);
+  tlMenu.add_item(&calZoomMin,         &on_calZoomMin_selected);
+  tlMenu.add_item(&calZoomMax,         &on_calZoomMax_selected);
+  tlMenu.add_item(&setExposureTime,    &on_setExposureTime_selected);
+  tlMenu.add_item(&transitionToSet,    &on_transitionToSet_selected);
+  tlMenu.add_item(&setVideoTime,       &on_set_videoTime_selected);
+  tlMenu.add_item(&setPanTilt,         &on_setPanTilt_selected);
+  tlMenu.add_item(&setZoomSlide,       &on_setZoomSlide_selected);
+  tlMenu.add_item(&setRotateSteps,     &on_setRotateSteps_selected);
+  tlMenu.add_item(&addTransition,      &on_addTransition_selected);
+  tlMenu.add_item(&delTransition,      &on_delTransition_selected);
+  tlMenu.add_item(&setShootTime,       &on_set_shootTime_selected);
+  tlMenu.add_item(&dryRun,             &on_dryRun_selected);
+  tlMenu.add_item(&setStartDelay,      &on_setStartDelay_selected);
+  tlMenu.add_item(&RunSequence,        &on_RunSequence_selected);
 
-//Panoramic menu
-//  mm.add_menu(&pmMenu);
-//  pmMenu.add_item(&pm_autoMode, &on_pm_autoMode_selected);
+//Video Pan Mode
+  mm.add_menu(&vpMenu);
+  vpMenu.add_item(&setPanTime,         &on_set_PanTime_selected);
+  vpMenu.add_item(&setPanRevs,         &on_set_PanRevs_selected);
 
 //Setup menu
   mm.add_menu(&suMenu);

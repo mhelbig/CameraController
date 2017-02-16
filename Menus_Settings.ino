@@ -424,6 +424,42 @@ void on_XmotorEnable_selected(MenuItem* p_menu_item)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
+// X Motor Pulses Per Rev
+/////////////////////////////////////////////////////////////////////////////////
+void on_XmotorPulsesPerRev_selected(MenuItem* p_menu_item)
+{
+  static unsigned int tempPPRsetting;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    tempPPRsetting = XmotorStepsPerRev;
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(5,2);
+    lcd.print(XmotorStepsPerRev);
+  }
+
+  // callback function main:
+    adjustUnsignedIntValue(&XmotorStepsPerRev,50,65000);
+    lcd.setCursor(5,2);
+    lcd.print(XmotorStepsPerRev);
+    lcd.print(" ");
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'C')  // if C is pressed we keep the old value
+    {
+      XmotorStepsPerRev = tempPPRsetting;
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 // Y Motor Invert
 /////////////////////////////////////////////////////////////////////////////////
 void on_YmotorInvert_selected(MenuItem* p_menu_item)
@@ -715,6 +751,42 @@ void on_RmotorEnable_selected(MenuItem* p_menu_item)
     if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
     {
       selectedRmotorEnableIndex = tempEnumIndex;
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// R Motor Pulses Per Rev
+/////////////////////////////////////////////////////////////////////////////////
+void on_RmotorPulsesPerRev_selected(MenuItem* p_menu_item)
+{
+  static unsigned int tempPPRsetting;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    tempPPRsetting = RmotorStepsPerRev;
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(5,2);
+    lcd.print(RmotorStepsPerRev);
+  }
+
+  // callback function main:
+    adjustUnsignedIntValue(&RmotorStepsPerRev,50,65000);
+    lcd.setCursor(5,2);
+    lcd.print(RmotorStepsPerRev);
+    lcd.print(" ");
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'C')  // if C is pressed we keep the old value
+    {
+      RmotorStepsPerRev = tempPPRsetting;
     }
   }
 }

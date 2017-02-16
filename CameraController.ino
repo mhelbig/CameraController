@@ -46,6 +46,7 @@ int selectedMotionProfileIndex;
 
 int selectedXmotorInvertIndex;
 int selectedXmotorEnableIndex;
+unsigned int XmotorStepsPerRev;
 
 int selectedYmotorInvertIndex;
 int selectedYmotorEnableIndex;
@@ -58,6 +59,7 @@ int selectedDmotorEnableIndex;
 
 int selectedRmotorInvertIndex;
 int selectedRmotorEnableIndex;
+unsigned int RmotorStepsPerRev;
 
 //motor control and spline variables:
 float frameNumber[MAX_NUMBER_OF_TRANSITIONS + 2] = {000,000,900,1200,1500,1800,1800};  // first and last values set tangent points

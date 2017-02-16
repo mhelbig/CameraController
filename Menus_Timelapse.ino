@@ -428,6 +428,9 @@ void on_setRotateSteps_selected(MenuItem* p_menu_item)
     lcd.setCursor(12,2);
     lcd.print(RmotorIncrementValue*frameNumber[numberOfTransitions]/1000,0);
     lcd.print("K ");
+    lcd.setCursor(12,3);
+    lcd.print(RmotorIncrementValue*frameNumber[numberOfTransitions]/RmotorStepsPerRev,1);
+    lcd.print(" ");
   }
 
   // callback function "destructor"

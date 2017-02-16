@@ -13,12 +13,16 @@ int videoFramesPerSecondIndexAddress  = EEPROM.getAddress(sizeof(int));
 int selectedMotionProfileIndexAddress = EEPROM.getAddress(sizeof(int));
 int selectedXmotorInvertIndexAddress  = EEPROM.getAddress(sizeof(int));
 int selectedXmotorEnableIndexAddress  = EEPROM.getAddress(sizeof(int));
+int XmotorStepsPerRevAddress          = EEPROM.getAddress(sizeof(unsigned int));
 int selectedYmotorInvertIndexAddress  = EEPROM.getAddress(sizeof(int));
 int selectedYmotorEnableIndexAddress  = EEPROM.getAddress(sizeof(int));
 int selectedZmotorInvertIndexAddress  = EEPROM.getAddress(sizeof(int));
 int selectedZmotorEnableIndexAddress  = EEPROM.getAddress(sizeof(int));
 int selectedDmotorInvertIndexAddress  = EEPROM.getAddress(sizeof(int));
 int selectedDmotorEnableIndexAddress  = EEPROM.getAddress(sizeof(int));
+int selectedRmotorInvertIndexAddress  = EEPROM.getAddress(sizeof(int));
+int selectedRmotorEnableIndexAddress  = EEPROM.getAddress(sizeof(int));
+int RmotorStepsPerRevAddress          = EEPROM.getAddress(sizeof(unsigned int));
 
 // saved sequence values:
 int numberOfTransitionsAddress        = EEPROM.getAddress(sizeof(int));
@@ -49,14 +53,22 @@ void saveNonVolatileSettings(void)
   EEPROM.writeInt(motorSettleTimeSettingAddress,      motorSettleTimeSetting);
   EEPROM.writeInt(selectedMotionProfileIndexAddress,  selectedMotionProfileIndex);
   
-  EEPROM.writeInt(selectedXmotorInvertIndexAddress,   selectedXmotorInvertIndex);  
-  EEPROM.writeInt(selectedXmotorEnableIndexAddress,   selectedXmotorEnableIndex);  
+  EEPROM.writeInt(selectedXmotorInvertIndexAddress,   selectedXmotorInvertIndex);
+  EEPROM.writeInt(selectedXmotorEnableIndexAddress,   selectedXmotorEnableIndex);
+  EEPROM.writeInt(XmotorStepsPerRevAddress,           XmotorStepsPerRev);
+  
   EEPROM.writeInt(selectedYmotorInvertIndexAddress,   selectedYmotorInvertIndex);  
   EEPROM.writeInt(selectedYmotorEnableIndexAddress,   selectedYmotorEnableIndex);  
+  
   EEPROM.writeInt(selectedZmotorInvertIndexAddress,   selectedZmotorInvertIndex);  
   EEPROM.writeInt(selectedZmotorEnableIndexAddress,   selectedZmotorEnableIndex);  
+  
   EEPROM.writeInt(selectedDmotorInvertIndexAddress,   selectedDmotorInvertIndex);  
   EEPROM.writeInt(selectedDmotorEnableIndexAddress,   selectedDmotorEnableIndex);  
+
+  EEPROM.writeInt(selectedRmotorInvertIndexAddress,   selectedRmotorInvertIndex);  
+  EEPROM.writeInt(selectedRmotorEnableIndexAddress,   selectedRmotorEnableIndex);  
+  EEPROM.writeInt(RmotorStepsPerRevAddress,           RmotorStepsPerRev);
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -76,12 +88,17 @@ void loadNonVolatileSettings(void)
 
   selectedXmotorInvertIndex   = EEPROM.readInt(selectedXmotorInvertIndexAddress);
   selectedXmotorEnableIndex   = EEPROM.readInt(selectedXmotorEnableIndexAddress);
+  XmotorStepsPerRev           = EEPROM.readInt(XmotorStepsPerRevAddress);
+  
   selectedYmotorInvertIndex   = EEPROM.readInt(selectedYmotorInvertIndexAddress);
   selectedYmotorEnableIndex   = EEPROM.readInt(selectedYmotorEnableIndexAddress);
+  
   selectedZmotorInvertIndex   = EEPROM.readInt(selectedZmotorInvertIndexAddress);
   selectedZmotorEnableIndex   = EEPROM.readInt(selectedZmotorEnableIndexAddress);
+  
   selectedDmotorInvertIndex   = EEPROM.readInt(selectedDmotorInvertIndexAddress);
   selectedDmotorEnableIndex   = EEPROM.readInt(selectedDmotorEnableIndexAddress);
+  RmotorStepsPerRev           = EEPROM.readInt(RmotorStepsPerRevAddress);
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -93,19 +110,23 @@ void restoreDefaultSettings(void)
   lensDefoggerModeIndex       = 1;
   selectedExposureIndex       = 21;
   shutterButtonTimeSetting    = 300;
-  backlightTimeIndex          = 2;
+  backlightTimeIndex          = 0;
   cameraRecoveryTimeSetting   = 2850;
   motorSettleTimeSetting      = 500;
   videoFramesPerSecondIndex   = 2;
   selectedMotionProfileIndex  = 2;
   selectedXmotorInvertIndex   = 0;
   selectedXmotorEnableIndex   = 1;
+  XmotorStepsPerRev           = 40000;
   selectedYmotorInvertIndex   = 1;
   selectedYmotorEnableIndex   = 1;
   selectedZmotorInvertIndex   = 0;
   selectedZmotorEnableIndex   = 1;
   selectedDmotorInvertIndex   = 0;
   selectedDmotorEnableIndex   = 1;
+  selectedRmotorInvertIndex   = 0;
+  selectedRmotorEnableIndex   = 1;
+  RmotorStepsPerRev           = 40000;
   ZmotorMinPosition = 0;
   ZmotorMaxPosition = 0;
   DmotorMinPosition = 0;

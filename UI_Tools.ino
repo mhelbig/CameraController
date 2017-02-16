@@ -21,6 +21,26 @@ void adjustIntValue(int *value, int min, int max)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
+// Function to read the joystick positions as digital and adjust an unsigned integer value on the lcd display
+// includes support for fine and coarse adjustment by shifting the joystick right and left
+void adjustUnsignedIntValue(unsigned int *value, unsigned int min, unsigned int max)
+{
+  static int coarseAdjust = 1;
+  
+  Serial.println(*value,DEC);
+  
+  if (nunchuk.userInput == 'R') coarseAdjust = 1;
+  if (nunchuk.userInput == 'L') coarseAdjust = 10;
+  if (nunchuk.userInput == 'F') *value = *value + coarseAdjust;  
+  if (nunchuk.userInput == 'B') *value = *value - coarseAdjust;  
+  
+  Serial.println(*value);
+
+  if(*value > max) *value = max;
+  if(*value < min) *value = min;
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 // Function to read the analog joystick X and Y axes and adjust motor positions
 // All the math in the function is done with a float to maintain fractional precision
 // result is converted back to an int or long as necessary by the calling function

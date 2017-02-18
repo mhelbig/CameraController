@@ -32,6 +32,8 @@ MenuItem RunSequence        ("Run sequence");
 Menu vpMenu                 ("Video Pan");
 MenuItem setPanTime         ("Set Pan Time");
 MenuItem setPanRevs         ("Set Pan Revolutions");
+MenuItem initialPanTilt     ("Initial Pan & Tilt");
+MenuItem recordVideo        ("Record Video");
 
 //Setup menu
 Menu suMenu                 ("System Settings");
@@ -88,6 +90,9 @@ void initializeMenu(void)
   mm.add_menu(&vpMenu);
   vpMenu.add_item(&setPanTime,         &on_set_PanTime_selected);
   vpMenu.add_item(&setPanRevs,         &on_set_PanRevs_selected);
+  vpMenu.add_item(&initialPanTilt,     &on_initialPanTilt_selected);
+  vpMenu.add_item(&setPanRevs,         &on_set_PanRevs_selected);
+  vpMenu.add_item(&recordVideo,        &on_recordVideo_selected);
 
 //Setup menu
   mm.add_menu(&suMenu);

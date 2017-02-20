@@ -91,7 +91,6 @@ void initializeMenu(void)
   vpMenu.add_item(&setPanTime,         &on_set_PanTime_selected);
   vpMenu.add_item(&setPanRevs,         &on_set_PanRevs_selected);
   vpMenu.add_item(&initialPanTilt,     &on_initialPanTilt_selected);
-  vpMenu.add_item(&setPanRevs,         &on_set_PanRevs_selected);
   vpMenu.add_item(&recordVideo,        &on_recordVideo_selected);
 
 //Setup menu

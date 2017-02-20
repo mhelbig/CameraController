@@ -1,4 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////////
+// Constants
+/////////////////////////////////////////////////////////////////////////////////
+#define VIDEO_PAN_CYCLE_TIME   20  // Throttles the speed of the pan processing loop in mSec
+
+/////////////////////////////////////////////////////////////////////////////////
 // Set Pan Time
 /////////////////////////////////////////////////////////////////////////////////
 void on_set_PanTime_selected(MenuItem* p_menu_item)
@@ -89,30 +94,27 @@ void on_initialPanTilt_selected(MenuItem* p_menu_item)
     lcd.clear();
     displaySetHeading();
     
-    XmotorPosition = XmotorSplinePoints_y[currentTransitionSelected]; // get the current positions from the array
-    YmotorPosition = YmotorSplinePoints_y[currentTransitionSelected];
-    
     waitForJoystickToBeCentered = 10;   // flag that stops the joystick shift from messing up the motor positions
   }
 
   // callback function main:
-  if(waitForJoystickToBeCentered)  // this keep the joystick being shifted as we enter the menu from messing with the motor postion
+  if(waitForJoystickToBeCentered)  // this keep the joystick being shifted as we enter the menu from messing with the motor position
   {
     if(nunchuk.analogDisplacementX == 0) waitForJoystickToBeCentered--;
     return;
   }
 
   setMotorEnableState(1);  // Turn on the motor enable lines
-  if(adjustMotorPositions(&XmotorPosition, &YmotorPosition, -1000000, 1000000, -1000000, 1000000))  // no real limits on positions for pan and tilt
+  if(adjustMotorPositions(&XmotorPanHomePosition, &YmotorPanHomePosition, -1000000, 1000000, -1000000, 1000000))  // no real limits on positions for pan and tilt
   {
     lcd.setCursor(0,1);
     lcd.print("                    ");
     lcd.setCursor(0,1);
     lcd.print("X:");
-    lcd.print(round(XmotorPosition));
+    lcd.print(round(XmotorPanHomePosition));
     lcd.setCursor(10,1);
     lcd.print("Y:");
-    lcd.print(round(YmotorPosition));
+    lcd.print(round(YmotorPanHomePosition));
   }
 
   // callback function "destructor"
@@ -134,11 +136,11 @@ enum panCameraMode
   panFinished
 };
 
+static float panStepsPerSecond;
+
 void on_recordVideo_selected(MenuItem* p_menu_item)
 {
   static panCameraMode mode;
-  static float frame;
-  static float intervalTime;
 
   // callback function "constructor"
 
@@ -149,9 +151,9 @@ void on_recordVideo_selected(MenuItem* p_menu_item)
     
     displaySetHeading();
     lcd.setCursor(0,1);
-    lcd.print("Start VCR Recording");
+    lcd.print("Start VCR Record");
     lcd.setCursor(0,2);
-    lcd.print("Hold Z to Start pan");
+    lcd.print("Press Z to Start pan");
     lcd.setCursor(0,3);
     lcd.print("C to cancel");
     
@@ -163,25 +165,44 @@ void on_recordVideo_selected(MenuItem* p_menu_item)
   {
     case waitToPan:
 //      Serial.println("waitToStart:");
-      if(nunchuk.userInput == 'z')
+      if(nunchuk.userInput == 'Z')
       {
+        panStepsPerSecond = (panRevsSetting * XmotorStepsPerRev) / panTimeSetting;
+        generalPurposeTimer.init(VIDEO_PAN_CYCLE_TIME);
+        panTime = 0 - panOvershootTime;  //set the starting point
+        
+        lcd.clear();
+        displaySetHeading();
+        
         mode = panCamera;
       }
       break;
     case panCamera:
-      lookupMotorPositions(frame);
-      
-      updateMotorPositions();
-      
-      // put timing and stepping code here
-      
-      mode = panFinished;
+      if (generalPurposeTimer.expired())
+      {
+        generalPurposeTimer.addTime(VIDEO_PAN_CYCLE_TIME);
+        updateMotorPanPosition;
+        
+        XmotorPanPosition = XmotorPanHomePosition + (panStepsPerSecond * panTime);  // calculate the pan motor position
+        
+        // FIX THE ROUNDING OF THIS CALCULATION TO ZERO:   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        panTime += (float)(VIDEO_PAN_CYCLE_TIME/1000);                                // increment the pan time
+        
+        lcd.setCursor(0,1);
+        lcd.print(panTime,1);
+        lcd.setCursor(0,2);
+        lcd.print(XmotorPanPosition,0);
+      }
+
+     if(panTime > (panTimeSetting + panOvershootTime))
+     {
+       mode = panFinished;
+       setMotorEnableState(0);  // Turn off the motor enable lines
+      lcd.setCursor(0,3);
+      lcd.print("Completed. Press 'C'");
+     }
       break;
     case panFinished:
-      setMotorEnableState(0);  // Turn off the motor enable lines
-      lcd.clear();
-      lcd.setCursor(0,0);
-      lcd.print("Completed. Press 'C'");
 
       break;
   }

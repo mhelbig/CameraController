@@ -302,7 +302,7 @@ void on_setPanTilt_selected(MenuItem* p_menu_item)
   }
 
   // callback function main:
-  if(waitForJoystickToBeCentered)  // this keep the joystick being shifted as we enter the menu from messing with the motor postion
+  if(waitForJoystickToBeCentered)  // this keeps the joystick being shifted as we enter the menu from messing with the motor postion
   {
     if(nunchuk.analogDisplacementX == 0) waitForJoystickToBeCentered--;
     return;

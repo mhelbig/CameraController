@@ -34,13 +34,13 @@ float DmotorMaxPosition       = 0;
 int   RmotorIncrementValue    = 0;
 
 // Video Pan Mode:
+int selectedPanDirectionIndex = 1;    // Right pan is the default direction
 float panTimeSetting          = 30;   // desired pan time setting
 float panTime                 = 0;    // pan time during pans
-float panOvershootTime        = 3;    // additional time and panning added before and after the pan shoot sequence
+float panOvershootTime        = 0;    // additional time and panning added before and after the pan shoot sequence  !!!!! Add this to the non-volatile settings !!!!!
 float panRevsSetting          = 1;    // desired number of pan rotations
 float XmotorPanHomePosition   = 0;    // start position for pan sequences
 float YmotorPanHomePosition   = 0;    // tilt position held during pans
-float XmotorPanPosition       = 0;    // calculated motor position
 
 // Non-Volatile Settings:  (values are loaded from EEPROM on startup)
 int backlightTimeIndex;
@@ -170,6 +170,12 @@ enumeratedMenuList cameraExposureTime[]=
   { "      0.3"   ,300},
   { "      1/4"   ,250},
   { "Under 1/4"   ,200}
+};
+
+enumeratedMenuList panDirectionList[]=
+{
+  { "Left " ,-1},  // corresponds to the spline.cpp setDegree() function
+  { "Right" ,1}  // we use the catmull spline type because it's easer to setup
 };
 
 /////////////////////////////////////////////////////////////////////////////////

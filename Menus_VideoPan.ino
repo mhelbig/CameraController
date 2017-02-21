@@ -1,7 +1,44 @@
 /////////////////////////////////////////////////////////////////////////////////
 // Constants
 /////////////////////////////////////////////////////////////////////////////////
-#define VIDEO_PAN_CYCLE_TIME   20  // Throttles the speed of the pan processing loop in mSec
+#define VIDEO_PAN_CYCLE_TIME   100  // Throttles the speed of the pan processing loop in mSec
+
+/////////////////////////////////////////////////////////////////////////////////
+// Set Pan Direction
+/////////////////////////////////////////////////////////////////////////////////
+void on_setPanDirection_selected(MenuItem* p_menu_item)
+{
+  static int tempEnumIndex;
+  
+// callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    tempEnumIndex = selectedPanDirectionIndex;
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(5,2);
+    lcd.print(panDirectionList[tempEnumIndex].menuText);
+  }
+
+// callback function main:
+  if(selectEnumeratedValue(&tempEnumIndex,(sizeof(panDirectionList)/sizeof(panDirectionList[0]))))
+    {
+      lcd.setCursor(5,2);
+      lcd.print(panDirectionList[tempEnumIndex].menuText);
+    }
+  
+// callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'Z')  // if Z is pressed we keep the newly adjusted value
+    {
+      selectedPanDirectionIndex = tempEnumIndex;
+    }
+  }  
+}
 
 /////////////////////////////////////////////////////////////////////////////////
 // Set Pan Time
@@ -94,6 +131,9 @@ void on_initialPanTilt_selected(MenuItem* p_menu_item)
     lcd.clear();
     displaySetHeading();
     
+    XmotorPosition = XmotorPanHomePosition;   // start out at the last home position 
+    YmotorPosition = YmotorPanHomePosition;
+    
     waitForJoystickToBeCentered = 10;   // flag that stops the joystick shift from messing up the motor positions
   }
 
@@ -105,22 +145,26 @@ void on_initialPanTilt_selected(MenuItem* p_menu_item)
   }
 
   setMotorEnableState(1);  // Turn on the motor enable lines
-  if(adjustMotorPositions(&XmotorPanHomePosition, &YmotorPanHomePosition, -1000000, 1000000, -1000000, 1000000))  // no real limits on positions for pan and tilt
+  if(adjustMotorPositions(&XmotorPosition, &YmotorPosition, -1000000, 1000000, -1000000, 1000000))  // no real limits on positions for pan and tilt
   {
     lcd.setCursor(0,1);
     lcd.print("                    ");
     lcd.setCursor(0,1);
     lcd.print("X:");
-    lcd.print(round(XmotorPanHomePosition));
+    lcd.print(round(XmotorPosition));
     lcd.setCursor(10,1);
     lcd.print("Y:");
-    lcd.print(round(YmotorPanHomePosition));
+    lcd.print(round(YmotorPosition));
   }
 
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
     setMotorEnableState(0);  // Turn off the motor enable lines
+
+    XmotorPanHomePosition = XmotorPosition;   // save the home positions
+    YmotorPanHomePosition = YmotorPosition;
+
     ms.deselect_set_menu_item();
     displayMenu();
   }
@@ -147,7 +191,11 @@ void on_recordVideo_selected(MenuItem* p_menu_item)
   if (ms.menu_item_was_just_selected())
   {
     setMotorEnableState(1);  // Turn on the motor enable lines
-    updateMotorPositions();
+
+    panStepsPerSecond = (panRevsSetting * XmotorStepsPerRev) / panTimeSetting;
+    panTime = 0 - panOvershootTime;  //set the starting point
+    XmotorPosition = XmotorPanHomePosition + ( panStepsPerSecond * panTime * panDirectionList[selectedPanDirectionIndex].value );  // move the motors to the home position
+    YmotorPosition = YmotorPanHomePosition;
     
     displaySetHeading();
     lcd.setCursor(0,1);
@@ -167,12 +215,14 @@ void on_recordVideo_selected(MenuItem* p_menu_item)
 //      Serial.println("waitToStart:");
       if(nunchuk.userInput == 'Z')
       {
-        panStepsPerSecond = (panRevsSetting * XmotorStepsPerRev) / panTimeSetting;
         generalPurposeTimer.init(VIDEO_PAN_CYCLE_TIME);
-        panTime = 0 - panOvershootTime;  //set the starting point
         
         lcd.clear();
         displaySetHeading();
+        lcd.setCursor(0,1);
+        lcd.print("    Time: ");
+        lcd.setCursor(0,2);
+        lcd.print("Position: ");
         
         mode = panCamera;
       }
@@ -181,29 +231,25 @@ void on_recordVideo_selected(MenuItem* p_menu_item)
       if (generalPurposeTimer.expired())
       {
         generalPurposeTimer.addTime(VIDEO_PAN_CYCLE_TIME);
-        updateMotorPanPosition;
-        
-        XmotorPanPosition = XmotorPanHomePosition + (panStepsPerSecond * panTime);  // calculate the pan motor position
-        
-        // FIX THE ROUNDING OF THIS CALCULATION TO ZERO:   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        panTime += (float)(VIDEO_PAN_CYCLE_TIME/1000);                                // increment the pan time
-        
-        lcd.setCursor(0,1);
-        lcd.print(panTime,1);
-        lcd.setCursor(0,2);
-        lcd.print(XmotorPanPosition,0);
-      }
 
-     if(panTime > (panTimeSetting + panOvershootTime))
-     {
-       mode = panFinished;
-       setMotorEnableState(0);  // Turn off the motor enable lines
-      lcd.setCursor(0,3);
-      lcd.print("Completed. Press 'C'");
-     }
+       if(panTime > (panTimeSetting + panOvershootTime))
+       {
+          mode = panFinished;
+       }
+
+        XmotorPosition = XmotorPanHomePosition + (panStepsPerSecond * panTime * panDirectionList[selectedPanDirectionIndex].value);  // calculate the pan motor position
+        
+        lcd.setCursor(10,1);
+        lcd.print(panTime,0); lcd.print(" ");
+        lcd.setCursor(10,2);
+        lcd.print(XmotorPosition,0);  lcd.print(" ");
+        panTime += ((float)VIDEO_PAN_CYCLE_TIME/1000);                                // increment the pan time
+      }
       break;
     case panFinished:
-
+      setMotorEnableState(0);  // Turn off the motor enable lines
+      lcd.setCursor(0,3);
+      lcd.print("Completed. Press 'C'");
       break;
   }
 

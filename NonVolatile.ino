@@ -23,6 +23,7 @@ int selectedDmotorEnableIndexAddress  = EEPROM.getAddress(sizeof(int));
 int selectedRmotorInvertIndexAddress  = EEPROM.getAddress(sizeof(int));
 int selectedRmotorEnableIndexAddress  = EEPROM.getAddress(sizeof(int));
 int RmotorStepsPerRevAddress          = EEPROM.getAddress(sizeof(unsigned int));
+// Add panOvershootTime parameter
 
 // saved sequence values:
 int numberOfTransitionsAddress        = EEPROM.getAddress(sizeof(int));
@@ -117,7 +118,7 @@ void restoreDefaultSettings(void)
   selectedMotionProfileIndex  = 2;
   selectedXmotorInvertIndex   = 0;
   selectedXmotorEnableIndex   = 1;
-  XmotorStepsPerRev           = 40000;
+  XmotorStepsPerRev           = 10180;
   selectedYmotorInvertIndex   = 1;
   selectedYmotorEnableIndex   = 1;
   selectedZmotorInvertIndex   = 0;

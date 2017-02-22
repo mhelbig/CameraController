@@ -34,13 +34,13 @@ float DmotorMaxPosition       = 0;
 int   RmotorIncrementValue    = 0;
 
 // Video Pan Mode:
-int selectedPanDirectionIndex = 1;    // Right pan is the default direction
-float panTimeSetting          = 30;   // desired pan time setting
-float panTime                 = 0;    // pan time during pans
-float panOvershootTime        = 0;    // additional time and panning added before and after the pan shoot sequence  !!!!! Add this to the non-volatile settings !!!!!
-float panRevsSetting          = 1;    // desired number of pan rotations
-float XmotorPanHomePosition   = 0;    // start position for pan sequences
-float YmotorPanHomePosition   = 0;    // tilt position held during pans
+int   selectedPanDirectionIndex = 1;    // Right pan is the default direction
+int   panOvershootTime          = 2;    // additional time and panning added before and after the pan shoot sequence
+float panTimeSetting            = 30;   // desired pan time setting
+float panTime                   = 0;    // pan time during pans
+int   panRevsSetting            = 100;  // desired number of pan rotations * 100
+float XmotorPanHomePosition     = 0;    // start position for pan sequences
+float YmotorPanHomePosition     = 0;    // tilt position held during pans
 
 // Non-Volatile Settings:  (values are loaded from EEPROM on startup)
 int backlightTimeIndex;
@@ -102,7 +102,7 @@ struct enumeratedMenuList
 
 enumeratedMenuList backlightTimeList[]=
 {
-  { "5 minutes      " ,300}, // Generally used for development or AC powered setups
+  { "Always On      " ,300}, // Generally used for development or AC powered setups
   { "30 seconds     " ,30},  // Generally used for day time
   { "2 seconds      " ,2}    // Generally used for night mode to minimize eye strain going from menus to camera
 };
@@ -174,8 +174,8 @@ enumeratedMenuList cameraExposureTime[]=
 
 enumeratedMenuList panDirectionList[]=
 {
-  { "Left " ,-1},  // corresponds to the spline.cpp setDegree() function
-  { "Right" ,1}  // we use the catmull spline type because it's easer to setup
+  { "Left " ,-1},
+  { "Right" ,1}
 };
 
 /////////////////////////////////////////////////////////////////////////////////

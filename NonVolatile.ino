@@ -23,6 +23,7 @@ int selectedDmotorEnableIndexAddress  = EEPROM.getAddress(sizeof(int));
 int selectedRmotorInvertIndexAddress  = EEPROM.getAddress(sizeof(int));
 int selectedRmotorEnableIndexAddress  = EEPROM.getAddress(sizeof(int));
 int RmotorStepsPerRevAddress          = EEPROM.getAddress(sizeof(unsigned int));
+int panOvershootTimeAddress           = EEPROM.getAddress(sizeof(int));
 // Add panOvershootTime parameter
 
 // saved sequence values:
@@ -70,6 +71,8 @@ void saveNonVolatileSettings(void)
   EEPROM.writeInt(selectedRmotorInvertIndexAddress,   selectedRmotorInvertIndex);  
   EEPROM.writeInt(selectedRmotorEnableIndexAddress,   selectedRmotorEnableIndex);  
   EEPROM.writeInt(RmotorStepsPerRevAddress,           RmotorStepsPerRev);
+  EEPROM.writeInt(panOvershootTimeAddress,            panOvershootTime);
+  
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -100,6 +103,7 @@ void loadNonVolatileSettings(void)
   selectedDmotorInvertIndex   = EEPROM.readInt(selectedDmotorInvertIndexAddress);
   selectedDmotorEnableIndex   = EEPROM.readInt(selectedDmotorEnableIndexAddress);
   RmotorStepsPerRev           = EEPROM.readInt(RmotorStepsPerRevAddress);
+  panOvershootTime            = EEPROM.readInt(panOvershootTimeAddress);
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -128,6 +132,7 @@ void restoreDefaultSettings(void)
   selectedRmotorInvertIndex   = 0;
   selectedRmotorEnableIndex   = 1;
   RmotorStepsPerRev           = 40000;
+  panOvershootTime            = 2;
   ZmotorMinPosition = 0;
   ZmotorMaxPosition = 0;
   DmotorMinPosition = 0;

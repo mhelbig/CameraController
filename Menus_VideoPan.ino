@@ -79,11 +79,46 @@ void on_set_PanTime_selected(MenuItem* p_menu_item)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
+// Set Pan Overshoot Time
+/////////////////////////////////////////////////////////////////////////////////
+void on_set_Pan_Overshoot_selected(MenuItem* p_menu_item)
+{
+  static int tempPanOvershootSetting;
+  
+  // callback function "constructor"
+  if (ms.menu_item_was_just_selected())
+  {
+    lcd.clear();
+    displaySetHeading();
+    lcd.setCursor(7,2);
+    lcd.print("s");
+    
+    tempPanOvershootSetting = panOvershootTime;  // save a copy of the current setting in case we cancel
+  }
+  // callback function main:
+  adjustIntValue(&panOvershootTime,0,5);
+  lcd.setCursor(6,2);
+  lcd.print(panOvershootTime);
+
+  // callback function "destructor"
+  if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
+  {
+    ms.deselect_set_menu_item();
+    displayMenu();
+
+    if(nunchuk.userInput == 'C')  // if C is pressed, restore the orignal value
+    {
+      panOvershootTime = tempPanOvershootSetting;
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 // Set Pan Revolutions
 /////////////////////////////////////////////////////////////////////////////////
 void on_set_PanRevs_selected(MenuItem* p_menu_item)
 {
-  static float tempPanRevsSetting;
+  static int tempPanRevsSetting;
   
   // callback function "constructor"
   if (ms.menu_item_was_just_selected())
@@ -93,13 +128,13 @@ void on_set_PanRevs_selected(MenuItem* p_menu_item)
     
     tempPanRevsSetting = panRevsSetting;  // save a copy of the current setting in case we cancel
   }
+  
   // callback function main:
-  if(adjustAnalogValue(&panRevsSetting,.01,25,false))
-  {
-    lcd.setCursor(2,2);
-    lcd.print((round(panRevsSetting*100 +0.5)) / 100);
-    lcd.print(" ");
-  }
+  adjustIntValue(&panRevsSetting,10,400);
+  lcd.setCursor(2,2);
+  lcd.print((float)panRevsSetting/100);
+  lcd.print(" ");
+  
   // callback function "destructor"
   if(nunchuk.userInput == 'C' || nunchuk.userInput == 'Z')
   {
@@ -109,10 +144,6 @@ void on_set_PanRevs_selected(MenuItem* p_menu_item)
     if(nunchuk.userInput == 'C')  // if C is pressed, restore the orignal value
     {
       panRevsSetting = tempPanRevsSetting;
-    }
-    else
-    {
-      panRevsSetting = panRevsSetting;    // round the result to 2 decimal places
     }
   }
 }
@@ -192,7 +223,7 @@ void on_recordVideo_selected(MenuItem* p_menu_item)
   {
     setMotorEnableState(1);  // Turn on the motor enable lines
 
-    panStepsPerSecond = (panRevsSetting * XmotorStepsPerRev) / panTimeSetting;
+    panStepsPerSecond = ( ( (float)panRevsSetting/100) * XmotorStepsPerRev) / panTimeSetting;
     panTime = 0 - panOvershootTime;  //set the starting point
     XmotorPosition = XmotorPanHomePosition + ( panStepsPerSecond * panTime * panDirectionList[selectedPanDirectionIndex].value );  // move the motors to the home position
     YmotorPosition = YmotorPanHomePosition;

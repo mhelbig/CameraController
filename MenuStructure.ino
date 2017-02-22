@@ -32,9 +32,10 @@ MenuItem RunSequence        ("Run sequence");
 Menu vpMenu                 ("Video Pan");
 MenuItem setPanDirection    ("Set Pan Direction");
 MenuItem setPanTime         ("Set Pan Time");
+MenuItem setPanOvershoot    ("Pan Overshoot Time");
 MenuItem setPanRevs         ("Set Pan Revolutions");
 MenuItem initialPanTilt     ("Initial Pan & Tilt");
-MenuItem recordVideo        ("Record Video");
+MenuItem recordVideo        ("Pan & Record Video");
 
 //Setup menu
 Menu suMenu                 ("System Settings");
@@ -60,7 +61,6 @@ MenuItem DmotorEnable       ("D motor enable");
 MenuItem RmotorInvert       ("R motor direction");
 MenuItem RmotorEnable       ("R motor enable");
 MenuItem RmotorPulsesPerRev ("R motor pulses/rev");
-// Add Pan Overshoot time menu item
 MenuItem loadSettings       ("Load settings");
 MenuItem saveSettings       ("Save settings");
 MenuItem restoreDefaults    ("Restore defaults");
@@ -92,6 +92,7 @@ void initializeMenu(void)
   mm.add_menu(&vpMenu);
   vpMenu.add_item(&setPanDirection,    &on_setPanDirection_selected);
   vpMenu.add_item(&setPanTime,         &on_set_PanTime_selected);
+  vpMenu.add_item(&setPanOvershoot,    &on_set_Pan_Overshoot_selected);
   vpMenu.add_item(&setPanRevs,         &on_set_PanRevs_selected);
   vpMenu.add_item(&initialPanTilt,     &on_initialPanTilt_selected);
   vpMenu.add_item(&recordVideo,        &on_recordVideo_selected);
